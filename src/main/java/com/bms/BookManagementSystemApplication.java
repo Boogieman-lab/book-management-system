@@ -1,12 +1,11 @@
-package me.bookhub;
+package com.bms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Main {
+public class BookManagementSystemApplication {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(BookManagementSystemApplication.class, args);
     }
 }

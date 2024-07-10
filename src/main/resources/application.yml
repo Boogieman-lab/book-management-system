@@ -7,6 +7,6 @@ spring:
     defer-datasource-initialization: true
   datasource:
     driverClassName: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/sys
+    url: jdbc:mariadb://localhost:23306/bms
     username: root
-    password: root
+    password: sangs#1234

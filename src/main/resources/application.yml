@@ -4,6 +4,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        highlight_sql: true
     defer-datasource-initialization: true
   datasource:
     driverClassName: org.mariadb.jdbc.Driver

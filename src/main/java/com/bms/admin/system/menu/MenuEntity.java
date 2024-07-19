@@ -1,10 +1,14 @@
 package com.bms.admin.system.menu;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "menu_tbl")
 public class MenuEntity {
     @Id
@@ -29,4 +33,15 @@ public class MenuEntity {
 
     @Column(name = "menu_type", columnDefinition = "varchar(10) DEFAULT 'USER'")
     private String menuType;
+
+    @Builder
+    public MenuEntity(int menuId, String menuName, String menuUrl, Integer parentId, int menuOrder, char activeYn, String menuType) {
+        this.menuId = menuId;
+        this.menuName = menuName;
+        this.menuUrl = menuUrl;
+        this.parentId = parentId;
+        this.menuOrder = menuOrder;
+        this.activeYn = activeYn;
+        this.menuType = menuType;
+    }
 }

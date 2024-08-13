@@ -1,4 +1,4 @@
-package com.bms.admin.system.menu;
+package com.example.bookmanagementsystembo.common.menu;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/menu")
-public class MenuController {
+public class MenuApiController {
 
     private final MenuService menuService;
 

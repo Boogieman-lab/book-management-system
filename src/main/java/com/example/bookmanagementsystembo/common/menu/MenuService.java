@@ -1,4 +1,4 @@
-package com.bms.admin.system.menu;
+package com.example.bookmanagementsystembo.common.menu;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,4 +1,4 @@
-package com.bms.admin.system.menu;
+package com.example.bookmanagementsystembo.common.menu;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

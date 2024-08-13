@@ -1,4 +1,4 @@
-package com.bms.admin.system.menu;
+package com.example.bookmanagementsystembo.common.menu;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

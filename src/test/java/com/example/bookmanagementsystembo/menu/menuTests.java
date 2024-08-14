@@ -2,6 +2,7 @@ package com.example.bookmanagementsystembo.menu;
 
 import com.example.bookmanagementsystembo.common.menu.MenuEntity;
 import com.example.bookmanagementsystembo.common.menu.MenuRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +20,7 @@ public class menuTests {
     @MockBean
     private MenuRepository menuRepository;
 
+    @DisplayName("메뉴 조회")
     @Test
     void testMenuFindAll() {
         // Mock 데이터를 설정
@@ -55,6 +57,7 @@ public class menuTests {
         assertEquals("메인", me.getMenuName());
     }
 
+    @DisplayName("메뉴 ID로 조회")
     @Test
     void testMenuFindById() {
         // Mock 데이터를 설정
@@ -80,6 +83,7 @@ public class menuTests {
         }
     }
 
+    @DisplayName("메뉴 활성 여부 변경 테스트")
     @Test
     void testMenuUpdateActiveYn() {
         MenuEntity mockMenu = MenuEntity.builder()

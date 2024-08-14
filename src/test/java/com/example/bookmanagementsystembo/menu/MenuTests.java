@@ -15,7 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class menuTests {
+public class MenuTests {
 
     @MockBean
     private MenuRepository menuRepository;

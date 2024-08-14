@@ -27,7 +27,7 @@ public class MenuService {
             menuPage = menuRepository.findByMenuNameContaining(searchMenuName, pageable);
         }
 
-        return menuPage.getContent().stream().map(MenuDTO::fromMenuEntity).toList();
+        return menuPage.getContent().stream().map(MenuDTO::toMenuDTO).toList();
     }
 
 }

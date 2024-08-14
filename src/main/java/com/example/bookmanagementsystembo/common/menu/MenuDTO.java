@@ -27,7 +27,7 @@ public class MenuDTO {
     }
 
     // 엔티티를 DTO로 변환
-    public static MenuDTO fromMenuEntity(MenuEntity menuEntity) {
+    public static MenuDTO toMenuDTO(MenuEntity menuEntity) {
         return MenuDTO.builder()
                 .menuId(menuEntity.getMenuId())
                 .menuName(menuEntity.getMenuName())
@@ -39,4 +39,14 @@ public class MenuDTO {
                 .build();
     }
 
+    // 사이드바 메뉴를 위한 생성자
+    public static MenuDTO toSidebarMenu(int menuId, String menuName, String menuUrl, Integer parentId, int menuOrder) {
+        return MenuDTO.builder()
+                .menuId(menuId)
+                .menuName(menuName)
+                .menuUrl(menuUrl)
+                .parentId(parentId)
+                .menuOrder(menuOrder)
+                .build();
+    }
 }

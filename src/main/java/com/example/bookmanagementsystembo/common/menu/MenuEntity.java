@@ -28,7 +28,7 @@ public class MenuEntity {
     @Column(name = "menu_order", nullable = false)
     private int menuOrder;
 
-    @Column(name = "active_yn", columnDefinition = "char(1) DEFAULT '1'")
+    @Column(name = "active_yn", columnDefinition = "char(1) DEFAULT 'Y'")
     private char activeYn;
 
     @Column(name = "menu_type", columnDefinition = "varchar(10) DEFAULT 'USER'")

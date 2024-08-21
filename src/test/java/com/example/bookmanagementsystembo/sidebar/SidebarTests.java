@@ -26,6 +26,7 @@ public class SidebarTests {
     @Test
     public void testGetSidebarMenus() {
         List<MenuDTO> sidebarDTO = sidebarService.getSidebarMenus();
+        System.out.println(sidebarDTO);
         assertEquals(24, sidebarDTO.size());
     }
 }

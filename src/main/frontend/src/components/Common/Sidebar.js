@@ -27,9 +27,13 @@ const SidebarContainer = styled(List)`
 // 각 메뉴 항목의 텍스트 스타일을 관리
 const CustomListItemText = styled(ListItemText)`
   .MuiTypography-root {
-    color: ${(props) => (props.active ? 'white' : 'inherit')}; /* 메뉴 항목이 활성화된 경우, 글자 색상을 흰색으로 설정, 그렇지 않으면 기본 색상 유지 */
-    font-weight: ${(props) => (props.active ? 'bold' : 'normal')}; /* 메뉴 항목이 활성화된 경우, 글자 굵기를 굵게 설정, 그렇지 않으면 기본 굵기 유지 */
-    /* font-size: ${(props) => (props.active ? '18px' : '16px')}; */ /* (사용되지 않음) 메뉴 항목이 활성화된 경우, 글자 크기를 18px로 설정, 그렇지 않으면 16px로 설정 */
+    color: inherit; /* 기본 색상 유지 */
+    font-weight: inherit; /* 기본 굵기 유지 */
+  }
+
+  &.active .MuiTypography-root {
+    color: white; /* 활성화된 항목에 대해 흰색으로 변경 */
+    font-weight: bold; /* 활성화된 항목에 대해 굵게 변경 */
   }
 `;
 
@@ -55,7 +59,7 @@ export default function Sidebar() {
             {menuItems.map((item) => (
                 <React.Fragment key={item.menuId}>
                     <ListItemButton onClick={() => handleItemClick(item.menuUrl)}>
-                        <CustomListItemText primary={item.menuName} active={isActive(item.menuUrl)}/>
+                        <CustomListItemText primary={item.menuName}  className={isActive(item.menuUrl) ? "active" : ""}/>
                         {item.subItems.length > 0 && (
                             open[item.menuId] ?
                                 <CustomExpandLess onClick={(e) => {
@@ -79,7 +83,7 @@ export default function Sidebar() {
                                     >
                                         <CustomListItemText
                                             primary={subItem.menuName}
-                                            active={isActive(subItem.menuUrl)} // 서브메뉴 항목의 활성화 상태 설정
+                                            className={isActive(subItem.menuUrl) ? "active" : ""}
                                         />
                                     </ListItemButton>
                                 ))}

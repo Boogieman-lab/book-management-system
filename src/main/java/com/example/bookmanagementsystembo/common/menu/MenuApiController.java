@@ -8,7 +8,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/menu")
+@RequestMapping("/api/menus")
 public class MenuApiController {
 
     private final MenuService menuService;

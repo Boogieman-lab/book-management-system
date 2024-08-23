@@ -1,7 +1,8 @@
 import React from "react";
-import {BrowserRouter as Router, Routes} from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Sidebar from "./components/Common/Sidebar";
 import Header from "./components/Common/Header";
+import MenuPage from './pages/Menu/MenuPage';
 import {Box, CssBaseline} from '@mui/material';
 
 function App() {
@@ -16,8 +17,9 @@ function App() {
                 <Header/>
 
                 {/* 메인 콘텐츠 영역 */}
-                <Box component="main" sx={{flexGrow: 1, p: 3, mt: 8}}>
+                <Box componet="main" sx={{flexGrow: 4, p: 4, mt: 0}}>
                     <Routes>
+                        /<Route path="/admin/system/menus" element={<MenuPage />} /> {/* 메뉴 페이지 라우트 */}
                         {/* 라우트 정의는 여기에 추가 */}
                     </Routes>
                 </Box>

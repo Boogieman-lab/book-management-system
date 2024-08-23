@@ -12,8 +12,8 @@ import useSidebar from '../../hooks/useSidebar';
 // SidebarContainer: List 컴포넌트를 기반으로 하는 사용자 정의 스타일 컴포넌트
 // 사이드바의 전체 레이아웃과 스타일을 관리
 const SidebarContainer = styled(List)`
-  width: 250px; /* 사이드바의 너비를 250px로 고정 */
-  max-width: 250px; /* 사이드바의 최대 너비를 250px로 고정 */
+  width: 240px; /* 사이드바의 너비를 250px로 고정 */
+  max-width: 240px; /* 사이드바의 최대 너비를 250px로 고정 */
   background-color: #202734; /* 사이드바의 배경색을 어두운 회색(#202734)으로 설정 */
   color: #9ca3af; /* 사이드바 내부 텍스트 색상을 회색(#9ca3af)으로 설정 */
   position: fixed; /* 사이드바를 화면에 고정시켜, 스크롤해도 위치가 유지되도록 설정 */

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchSidebarItems } from '../services/sidebarService';
+import {useState, useEffect} from 'react';
+import {useNavigate, useLocation} from 'react-router-dom';
+import {fetchSidebarItems} from '../services/sidebarService';
 
 // 사이드바 메뉴 항목을 관리하는 커스텀 훅
 export default function useSidebar() {
@@ -44,5 +44,5 @@ export default function useSidebar() {
         }));
     };
 
-    return { menuItems, open, isActive, handleItemClick, handleIconClick };
+    return {menuItems, open, isActive, handleItemClick, handleIconClick};
 }

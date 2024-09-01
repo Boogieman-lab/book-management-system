@@ -22,4 +22,14 @@ public class MenuApiController {
         return ResponseEntity.ok(menuList);
     }
 
+    @PatchMapping("/modify/{id}")
+    public ResponseEntity<Void> modifyActiveYn(@PathVariable("menuId") int menuId, @PathVariable("activeYn") char activeYn) {
+        MenuDTO menuDTO = new MenuDTO();
+        menuDTO.setMenuId(menuId);
+        menuDTO.setActiveYn(activeYn);
+        menuService.modifyActiveYn(menuDTO);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

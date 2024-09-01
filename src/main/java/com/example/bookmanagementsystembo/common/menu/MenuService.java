@@ -30,4 +30,12 @@ public class MenuService {
         return menuPage.getContent().stream().map(MenuDTO::toMenuDTO).toList();
     }
 
+    public void modifyActiveYn(MenuDTO menuDTO) {
+        MenuEntity menuEntity = menuRepository.findById(menuDTO.getMenuId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid menu ID"));
+
+        menuEntity.toggleActiveYn();
+
+        menuRepository.save(menuEntity);
+    }
 }

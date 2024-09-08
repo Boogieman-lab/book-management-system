@@ -44,4 +44,9 @@ public class MenuEntity {
         this.activeYn = activeYn;
         this.menuType = menuType;
     }
+
+    // 상태를 반전시키는 메서드
+    public void toggleActiveYn() {
+        this.activeYn = (this.activeYn == 'Y') ? 'N' : 'Y';
+    }
 }

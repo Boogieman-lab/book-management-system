@@ -29,6 +29,4 @@ public class MenuApiController {
 
         return ResponseEntity.ok().build();
     }
-
-
 }

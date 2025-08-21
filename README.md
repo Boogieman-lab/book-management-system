@@ -1,5 +1,9 @@
 # 📚 부기맨(Boogieman) | 도서 관리 시스템
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/aaad232f-420b-4932-91e4-7103b5735c00" width="200" alt="Boogieman Logo"/>
+</p>
+
 ## 📖 프로젝트 개요
 
 사내 복지로 **희망 도서를 신청하면 회사에서 구매 후 대출할 수 있는 제도**가 운영되고 있지만,

@@ -1,7 +1,7 @@
 # 📚 부기맨(Boogieman) | 도서 관리 시스템
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/9df6ac0a-079b-4de7-9f24-298e2bc2cb5d" width="200" alt="Boogieman Logo"/>
+  <img src="https://github.com/user-attachments/assets/ffe6b6ff-6688-4818-8fa5-626a059a71ee" width="200" alt="Boogieman Logo"/>
 </p>
 
 ## 📖 프로젝트 개요

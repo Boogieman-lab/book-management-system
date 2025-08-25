@@ -64,7 +64,7 @@
 ## 🤓 기획 및 설계
 
 * 📊 \[프로젝트 칸반보드]
-* 🛠 \[기능 명세서]
+* 🛠 [기능 명세서](https://www.notion.so/dev-kimsh/25a84505755180adaa3cf02259f9270c?source=copy_link)
 * 🖥 \[페이지 기획서]
 * 📑 \[API 설계]
 * 💾 \[DB 명세서]

@@ -2,8 +2,17 @@
 
 ```mermaid
 erDiagram
+    COMPANY {
+        BIGINT company_id PK "회사 고유 ID (Primary Key)"
+        VARCHAR name "회사명"
+        VARCHAR domain "회사 이메일 도메인"
+        DATETIME created_at "생성일시"
+        DATETIME updated_at "수정일시"
+    }
+
     DEPARTMENT {
         BIGINT department_id PK "부서 고유 ID (Primary Key)"
+        BIGINT company_id FK "회사 ID (Foreign Key)"
         VARCHAR name "부서명"
         DATETIME created_at "생성일시"
         DATETIME updated_at "수정일시"
@@ -11,12 +20,13 @@ erDiagram
 
     USER {
         BIGINT user_id PK "사용자 고유 ID (Primary Key)"
+        BIGINT company_id FK "회사 ID (Foreign Key)"
+        BIGINT department_id FK "부서 ID (Foreign Key)"
         VARCHAR email "사용자 이메일 (로그인 ID, UNIQUE)"
         VARCHAR password "비밀번호 (OAuth 시 NULL 가능)"
         VARCHAR name "사용자 이름"
-        BIGINT department_id FK "부서 ID (Foreign Key)"
         VARCHAR profile_image "프로필 이미지 URL"
-        VARCHAR role "권한 (USER / ADMIN)"
+        VARCHAR role "권한 (USER / COMPANY_ADMIN / SYSTEM_ADMIN)"
         INT login_fail_count "로그인 실패 횟수"
         DATETIME created_at "생성일시"
         DATETIME updated_at "수정일시"
@@ -108,7 +118,7 @@ erDiagram
         VARCHAR type "알림 유형"
         TEXT message_template "알림 내용 템플릿"
         DATETIME created_at "생성일"
-        DATETIME updated_at "수정일"
+        DATETIME updated_at "수정일시"
     }
 
     HISTORY {
@@ -129,7 +139,11 @@ erDiagram
     }
 
     %% 관계 정의
+    COMPANY ||--o{ DEPARTMENT : "부서 보유"
+    COMPANY ||--o{ USER : "사용자 소속"
+
     DEPARTMENT ||--o{ USER : "소속"
+
     USER ||--o{ BOOK_REQUEST : "신청"
     USER ||--o{ BORROWING : "대출"
     USER ||--o{ NOTIFICATION : "알림 수신"
@@ -146,3 +160,4 @@ erDiagram
     BOOK_REQUEST }o--|| USER : "신청자"
     BOOK_REQUEST }o--|| USER : "처리 관리자"
     NOTIFICATION }o--|| NOTIFICATION_TEMPLATE : "템플릿 참조"
+

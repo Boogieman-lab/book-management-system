@@ -48,7 +48,7 @@ public class Users extends BaseEntity {
     @Comment("로그인 실패 횟수")
     private Integer loginFailCount = 0;
 
-    public static Users of(Long userId, String email, String password, String name, Long departmentId, String profileImage, Role role, Integer loginFailCount) {
+    public static Users create(Long userId, String email, String password, String name, Long departmentId, String profileImage, Role role, Integer loginFailCount) {
         Users user = new Users();
         user.userId = userId;
         user.email = email;

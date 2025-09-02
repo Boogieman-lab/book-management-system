@@ -34,11 +34,12 @@ class AuthServiceTest {
     @Test
     void signup_shouldSaveUser_whenEmailNotExists() {
         // given
-        SignupRequest request = new SignupRequest();
-        request.setUsername("testuser");
-        request.setPassword("password123");
-        request.setEmail("test@example.com");
-        request.setRole(Role.ROLE_USER);
+        SignupRequest request = new SignupRequest(
+            "testuser",
+            "password123",
+            "test@example.com",
+            Role.ROLE_USER
+        );
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");

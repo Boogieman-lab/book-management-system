@@ -1,6 +1,8 @@
 package com.example.bookmanagementsystembo.auth.domain.service;
 
 import com.example.bookmanagementsystembo.auth.presentation.dto.SignupRequest;
+import com.example.bookmanagementsystembo.exception.CoreException;
+import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.user.domain.entity.Users;
 import com.example.bookmanagementsystembo.user.infra.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,18 +22,18 @@ public class AuthService {
      */
     @Transactional
     public void signup(SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+        if (userRepository.existsByEmail(request.email())) {
+            throw new CoreException(ErrorType.USER_ALREADY_EXISTS, request.email());
         }
 
-        Users user = Users.of(
+        Users user = Users.create(
                 null, // userId는 DB가 자동 생성
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword()),
-                request.getUsername(), // name
+                request.email(),
+                passwordEncoder.encode(request.password()),
+                request.username(), // name
                 null, // departmentId 없으면 null
                 "default-profile.png", // 기본 프로필 이미지
-                request.getRole(),
+                request.role(),
                 0 // loginFailCount 기본 0
         );
 

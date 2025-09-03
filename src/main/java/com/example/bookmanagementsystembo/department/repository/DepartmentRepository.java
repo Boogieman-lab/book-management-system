@@ -1,6 +1,6 @@
-package com.example.bookmanagementsystembo.user.infra;
+package com.example.bookmanagementsystembo.department.repository;
 
-import com.example.bookmanagementsystembo.user.domain.entity.Department;
+import com.example.bookmanagementsystembo.department.entity.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {

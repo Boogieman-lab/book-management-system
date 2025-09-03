@@ -2,162 +2,100 @@
 
 ```mermaid
 erDiagram
-    COMPANY {
-        BIGINT company_id PK "회사 고유 ID (Primary Key)"
-        VARCHAR name "회사명"
-        VARCHAR domain "회사 이메일 도메인"
-        DATETIME created_at "생성일시"
-        DATETIME updated_at "수정일시"
+
+    USERS {
+        BIGINT          user_id          PK "사용자 ID"
+        VARCHAR(255)    email               "사용자 이메일 (UNIQUE, NOT NULL)"
+        VARCHAR(255)    password            "비밀번호"
+        VARCHAR(50)     name                "사용자 이름 (NOT NULL)"
+        BIGINT          department_id       "부서 ID"
+        VARCHAR(500)    profile_image       "프로필 이미지 URL"
+        VARCHAR(20)     role                "권한 (NOT NULL)"
+        INT             login_fail_count    "로그인 실패 횟수"
+        DATETIME        created_at          "생성일시"
+        DATETIME        updated_at          "수정일시"
     }
 
     DEPARTMENT {
-        BIGINT department_id PK "부서 고유 ID (Primary Key)"
-        BIGINT company_id FK "회사 ID (Foreign Key)"
-        VARCHAR name "부서명"
-        DATETIME created_at "생성일시"
-        DATETIME updated_at "수정일시"
-    }
-
-    USER {
-        BIGINT user_id PK "사용자 고유 ID (Primary Key)"
-        BIGINT company_id FK "회사 ID (Foreign Key)"
-        BIGINT department_id FK "부서 ID (Foreign Key)"
-        VARCHAR email "사용자 이메일 (로그인 ID, UNIQUE)"
-        VARCHAR password "비밀번호 (OAuth 시 NULL 가능)"
-        VARCHAR name "사용자 이름"
-        VARCHAR profile_image "프로필 이미지 URL"
-        VARCHAR role "권한 (USER / COMPANY_ADMIN / SYSTEM_ADMIN)"
-        INT login_fail_count "로그인 실패 횟수"
-        DATETIME created_at "생성일시"
-        DATETIME updated_at "수정일시"
+        BIGINT      department_id   PK  "부서 ID"
+        VARCHAR(50) name                "부서명"
+        DATETIME    created_at          "생성일시"
+        DATETIME    updated_at          "수정일시"
     }
 
     BOOK {
-        BIGINT book_id PK "도서 고유 ID (Primary Key)"
-        VARCHAR title "도서명"
-        VARCHAR author "저자"
-        VARCHAR publisher "출판사"
-        VARCHAR isbn "국제 표준 도서번호"
-        DATE published_date "출간일"
-        VARCHAR genre "장르"
-        INT page_count "페이지수"
-        VARCHAR language "언어"
-        VARCHAR cover_image "도서 이미지 URL"
-        DATETIME created_at "등록일시"
-        DATETIME updated_at "수정일시"
+        BIGINT       book_id    PK  "도서 ID"
+        VARCHAR(512) title          "도서명 (NOT NULL)"
+        VARCHAR(512) authors        "저자"
+        VARCHAR(255) publisher      "출판사"
+        VARCHAR(50)  isbn           "국제 표준 도서번호"
+        DATE         pub_date       "출간일"
+        INT          page_count     "페이지 수"
+        VARCHAR(50)  genre          "장르"
+        VARCHAR(512) image_url      "표지 이미지"
+        DATETIME     created_at     "생성일시"
+        DATETIME     updated_at     "수정일시"
     }
 
-    BOOK_ITEM {
-        BIGINT item_id PK "도서 단위 고유 ID (Primary Key)"
-        BIGINT book_id FK "도서 ID (Foreign Key)"
-        VARCHAR status "상태 (대출 가능 / 대출 중 / 분실 / 폐기)"
-        VARCHAR location "서가 위치"
-        DATETIME created_at "등록일시"
-        DATETIME updated_at "수정일시"
-    }
-
-    BOOK_REQUEST {
-        BIGINT request_id PK "신청 고유 ID (Primary Key)"
-        BIGINT user_id FK "신청자 ID (Foreign Key)"
-        BIGINT admin_id FK "승인/거절 처리 관리자 ID (Foreign Key)"
-        VARCHAR title "신청 도서명"
-        VARCHAR author "저자"
-        VARCHAR publisher "출판사"
-        VARCHAR isbn "ISBN"
-        TEXT reason "신청 사유"
-        VARCHAR status "신청 상태 (승인 대기 / 승인 / 거절)"
-        DATETIME created_at "신청일"
-        DATETIME updated_at "수정일"
-    }
-
-    BORROWING {
-        BIGINT borrow_id PK "대출 고유 ID (Primary Key)"
-        BIGINT item_id FK "대출한 도서 단위 ID (Foreign Key)"
-        BIGINT user_id FK "대출자 ID (Foreign Key)"
-        DATETIME borrow_date "대출일"
-        DATETIME due_date "반납 예정일"
-        DATETIME return_date "반납일"
-        INT overdue_days "연체일 수"
-        INT extension_count "연장 횟수"
-        DATETIME final_due_date "최종 반납 예정일"
-        VARCHAR status "상태 (대출 중 / 반납 / 연체)"
+    BOOK_HOLD {
+        BIGINT      book_hold_id    PK  "도서 보유 ID"
+        BIGINT      book_id         FK  "도서 ID (NOT NULL)"
+        VARCHAR(50) status              "보유 상태 (NOT NULL)"
+        INT         quantity            "수량"
+        VARCHAR(50) location            "위치"
+        DATETIME    created_at          "생성일시"
+        DATETIME    updated_at          "수정일시"
     }
 
     RESERVATION {
-        BIGINT reservation_id PK "예약 고유 ID (Primary Key)"
-        BIGINT item_id FK "예약 도서 단위 ID (Foreign Key)"
-        BIGINT user_id FK "예약자 ID (Foreign Key)"
-        DATETIME reserved_at "예약일시"
-        VARCHAR status "예약 상태 (예약 중 / 완료 / 취소)"
+        BIGINT      reservation_id  PK  "예약 ID"
+        BIGINT      book_borrow_id  FK  "대출 ID"
+        BIGINT      user_id         FK  "사용자 ID (NOT NULL)"
+        VARCHAR(50) status              "예약 상태 (NOT NULL)"
+        DATETIME    reserved_at         "예약일시"
+        DATETIME    created_at          "생성일시"
+        DATETIME    updated_at          "수정일시"
+    }
+
+    BOOK_BORROW {
+        BIGINT          book_borrow_id  PK  "대출 ID"
+        BIGINT          book_hold_id    FK  "도서 보유 ID (NOT NULL)"
+        BIGINT          user_id         FK  "사용자 ID (NOT NULL)"
+        VARCHAR(512)    reason              "대출 사유"
+        VARCHAR(50)     status              "대출 상태 (NOT NULL)"
+        DATETIME        created_at          "생성일시"
+        DATETIME        updated_at          "수정일시"
+    }
+
+    BOOK_REQUEST {
+        BIGINT       book_request_id     PK  "도서 희망 ID"
+        BIGINT       user_id             FK  "사용자 ID (NOT NULL)"
+        BIGINT       book_id             FK  "도서 ID (NOT NULL)"
+        VARCHAR(512) reason                  "신청 사유"
+        DATETIME     created_at              "생성일시"
+        DATETIME     updated_at              "수정일시"
     }
 
     PENALTY {
-        BIGINT penalty_id PK "페널티 고유 ID (Primary Key)"
-        BIGINT user_id FK "사용자 ID (Foreign Key)"
-        BIGINT borrow_id FK "연체 대출 ID (Foreign Key)"
-        INT amount "벌금 금액"
-        VARCHAR reason "사유"
-        DATETIME created_at "생성일시"
-        DATETIME paid_at "납부일시"
-        VARCHAR status "상태 (미납 / 납부)"
+        BIGINT      penalty_id      PK  "패널티 ID"
+        BIGINT      user_id         FK  "사용자 ID (NOT NULL)"
+        BIGINT      borrow_id       FK  "대출 ID (NOT NULL)"
+        INT         amount              "금액"
+        VARCHAR(50) status              "패널티 상태 (NOT NULL)"
+        DATETIME    paid_at             "납부일시"
+        DATETIME    created_at          "생성일시"
+        DATETIME    updated_at          "수정일시"
     }
 
-    NOTIFICATION {
-        BIGINT noti_id PK "알림 고유 ID (Primary Key)"
-        BIGINT user_id FK "수신자 ID (Foreign Key)"
-        BIGINT template_id FK "알림 템플릿 ID (Foreign Key)"
-        VARCHAR type "알림 유형 (승인/거절/반납예정/연체 등)"
-        TEXT message "알림 내용"
-        BOOLEAN is_read "읽음 여부"
-        DATETIME created_at "생성일"
-        DATETIME read_at "읽음일시"
-    }
+    %% 관계(논리적 FK)
+    USERS ||--o{ BOOK_REQUEST : "희망 도서 신청"
+    BOOK ||--|| BOOK_HOLD : "보유 도서 대상"
+    BOOK ||--o{ BOOK_REQUEST : "희망 도서 대상"
+    BOOK_HOLD ||--o{ BOOK_BORROW : "대출 도서 대상"
+    USERS ||--o{ BOOK_BORROW : "대출 신청"
+    BOOK_BORROW ||--o{ RESERVATION : "대출 예약"
+    BOOK_BORROW ||--o{ PENALTY : "연체/분실 등"
+    DEPARTMENT ||--o{ USERS : "소속"
 
-    NOTIFICATION_TEMPLATE {
-        BIGINT template_id PK "템플릿 고유 ID (Primary Key)"
-        VARCHAR type "알림 유형"
-        TEXT message_template "알림 내용 템플릿"
-        DATETIME created_at "생성일"
-        DATETIME updated_at "수정일시"
-    }
-
-    HISTORY {
-        BIGINT history_id PK "이력 고유 ID (Primary Key)"
-        BIGINT user_id FK "사용자 ID (Foreign Key)"
-        BIGINT item_id FK "도서 단위 ID (Foreign Key)"
-        VARCHAR action "행위 (대출, 반납, 신청, 승인, 예약 취소 등)"
-        DATETIME action_date "행위 일시"
-        TEXT detail "상세 기록"
-    }
-
-    AUDIT_LOG {
-        BIGINT audit_id PK "로그 고유 ID (Primary Key)"
-        BIGINT admin_id FK "관리자 ID (Foreign Key)"
-        VARCHAR action_type "행위 유형 (BOOK 등록/삭제, USER 권한 변경 등)"
-        TEXT detail "상세 기록"
-        DATETIME action_date "행위 일시"
-    }
-
-    %% 관계 정의
-    COMPANY ||--o{ DEPARTMENT : "부서 보유"
-    COMPANY ||--o{ USER : "사용자 소속"
-
-    DEPARTMENT ||--o{ USER : "소속"
-
-    USER ||--o{ BOOK_REQUEST : "신청"
-    USER ||--o{ BORROWING : "대출"
-    USER ||--o{ NOTIFICATION : "알림 수신"
-    USER ||--o{ HISTORY : "행위 기록"
-    USER ||--o{ PENALTY : "벌금/페널티"
-    USER ||--o{ RESERVATION : "예약"
-    USER ||--o{ AUDIT_LOG : "관리자 작업 기록"
-
-    BOOK ||--o{ BOOK_ITEM : "도서 단위"
-    BOOK_ITEM ||--o{ BORROWING : "대출 대상"
-    BOOK_ITEM ||--o{ HISTORY : "관련 기록"
-    BOOK_ITEM ||--o{ RESERVATION : "예약 대상"
-
-    BOOK_REQUEST }o--|| USER : "신청자"
-    BOOK_REQUEST }o--|| USER : "처리 관리자"
-    NOTIFICATION }o--|| NOTIFICATION_TEMPLATE : "템플릿 참조"
+    
 

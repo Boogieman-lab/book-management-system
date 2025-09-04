@@ -39,13 +39,11 @@ public class DepartmentService {
 
     @Transactional
     public void updateDepartment(Long departmentId, String name) {
-        departmentRepository.findById(departmentId).orElseThrow(() -> new CoreException(ErrorType.DEPARTMENT_NOT_FOUND, departmentId));
+        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new CoreException(ErrorType.DEPARTMENT_NOT_FOUND, departmentId));
 
         if (departmentRepository.findByName(name).isPresent()) {
             throw new CoreException(ErrorType.DEPARTMENT_ALREADY_EXISTS, name);
         }
-
-        Department department = Department.update(departmentId, name);
-        departmentRepository.save(department);
+        department.update(name);
     }
 }

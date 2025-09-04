@@ -32,8 +32,8 @@ public class Department extends BaseEntity {
         return new Department(null, name);
     }
 
-    public static Department update(Long departmentId, String name) {
-        return new Department(departmentId, name);
+    public void update(String name) {
+        this.name = name;
     }
 
 }

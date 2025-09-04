@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.user.domain.service;
 
-import com.example.bookmanagementsystembo.department.dto.DepartmentInfo;
+import com.example.bookmanagementsystembo.department.dto.DepartmentDto;
 import com.example.bookmanagementsystembo.department.service.DepartmentService;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
@@ -22,8 +22,8 @@ public class UserService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
 
-        DepartmentInfo department = departmentService.findById(user.getDepartmentId());
+        DepartmentDto department = departmentService.getDepartmentById(user.getDepartmentId());
 
-        return UserInfo.of(user.getName(), user.getEmail(), department.name());
+        return UserInfo.of(user.getName(), user.getEmail(), department.departmentName());
     }
 }

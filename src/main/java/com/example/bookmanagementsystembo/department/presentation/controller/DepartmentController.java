@@ -1,14 +1,13 @@
 package com.example.bookmanagementsystembo.department.presentation.controller;
 
 import com.example.bookmanagementsystembo.department.dto.DepartmentDto;
+import com.example.bookmanagementsystembo.department.presentation.dto.DepartmentCreateRequest;
 import com.example.bookmanagementsystembo.department.presentation.dto.DepartmentResponse;
+import com.example.bookmanagementsystembo.department.presentation.dto.DepartmentUpdateRequest;
 import com.example.bookmanagementsystembo.department.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,4 +29,17 @@ public class DepartmentController {
         List<DepartmentDto> departments = departmentService.getDepartments();
         return ResponseEntity.ok(DepartmentResponse.from(departments));
     }
+
+    @PostMapping
+    public ResponseEntity<Long> createDepartment(@RequestBody DepartmentCreateRequest request) {
+        return ResponseEntity.ok(departmentService.createDepartment(request.name()));
+    }
+
+
+    @PostMapping
+    public ResponseEntity<Void> updateDepartment(@RequestBody DepartmentUpdateRequest request) {
+        departmentService.updateDepartment(request.departmentId(), request.name());
+        return ResponseEntity.ok().build();
+    }
+
 }

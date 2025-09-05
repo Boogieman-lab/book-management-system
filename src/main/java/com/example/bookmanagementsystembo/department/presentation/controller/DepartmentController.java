@@ -36,9 +36,9 @@ public class DepartmentController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<Void> updateDepartment(@RequestBody DepartmentUpdateRequest request) {
-        departmentService.updateDepartment(request.departmentId(), request.name());
+    @PutMapping("/{departmentId}}")
+    public ResponseEntity<Void> updateDepartment(@PathVariable Long departmentId, @RequestBody DepartmentUpdateRequest request) {
+        departmentService.updateDepartment(departmentId, request.name());
         return ResponseEntity.ok().build();
     }
 

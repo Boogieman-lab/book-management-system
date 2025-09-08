@@ -13,7 +13,9 @@ import org.springframework.web.client.RestTemplate;
 
 import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,16 +51,35 @@ public class BookService {
 
                 List<Book> books = new ArrayList<>();
                 for (JsonNode node : documentsNode) {
-                    Book book = Book.builder()
-                            .title(node.path("title").asText())
-                            .publisher(node.path("publisher").asText())
-                            .isbn(node.path("isbn").asText())
-                            .imageUrl(node.path("thumbnail").asText())
-                            .build();
-                    // authors는 List → JSON 문자열로 변환
-                    List<String> authorsList = objectMapper.convertValue(node.path("authors"), new TypeReference<List<String>>() {});
-                    book.setAuthorsFromList(authorsList, objectMapper);
+                    final String isbnApiValue = node.path("isbn").asText();
+                    final String isbnToSave = Arrays.stream(isbnApiValue.split(" "))
+                            .filter(isbn -> isbn.length() == 13)
+                            .findFirst()
+                            .orElse(null);
 
+                    if (isbnToSave == null) {
+                        continue;
+                    }
+
+                    Book book = bookRepository.findByIsbn(isbnToSave)
+                            .orElseGet(() -> {
+                                Book newBook = Book.builder()
+                                        .title(node.path("title").asText())
+                                        .publisher(node.path("publisher").asText())
+                                        .isbn(isbnToSave)
+                                        .imageUrl(node.path("thumbnail").asText())
+                                        .build();
+
+                                List<String> authorsList = objectMapper.convertValue(node.path("authors"), new TypeReference<List<String>>() {});
+                                newBook.setAuthorsFromList(authorsList, objectMapper);
+
+                                String datetime = node.path("datetime").asText();
+                                if (datetime != null && !datetime.isEmpty()) {
+                                    newBook.setPubDate(LocalDate.parse(datetime.substring(0, 10)));
+                                }
+
+                                return bookRepository.save(newBook);
+                            });
                     books.add(book);
                 }
                 return books;

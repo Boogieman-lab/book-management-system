@@ -1,6 +1,5 @@
 package com.example.bookmanagementsystembo.book.entity;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.example.bookmanagementsystembo.user.domain.entity.BaseEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
@@ -8,13 +7,13 @@ import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @Entity
 @Table(name = "book")
 public class Book extends BaseEntity {
@@ -57,22 +56,18 @@ public class Book extends BaseEntity {
     @Comment("표지 이미지")
     private String imageUrl;
 
-    // authors를 List<String>으로 변환
-    public List<String> getAuthorsAsList(ObjectMapper objectMapper) {
-        try {
-            return objectMapper.readValue(this.authors, new TypeReference<List<String>>() {});
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
-    }
-
-    // List<String>을 JSON 문자열로 변환해 저장
+    /**
+     * 저자 리스트를 JSON 문자열로 변환하여 저장
+     */
     public void setAuthorsFromList(List<String> authorsList, ObjectMapper objectMapper) {
         try {
-            this.authors = objectMapper.writeValueAsString(authorsList);
+            if (authorsList != null && !authorsList.isEmpty()) {
+                this.authors = objectMapper.writeValueAsString(authorsList);
+            } else {
+                this.authors = null;
+            }
         } catch (Exception e) {
-            this.authors = "[]"; // 실패하면 빈 배열로 초기화
+            this.authors = null;
         }
     }
-
 }

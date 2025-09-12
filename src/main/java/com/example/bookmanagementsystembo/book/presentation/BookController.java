@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/books")
+@RequestMapping("/api/external/books")
 @RequiredArgsConstructor
 @RestController
 public class BookController {
@@ -17,11 +17,9 @@ public class BookController {
 
     /**
      * 제목으로 책 검색
-     * - DB 저장 후 리스트 반환
-     * - //books/search?title=자바
      */
-    @GetMapping("/search")
-    public ResponseEntity<List<Book>> searchBooksByTitle(@RequestParam String title) {
+    @GetMapping("/getBooksByTitle")
+    public ResponseEntity<List<Book>> getBooksByTitle(@RequestParam String title) {
         List<Book> books = bookService.getBooksByTitle(title);
         return ResponseEntity.ok(books);
     }

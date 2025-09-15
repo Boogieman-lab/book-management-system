@@ -1,6 +1,7 @@
-package com.example.bookmanagementsystembo.book.presentation;
+package com.example.bookmanagementsystembo.book.presentation.controller;
 
-import com.example.bookmanagementsystembo.book.entity.Book;
+import com.example.bookmanagementsystembo.book.dto.BookDto;
+import com.example.bookmanagementsystembo.book.presentation.dto.BookResponse;
 import com.example.bookmanagementsystembo.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,9 @@ public class BookController {
      * 제목으로 책 검색
      */
     @GetMapping("/getBooksByTitle")
-    public ResponseEntity<List<Book>> getBooksByTitle(@RequestParam String title) {
-        List<Book> books = bookService.getBooksByTitle(title);
-        return ResponseEntity.ok(books);
+    public ResponseEntity<List<BookResponse>> getBooksByTitle(@RequestParam String title) {
+        List<BookDto> books = bookService.getBooksByTitle(title);
+        return ResponseEntity.ok(BookResponse.from(books));
     }
 
 }

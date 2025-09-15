@@ -28,3 +28,7 @@ security:
   jwt:
     secret: MySuperSecretKeyForJWTSigning12345
     expire-ms: 3600000
+
+kakao:
+  api:
+    key: 607c0971fc9d8c131d25efc5f3121ed1

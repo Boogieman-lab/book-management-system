@@ -7,22 +7,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RequestMapping("/api/external/books")
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/books")
 public class BookController {
 
     private final BookService bookService;
 
-    /**
-     * 제목으로 책 검색
-     */
-    @GetMapping("/getBooksByTitle")
-    public ResponseEntity<List<BookResponse>> getBooksByTitle(@RequestParam String title) {
-        List<BookDto> books = bookService.getBooksByTitle(title);
-        return ResponseEntity.ok(BookResponse.from(books));
+    // 도서 단일 조회 (bookId 기준)
+    @GetMapping("/{bookId}")
+    public ResponseEntity<BookResponse> getBook(@PathVariable Long bookId) {
+        BookDto book = bookService.getBookById(bookId);
+        return ResponseEntity.ok(BookResponse.from(book));
     }
-
 }

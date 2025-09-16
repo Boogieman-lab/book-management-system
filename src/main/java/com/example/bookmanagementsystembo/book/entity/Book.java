@@ -1,19 +1,14 @@
 package com.example.bookmanagementsystembo.book.entity;
 
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Getter
-@Setter
 @Entity
 @Table(name = "book")
 public class Book extends BaseEntity {
@@ -25,49 +20,51 @@ public class Book extends BaseEntity {
     private Long bookId;
 
     @Column(name = "title", nullable = false, length = 512)
-    @Comment("도서명")
+    @Comment("도서 제목")
     private String title;
 
-    @Column(name = "authors", length = 512)
-    @Comment("저자")
+    @Column(name = "contents", columnDefinition = "TEXT")
+    @Comment("도서 소개")
+    private String contents;
+
+    @Column(name = "url", length = 1024)
+    @Comment("도서 상세 URL")
+    private String url;
+
+    @Column(name = "isbn", length = 50)
+    @Comment("ISBN10 또는 ISBN13 (공백 구분)")
+    private String isbn;
+
+    @Column(name = "datetime")
+    @Comment("출판일")
+    private LocalDateTime datetime;
+
+    @Column(name = "authors", columnDefinition = "JSON")
+    @Comment("저자 리스트")
     private String authors;
+
+    @Column(name = "translators", columnDefinition = "JSON")
+    @Comment("번역자 리스트")
+    private String translators;
 
     @Column(name = "publisher", length = 255)
     @Comment("출판사")
     private String publisher;
 
-    @Column(name = "isbn", length = 50, unique = true)
-    @Comment("국제 표준 도서번호")
-    private String isbn;
+    @Column(name = "price")
+    @Comment("정가")
+    private Integer price;
 
-    @Column(name = "pub_date")
-    @Comment("출간일")
-    private LocalDate pubDate;
+    @Column(name = "sale_price")
+    @Comment("판매가")
+    private Integer salePrice;
 
-    @Column(name = "page_count")
-    @Comment("페이지 수")
-    private Integer pageCount;
+    @Column(name = "thumbnail", length = 512)
+    @Comment("표지 이미지 URL")
+    private String thumbnail;
 
-    @Column(name = "genre", length = 50)
-    @Comment("장르")
-    private String genre;
+    @Column(name = "status", length = 50)
+    @Comment("판매 상태")
+    private String status;
 
-    @Column(name = "image_url", length = 512)
-    @Comment("표지 이미지")
-    private String imageUrl;
-
-    /**
-     * 저자 리스트를 JSON 문자열로 변환하여 저장
-     */
-    public void setAuthorsFromList(List<String> authorsList, ObjectMapper objectMapper) {
-        try {
-            if (authorsList != null && !authorsList.isEmpty()) {
-                this.authors = objectMapper.writeValueAsString(authorsList);
-            } else {
-                this.authors = null;
-            }
-        } catch (Exception e) {
-            this.authors = null;
-        }
-    }
 }

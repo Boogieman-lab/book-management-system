@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.book.presentation;
+package com.example.bookmanagementsystembo.book.presentation.controller;
 
 import com.example.bookmanagementsystembo.book.dto.BookBorrowDetailDto;
 import com.example.bookmanagementsystembo.book.dto.BookBorrowDto;
@@ -7,10 +7,7 @@ import com.example.bookmanagementsystembo.book.presentation.dto.BookBorrowRespon
 import com.example.bookmanagementsystembo.book.service.BookBorrowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,9 +24,9 @@ public class BookBorrowController {
         return ResponseEntity.ok(BookBorrowResponse.from(bookBorrows));
     }
 
-    @GetMapping("/{borrowId}")
-    public ResponseEntity<BookBorrowDetailResponse> getBookBorrows(@PathVariable Long borrowId) {
-        BookBorrowDetailDto bookBorrows = bookBorrowService.getBookBorrow(borrowId);
+    @GetMapping("/{bookBorrowId}")
+    public ResponseEntity<BookBorrowDetailResponse> getBookBorrows(@PathVariable Long bookBorrowId) {
+        BookBorrowDetailDto bookBorrows = bookBorrowService.getBookBorrow(bookBorrowId);
         return ResponseEntity.ok(BookBorrowDetailResponse.from(bookBorrows));
     }
 

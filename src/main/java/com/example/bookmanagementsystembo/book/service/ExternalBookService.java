@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BookService {
+public class ExternalBookService {
 
     private final String API_URL = "https://dapi.kakao.com/v3/search/book";
 

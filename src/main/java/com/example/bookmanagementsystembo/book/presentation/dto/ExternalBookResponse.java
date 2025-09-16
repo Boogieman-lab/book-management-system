@@ -4,7 +4,7 @@ import com.example.bookmanagementsystembo.book.dto.BookDto;
 
 import java.util.List;
 
-public record BookResponse(
+public record ExternalBookResponse(
         List<String> authors,
         String contents,
         String datetime,
@@ -20,8 +20,8 @@ public record BookResponse(
 ) {
 
     // 단일 DTO → Response 변환
-    public static BookResponse from(BookDto dto) {
-        return new BookResponse(
+    public static ExternalBookResponse from(BookDto dto) {
+        return new ExternalBookResponse(
                 dto.authors(),
                 dto.contents(),
                 dto.datetime(),
@@ -38,9 +38,9 @@ public record BookResponse(
     }
 
     // 리스트 변환
-    public static List<BookResponse> from(List<BookDto> dtos) {
+    public static List<ExternalBookResponse> from(List<BookDto> dtos) {
         return dtos.stream()
-                .map(BookResponse::from)
+                .map(ExternalBookResponse::from)
                 .toList();
     }
 }

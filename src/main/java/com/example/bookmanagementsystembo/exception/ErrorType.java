@@ -18,7 +18,10 @@ public enum ErrorType {
     
     DEPARTMENT_NOT_FOUND(ErrorCode.NOT_FOUND, "부서를 찾을 수 없습니다.", LogLevel.WARN),
     DEPARTMENT_ALREADY_EXISTS(ErrorCode.CONFLICT, "존재하는 부서 이름 입니다.", LogLevel.WARN),
-    ;
+
+    BOOKBORROW_NOT_FOUND(ErrorCode.NOT_FOUND, "대출 도서를 찾을 수 없습니다.", LogLevel.WARN),
+    BORROWSTATUS_NOT_FOUND(ErrorCode.NOT_FOUND, "대출 상태 값을 찾을 수 없습니다.", LogLevel.WARN);
+
     private final ErrorCode code;
     private final String message;
     private final LogLevel logLevel;

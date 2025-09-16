@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.department.entity;
 
-import com.example.bookmanagementsystembo.user.domain.entity.BaseEntity;
+import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

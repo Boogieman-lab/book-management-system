@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.user.domain.entity;
+package com.example.bookmanagementsystembo.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

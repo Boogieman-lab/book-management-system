@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.book.presentation.controller;
 
-import com.example.bookmanagementsystembo.book.dto.BookDto;
+import com.example.bookmanagementsystembo.book.dto.ExternalBookDto;
 import com.example.bookmanagementsystembo.book.presentation.dto.ExternalBookResponse;
 import com.example.bookmanagementsystembo.book.service.ExternalBookService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class ExternalBookController {
      */
     @GetMapping("/getBooksByTitle")
     public ResponseEntity<List<ExternalBookResponse>> getBooksByTitle(@RequestParam String title) {
-        List<BookDto> books = externalBookService.getBooksByTitle(title);
+        List<ExternalBookDto> books = externalBookService.getBooksByTitle(title);
         return ResponseEntity.ok(ExternalBookResponse.from(books));
     }
 

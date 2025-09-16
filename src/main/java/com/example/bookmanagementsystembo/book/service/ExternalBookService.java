@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.book.dto.BookDto;
+import com.example.bookmanagementsystembo.book.dto.ExternalBookDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +27,7 @@ public class ExternalBookService {
     @Value("${kakao.api.key}")
     private String REST_API_KEY;
 
-    public List<BookDto> getBooksByTitle(String title) {
+    public List<ExternalBookDto> getBooksByTitle(String title) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "KakaoAK " + REST_API_KEY);
@@ -37,7 +37,7 @@ public class ExternalBookService {
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-        List<BookDto> books = new ArrayList<>();
+        List<ExternalBookDto> books = new ArrayList<>();
 
         if (response.getStatusCode() == HttpStatus.OK) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -57,7 +57,7 @@ public class ExternalBookService {
                                     new TypeReference<List<String>>() {}
                             );
 
-                            return new BookDto(
+                            return new ExternalBookDto(
                                     authors,
                                     node.path("contents").asText(),
                                     node.path("datetime").asText(),

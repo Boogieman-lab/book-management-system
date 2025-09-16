@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.book.presentation.dto;
 
-import com.example.bookmanagementsystembo.book.dto.BookDto;
+import com.example.bookmanagementsystembo.book.dto.ExternalBookDto;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public record ExternalBookResponse(
 ) {
 
     // 단일 DTO → Response 변환
-    public static ExternalBookResponse from(BookDto dto) {
+    public static ExternalBookResponse from(ExternalBookDto dto) {
         return new ExternalBookResponse(
                 dto.authors(),
                 dto.contents(),
@@ -38,7 +38,7 @@ public record ExternalBookResponse(
     }
 
     // 리스트 변환
-    public static List<ExternalBookResponse> from(List<BookDto> dtos) {
+    public static List<ExternalBookResponse> from(List<ExternalBookDto> dtos) {
         return dtos.stream()
                 .map(ExternalBookResponse::from)
                 .toList();

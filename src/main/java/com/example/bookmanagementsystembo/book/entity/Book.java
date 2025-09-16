@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.book.entity;
 
-import com.example.bookmanagementsystembo.user.domain.entity.BaseEntity;
+import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;

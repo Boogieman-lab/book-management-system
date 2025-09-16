@@ -42,13 +42,14 @@ erDiagram
     }
 
     BOOK_HOLD {
-        BIGINT       book_hold_id   PK "도서 보유 ID"
-        BIGINT       book_id        FK "도서 ID"
-        VARCHAR(50)  status         "보유 상태 (대출 가능, 대출 중 등)"
-        INT          quantity       "수량"
-        VARCHAR(255) location       "위치"
-        DATETIME     created_at     "생성일시"
-        DATETIME     updated_at     "수정일시"
+        BIGINT      book_hold_id    PK  "도서 보유 ID"
+        BIGINT      book_id         FK  "도서 ID (NOT NULL)"
+        VARCHAR(512) title              "도서명 (NOT NULL)"
+        VARCHAR(50) status              "보유 상태 (NOT NULL)"
+        INT         quantity            "수량"
+        VARCHAR(50) location            "위치"
+        DATETIME    created_at          "생성일시"
+        DATETIME    updated_at          "수정일시"
     }
 
     RESERVATION {

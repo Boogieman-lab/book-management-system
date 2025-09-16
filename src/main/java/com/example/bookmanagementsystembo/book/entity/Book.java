@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.book.entity;
 
-import com.example.bookmanagementsystembo.user.domain.entity.BaseEntity;
+import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import lombok.*;

@@ -28,19 +28,7 @@ class BookBorrowServiceTest {
     private BookBorrowService bookBorrowService;
 
     @Mock
-    private BookRepository bookRepository;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private BookHoldRepository bookHoldRepository;
-
-    @Mock
     private BookBorrowRepository bookBorrowRepository;
-
-    @Mock
-    private DepartmentRepository departmentRepository;
 
     private LocalDateTime fixed;
     private BookBorrowDto bookBorrowDto;

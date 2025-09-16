@@ -2,8 +2,8 @@ CREATE TABLE book_hold
 (
     book_hold_id     BIGINT AUTO_INCREMENT COMMENT '도서 보유 ID',
     book_id          BIGINT NOT NULL COMMENT '도서 아이템 ID',
+    title           VARCHAR(512) NOT NULL COMMENT '도서명',
     status           VARCHAR(50) NOT NULL COMMENT '보유 상태',
-    quantity         INT COMMENT '수량',
     location         VARCHAR(50) COMMENT '위치',
     created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',

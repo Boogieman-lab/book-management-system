@@ -30,4 +30,10 @@ public class BookBorrowController {
         return ResponseEntity.ok(BookBorrowDetailResponse.from(bookBorrows));
     }
 
+    @PatchMapping("/{bookBorrowId}")
+    public ResponseEntity<Void> updateBookBorrowStatus(@PathVariable Long bookBorrowId, @RequestParam String status) {
+        bookBorrowService.updateBookBorrow(bookBorrowId, status);
+        return ResponseEntity.ok().build();
+    }
+
 }

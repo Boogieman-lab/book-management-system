@@ -2,11 +2,11 @@ package com.example.bookmanagementsystembo.book.service;
 
 import com.example.bookmanagementsystembo.book.dto.BookBorrowDetailDto;
 import com.example.bookmanagementsystembo.book.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.book.entity.BookBorrow;
+import com.example.bookmanagementsystembo.book.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.book.infra.BookBorrowRepository;
-import com.example.bookmanagementsystembo.book.infra.BookHoldRepository;
-import com.example.bookmanagementsystembo.book.infra.BookRepository;
-import com.example.bookmanagementsystembo.department.repository.DepartmentRepository;
-import com.example.bookmanagementsystembo.user.infra.UserRepository;
+import com.example.bookmanagementsystembo.exception.CoreException;
+import com.example.bookmanagementsystembo.exception.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 
@@ -92,6 +95,35 @@ class BookBorrowServiceTest {
         verify(bookBorrowRepository, times(1)).findBookBorrow(bookBorrowId);
     }
 
+    @Test
+    @DisplayName("상태 업데이트 성공")
+    void updateBookBorrow_success() {
+        // Given
+        Long borrowId = 1L;
+        BookBorrow entity = new BookBorrow(10L, 20L, "사유", BorrowStatus.BORROWED); // 기존 상태 BORROWED
+        when(bookBorrowRepository.findById(borrowId)).thenReturn(Optional.of(entity));
 
+        // When
+        bookBorrowService.updateBookBorrow(borrowId, "RETURNED");
+
+        // Then
+        assertEquals(BorrowStatus.RETURNED, entity.getStatus());
+        verify(bookBorrowRepository).findById(borrowId);
+        verifyNoMoreInteractions(bookBorrowRepository); // dirty checking이므로 save 호출 없음 가정
+    }
+
+    @Test
+    @DisplayName("잘못된 상태 문자열이면 BORROWSTATUS_NOT_FOUND")
+    void updateBookBorrow_fail() {
+        // Given
+        Long borrowId = 1L;
+
+        // When & Then
+        CoreException ex = assertThrows(CoreException.class, () -> bookBorrowService.updateBookBorrow(borrowId, "UNKNOWN_STATUS"));
+        assertEquals(ErrorType.BORROWSTATUS_NOT_FOUND, ex.getErrorType());
+
+        // enum 변환에서 이미 예외가 나므로, 레포는 호출되지 않아야 함
+        verifyNoInteractions(bookBorrowRepository);
+    }
 
 }

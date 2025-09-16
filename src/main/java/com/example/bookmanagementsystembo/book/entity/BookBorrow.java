@@ -1,5 +1,6 @@
 package com.example.bookmanagementsystembo.book.entity;
 
+import com.example.bookmanagementsystembo.book.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -32,14 +33,19 @@ public class BookBorrow extends BaseEntity {
     @Comment("대출 사유")
     private String reason;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
     @Comment("대출 상태")
-    private String status;
+    private BorrowStatus status;
 
-    public BookBorrow(Long bookHoldId, Long userId, String reason, String status) {
+    public BookBorrow(Long bookHoldId, Long userId, String reason, BorrowStatus status) {
         this.bookHoldId = bookHoldId;
         this.userId = userId;
         this.reason = reason;
+        this.status = status;
+    }
+
+    public void updateStatus(BorrowStatus status) {
         this.status = status;
     }
 }

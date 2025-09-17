@@ -45,7 +45,7 @@ erDiagram
 
     RESERVATION {
         BIGINT      reservation_id  PK  "예약 ID"
-        BIGINT      book_borrow_id  FK  "대출 ID"
+        BIGINT      book_hold_id    FK  "도서 보유 ID"
         BIGINT      user_id         FK  "사용자 ID (NOT NULL)"
         VARCHAR(50) status              "예약 상태 (NOT NULL)"
         DATETIME    reserved_at         "예약일시"
@@ -85,11 +85,11 @@ erDiagram
 
     %% 관계(논리적 FK)
     USERS ||--o{ BOOK_REQUEST : "희망 도서 신청"
-    BOOK ||--|| BOOK_HOLD : "보유 도서 대상"
+    BOOK ||--o{ BOOK_HOLD : "보유 도서 대상"
     BOOK ||--o{ BOOK_REQUEST : "희망 도서 대상"
     BOOK_HOLD ||--o{ BOOK_BORROW : "대출 도서 대상"
     USERS ||--o{ BOOK_BORROW : "대출 신청"
-    BOOK_BORROW ||--o{ RESERVATION : "대출 예약"
+    BOOK_HOLD ||--o{ RESERVATION : "대출 예약"
     BOOK_BORROW ||--o{ PENALTY : "연체/분실 등"
 
     

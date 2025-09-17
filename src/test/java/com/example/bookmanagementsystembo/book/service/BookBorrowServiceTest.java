@@ -100,7 +100,7 @@ class BookBorrowServiceTest {
     void updateBookBorrow_success() {
         // Given
         Long borrowId = 1L;
-        BookBorrow entity = new BookBorrow(10L, 20L, "사유", BorrowStatus.BORROWED); // 기존 상태 BORROWED
+        BookBorrow entity = BookBorrow.create(10L, 20L, "사유"); // 기존 상태 BORROWED
         when(bookBorrowRepository.findById(borrowId)).thenReturn(Optional.of(entity));
 
         // When

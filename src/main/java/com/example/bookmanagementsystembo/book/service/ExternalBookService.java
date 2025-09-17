@@ -1,6 +1,8 @@
 package com.example.bookmanagementsystembo.book.service;
 
 import com.example.bookmanagementsystembo.book.dto.ExternalBookDto;
+import com.example.bookmanagementsystembo.exception.CoreException;
+import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,7 +76,7 @@ public class ExternalBookService {
                         })
                         .collect(Collectors.toList());
             } catch (IOException e) {
-                log.error("책 검색 실패", e);
+                new CoreException(ErrorType.BOOK_NOT_FOUND, title);
             }
         }
 

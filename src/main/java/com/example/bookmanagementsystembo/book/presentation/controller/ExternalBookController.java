@@ -19,7 +19,7 @@ public class ExternalBookController {
     /**
      * 제목으로 책 검색
      */
-    @GetMapping("/getBooksByTitle")
+    @GetMapping
     public ResponseEntity<List<ExternalBookResponse>> getBooksByTitle(@RequestParam String title) {
         List<ExternalBookDto> books = externalBookService.getBooksByTitle(title);
         return ResponseEntity.ok(ExternalBookResponse.from(books));

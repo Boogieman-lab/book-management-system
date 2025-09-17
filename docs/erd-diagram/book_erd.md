@@ -16,13 +16,6 @@ erDiagram
         DATETIME        updated_at          "수정일시"
     }
 
-    DEPARTMENT {
-        BIGINT      department_id   PK  "부서 ID"
-        VARCHAR(50) name                "부서명"
-        DATETIME    created_at          "생성일시"
-        DATETIME    updated_at          "수정일시"
-    }
-
     BOOK {
         BIGINT       book_id        PK "도서 ID"
         VARCHAR(512) title          "도서 제목"
@@ -44,9 +37,7 @@ erDiagram
     BOOK_HOLD {
         BIGINT      book_hold_id    PK  "도서 보유 ID"
         BIGINT      book_id         FK  "도서 ID (NOT NULL)"
-        VARCHAR(512) title              "도서명 (NOT NULL)"
         VARCHAR(50) status              "보유 상태 (NOT NULL)"
-        INT         quantity            "수량"
         VARCHAR(50) location            "위치"
         DATETIME    created_at          "생성일시"
         DATETIME    updated_at          "수정일시"
@@ -100,7 +91,6 @@ erDiagram
     USERS ||--o{ BOOK_BORROW : "대출 신청"
     BOOK_BORROW ||--o{ RESERVATION : "대출 예약"
     BOOK_BORROW ||--o{ PENALTY : "연체/분실 등"
-    DEPARTMENT ||--o{ USERS : "소속"
 
     
 

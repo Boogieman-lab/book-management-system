@@ -51,13 +51,13 @@ public class Book extends BaseEntity {
     @Comment("출판사")
     private String publisher;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     @Comment("정가")
-    private Integer price;
+    private int price;
 
-    @Column(name = "sale_price")
+    @Column(name = "sale_price", nullable = false)
     @Comment("판매가")
-    private Integer salePrice;
+    private int salePrice;
 
     @Column(name = "thumbnail", length = 512)
     @Comment("표지 이미지 URL")

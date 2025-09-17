@@ -2,6 +2,7 @@ package com.example.bookmanagementsystembo.book.presentation.controller;
 
 import com.example.bookmanagementsystembo.book.dto.BookBorrowDetailDto;
 import com.example.bookmanagementsystembo.book.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.book.presentation.dto.BookBorrowCreateRequest;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookBorrowDetailResponse;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookBorrowResponse;
 import com.example.bookmanagementsystembo.book.service.BookBorrowService;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/borrows/")
+@RequestMapping("/api/borrows")
 @RequiredArgsConstructor
 @RestController
 public class BookBorrowController {
@@ -36,4 +37,8 @@ public class BookBorrowController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping
+    public ResponseEntity<Long> createBookBorrow(@RequestBody BookBorrowCreateRequest request) {
+        return ResponseEntity.ok(bookBorrowService.createBookBorrow(request.bookHoldId(), request.userId(), request.reason()));
+    }
 }

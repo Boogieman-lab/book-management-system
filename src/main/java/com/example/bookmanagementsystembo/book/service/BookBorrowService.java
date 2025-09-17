@@ -31,7 +31,12 @@ public class BookBorrowService {
     @Transactional
     public void updateBookBorrow(Long bookBorrowId, String status) {
         BorrowStatus borrowStatus = BorrowStatus.fromString(status);
-        BookBorrow bookBorrow = bookBorrowRepository.findById(bookBorrowId).orElseThrow(() -> new CoreException(ErrorType.BOOKBORROW_NOT_FOUND, bookBorrowId));;
+        BookBorrow bookBorrow = bookBorrowRepository.findById(bookBorrowId).orElseThrow(() -> new CoreException(ErrorType.BOOKBORROW_NOT_FOUND, bookBorrowId));
         bookBorrow.updateStatus(borrowStatus);
+    }
+
+    public Long createBookBorrow(Long bookHoldId, Long userId, String reason) {
+        BookBorrow bookBorrow = BookBorrow.create(bookHoldId, userId, reason);
+        return bookBorrowRepository.save(bookBorrow).getBookBorrowId();
     }
 }

@@ -4,10 +4,12 @@ import com.example.bookmanagementsystembo.book.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -38,11 +40,8 @@ public class BookBorrow extends BaseEntity {
     @Comment("대출 상태")
     private BorrowStatus status;
 
-    public BookBorrow(Long bookHoldId, Long userId, String reason, BorrowStatus status) {
-        this.bookHoldId = bookHoldId;
-        this.userId = userId;
-        this.reason = reason;
-        this.status = status;
+    public static BookBorrow create(Long bookHoldId, Long userId, String reason) {
+        return new BookBorrow(null, bookHoldId, userId, reason, BorrowStatus.BORROWED);
     }
 
     public void updateStatus(BorrowStatus status) {

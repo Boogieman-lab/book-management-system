@@ -3,10 +3,12 @@ package com.example.bookmanagementsystembo.department.entity;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -22,11 +24,6 @@ public class Department extends BaseEntity {
     @Column(name = "name", nullable = false, length = 50)
     @Comment("부서 이름")
     private String name;
-
-    public Department(Long departmentId, String name) {
-        this.departmentId = departmentId;
-        this.name = name;
-    }
 
     public static Department create(String name) {
         return new Department(null, name);

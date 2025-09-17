@@ -3,7 +3,6 @@ package com.example.bookmanagementsystembo.book.service;
 import com.example.bookmanagementsystembo.book.dto.ExternalBookDto;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -42,44 +41,39 @@ public class ExternalBookService {
         List<ExternalBookDto> books = new ArrayList<>();
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            ObjectMapper objectMapper = new ObjectMapper();
             try {
-                JsonNode rootNode = objectMapper.readTree(response.getBody());
+                JsonNode rootNode = new ObjectMapper().readTree(response.getBody());
                 JsonNode documentsNode = rootNode.path("documents");
 
                 books = StreamSupport.stream(documentsNode.spliterator(), false)
-                        .map(node -> {
-                            List<String> authors = objectMapper.convertValue(
-                                    node.path("authors"),
-                                    new TypeReference<List<String>>() {}
-                            );
-
-                            List<String> translators = objectMapper.convertValue(
-                                    node.path("translators"),
-                                    new TypeReference<List<String>>() {}
-                            );
-
-                            return new ExternalBookDto(
-                                    authors,
-                                    node.path("contents").asText(),
-                                    node.path("datetime").asText(),
-                                    node.path("isbn").asText(),
-                                    node.path("price").asInt(-1),
-                                    node.path("publisher").asText(),
-                                    node.path("sale_price").asInt(-1),
-                                    node.path("status").asText(),
-                                    node.path("thumbnail").asText(),
-                                    node.path("title").asText(),
-                                    translators,
-                                    node.path("url").asText()
-                            );
-                        })
+                        .map(node -> new ExternalBookDto(
+                                jsonNodeToList(node.path("authors")),
+                                node.path("contents").asText(),
+                                node.path("datetime").asText(),
+                                node.path("isbn").asText(),
+                                node.path("price").asInt(-1),
+                                node.path("publisher").asText(),
+                                node.path("sale_price").asInt(-1),
+                                node.path("status").asText(),
+                                node.path("thumbnail").asText(),
+                                node.path("title").asText(),
+                                jsonNodeToList(node.path("translators")),
+                                node.path("url").asText()
+                        ))
                         .collect(Collectors.toList());
             } catch (IOException e) {
-                new CoreException(ErrorType.BOOK_NOT_FOUND, title);
+                throw new CoreException(ErrorType.EXTERNAL_BOOK_SERVICE_ERROR, title);
             }
         }
-
         return books;
+    }
+
+    /**
+     * JsonNode 배열을 Stream API로 List<String> 변환
+     */
+    private List<String> jsonNodeToList(JsonNode arrayNode) {
+        return StreamSupport.stream(arrayNode.spliterator(), false)
+                .map(JsonNode::asText)
+                .collect(Collectors.toList());
     }
 }

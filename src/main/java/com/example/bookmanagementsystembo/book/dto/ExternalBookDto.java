@@ -1,15 +1,18 @@
 package com.example.bookmanagementsystembo.book.dto;
 
+import lombok.Getter;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record ExternalBookDto(
         List<String> authors,
         String contents,
-        String datetime,
+        LocalDateTime datetime,
         String isbn,
         int price,
         String publisher,
-        int sale_price,
+        int salePrice,
         String status,
         String thumbnail,
         String title,

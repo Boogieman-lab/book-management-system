@@ -2,12 +2,13 @@ package com.example.bookmanagementsystembo.book.presentation.dto;
 
 import com.example.bookmanagementsystembo.book.dto.ExternalBookDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record ExternalBookResponse(
         List<String> authors,
         String contents,
-        String datetime,
+        LocalDateTime datetime,
         String isbn,
         int price,
         String publisher,
@@ -28,7 +29,7 @@ public record ExternalBookResponse(
                 dto.isbn(),
                 dto.price(),
                 dto.publisher(),
-                dto.sale_price(),
+                dto.salePrice(),
                 dto.status(),
                 dto.thumbnail(),
                 dto.title(),

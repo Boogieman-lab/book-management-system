@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class ExternalBookService {
                         .map(node -> new ExternalBookDto(
                                 jsonNodeToList(node.path("authors")),
                                 node.path("contents").asText(),
-                                node.path("datetime").asText(),
+                                OffsetDateTime.parse(node.path("datetime").asText()).toLocalDateTime(),
                                 node.path("isbn").asText(),
                                 node.path("price").asInt(-1),
                                 node.path("publisher").asText(),

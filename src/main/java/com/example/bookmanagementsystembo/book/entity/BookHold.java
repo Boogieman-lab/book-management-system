@@ -1,16 +1,20 @@
 package com.example.bookmanagementsystembo.book.entity;
 
+import com.example.bookmanagementsystembo.book.enums.BookHoldStatus;
+import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name ="book_hold")
-public class BookHold {
+public class BookHold extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,22 +26,13 @@ public class BookHold {
     @Comment("도서 ID")
     private Long bookId;
 
-    @Column(name = "title", nullable = false, length = 512)
-    @Comment("도서명")
-    private String title;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
     @Comment("보유 상태")
-    private String status;
+    private BookHoldStatus status;
 
     @Column(name = "location", length = 50)
     @Comment("위치")
     private String location;
 
-    public BookHold(Long bookId, String title, String status, String location) {
-        this.bookId = bookId;
-        this.title = title;
-        this.status = status;
-        this.location = location;
-    }
 }

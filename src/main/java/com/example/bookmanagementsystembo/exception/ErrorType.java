@@ -16,6 +16,7 @@ public enum ErrorType {
 
     BOOK_NOT_FOUND(ErrorCode.NOT_FOUND, "도서를 찾을 수 없습니다.", LogLevel.WARN),
     EXTERNAL_BOOK_SERVICE_ERROR(ErrorCode.INTERNAL_SERVER_ERROR, "도서 외부 API 응답 처리에 실패하였습니다.", LogLevel.WARN),
+    BOOK_JSON_PROCESSING_ERROR(ErrorCode.INTERNAL_SERVER_ERROR, "도서 저자/번역자 JSON 변환에 실패했습니다.", LogLevel.ERROR),
 
     DEPARTMENT_NOT_FOUND(ErrorCode.NOT_FOUND, "부서를 찾을 수 없습니다.", LogLevel.WARN),
     DEPARTMENT_ALREADY_EXISTS(ErrorCode.CONFLICT, "존재하는 부서 이름 입니다.", LogLevel.WARN),

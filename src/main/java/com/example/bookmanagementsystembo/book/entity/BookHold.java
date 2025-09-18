@@ -35,4 +35,7 @@ public class BookHold extends BaseEntity {
     @Comment("위치")
     private String location;
 
+    public static BookHold create(Long bookId, String location) {
+        return new BookHold(null, bookId, BookHoldStatus.AVAILABLE, location);
+    }
 }

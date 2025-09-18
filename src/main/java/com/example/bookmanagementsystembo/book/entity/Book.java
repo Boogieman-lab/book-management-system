@@ -7,6 +7,7 @@ import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -66,5 +67,35 @@ public class Book extends BaseEntity {
     @Column(name = "status", length = 50)
     @Comment("판매 상태")
     private String status;
+
+    public static Book create(String title,
+                              String contents,
+                              String isbn,
+                              LocalDateTime datetime,
+                              String authorsJson,
+                              String translatorsJson,
+                              String publisher,
+                              Integer price,
+                              Integer salePrice,
+                              String thumbnail,
+                              String status,
+                              String url) {
+        return new Book(
+                null, // bookId는 DB에서 자동 생성
+                title,
+                contents,
+                url,
+                isbn,
+                datetime,
+                authorsJson,
+                translatorsJson,
+                publisher,
+                price,
+                salePrice,
+                thumbnail,
+                status
+        );
+    }
+
 
 }

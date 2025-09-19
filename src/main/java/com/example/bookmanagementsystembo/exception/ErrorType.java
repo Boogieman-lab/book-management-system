@@ -22,7 +22,10 @@ public enum ErrorType {
     DEPARTMENT_ALREADY_EXISTS(ErrorCode.CONFLICT, "존재하는 부서 이름 입니다.", LogLevel.WARN),
 
     BOOKBORROW_NOT_FOUND(ErrorCode.NOT_FOUND, "대출 도서를 찾을 수 없습니다.", LogLevel.WARN),
-    BORROWSTATUS_NOT_FOUND(ErrorCode.NOT_FOUND, "대출 상태 값을 찾을 수 없습니다.", LogLevel.WARN);
+    BORROWSTATUS_NOT_FOUND(ErrorCode.NOT_FOUND, "대출 상태 값을 찾을 수 없습니다.", LogLevel.WARN),
+
+    REFRESH_TOKEN_EXPIRED(ErrorCode.UNAUTHORIZED, "만료된 토큰입니다.", LogLevel.WARN),
+    TOKEN_NOT_FOUND(ErrorCode.NOT_FOUND, "토큰을 찾을 수 없습니다.", LogLevel.WARN);
 
     private final ErrorCode code;
     private final String message;

@@ -1,6 +1,7 @@
 package com.example.bookmanagementsystembo.book.presentation.dto;
 
 import com.example.bookmanagementsystembo.book.dto.BookDto;
+import com.example.bookmanagementsystembo.book.dto.KakaoBookDocumentDto;
 
 import java.util.List;
 
@@ -37,10 +38,32 @@ public record BookResponse(
         );
     }
 
+
+    public static BookResponse fromKakao(KakaoBookDocumentDto dto) {
+        return new BookResponse(
+                dto.authors(),
+                dto.contents(),
+                dto.datetime(),
+                dto.isbn(),
+                dto.price(),
+                dto.publisher(),
+                dto.salePrice(),
+                dto.status(),
+                dto.thumbnail(),
+                dto.title(),
+                dto.translators(),
+                dto.url()
+        );
+    }
     // 리스트 변환
     public static List<BookResponse> from(List<BookDto> dtos) {
         return dtos.stream()
                 .map(BookResponse::from)
                 .toList();
     }
+
+    public static List<BookResponse> fromKakao(List<KakaoBookDocumentDto> dtos) {
+        return dtos.stream().map(BookResponse::fromKakao).toList();
+    }
+
 }

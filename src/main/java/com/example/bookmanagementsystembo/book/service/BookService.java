@@ -54,7 +54,7 @@ public class BookService {
                         );
                         return bookRepository.save(newBook);
                     } catch (JsonProcessingException e) {
-                        throw new CoreException(ErrorType.BOOK_JSON_PROCESSING_ERROR, e);
+                        throw new CoreException(ErrorType.BOOK_EXTERNAL_JSON_PROCESSING_ERROR, e);
                     }
                 });
 

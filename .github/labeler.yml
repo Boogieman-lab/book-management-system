@@ -1,0 +1,43 @@
+# enable labeler on issues, prs, or both.
+enable:
+  issues: false
+  prs: true
+
+# 레이블을 성공적으로 붙이고 PR에 보낼 코멘트
+comments:
+  prs: |
+    Labeler has applied labels based on your PR title or description.
+    Please review the labels and make any necessary adjustments.
+
+# 레이블 규칙
+labels:
+  'feature':
+    include:
+      - '\bfeat\b'
+  'fix':
+    include:
+      - '\bfix\b'
+  'build':
+    include:
+      - '\bbuild\b'
+  'chore':
+    include:
+      - '\bchore\b'
+  'ci':
+    include:
+      - '\bci\b'
+  'documentation':
+    include:
+      - '\bdocs\b'
+  'style':
+    include:
+      - '\bstyle\b'
+  'refactor':
+    include:
+      - '\brefactor\b'
+  'test':
+    include:
+      - '\btest\b'
+  'release':
+    include:
+      - '\brelease\b'

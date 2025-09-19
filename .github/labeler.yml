@@ -11,7 +11,7 @@ comments:
 
 # 레이블 규칙
 labels:
-  'feature':
+  'feat':
     include:
       - '\bfeat\b'
   'fix':

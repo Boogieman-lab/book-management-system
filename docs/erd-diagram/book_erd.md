@@ -49,6 +49,7 @@ erDiagram
         BIGINT      user_id         FK  "사용자 ID (NOT NULL)"
         VARCHAR(50) status              "예약 상태 (NOT NULL)"
         DATETIME    reserved_at         "예약일시"
+        DATETIME    expire_at           "예약만료일시"
         DATETIME    created_at          "생성일시"
         DATETIME    updated_at          "수정일시"
     }
@@ -59,6 +60,9 @@ erDiagram
         BIGINT          user_id         FK  "사용자 ID (NOT NULL)"
         VARCHAR(512)    reason              "대출 사유"
         VARCHAR(50)     status              "대출 상태 (NOT NULL)"
+        DATETIME        borrow_date         "대출일시"
+        DATETIME        due_date            "반납예정일"
+        DATETIME        return_date         "반납일시"
         DATETIME        created_at          "생성일시"
         DATETIME        updated_at          "수정일시"
     }
@@ -72,6 +76,15 @@ erDiagram
         DATETIME     updated_at              "수정일시"
     }
 
+    POLICY {
+        BIGINT       policy_id       PK  "정책 ID"
+        VARCHAR(50)  type                "정책 유형 (BORROW, RESERVATION, RETURN 등)"
+        VARCHAR(255) name                "정책명"
+        VARCHAR(512) value               "정책 값 (숫자/문자)"
+        VARCHAR(512) description         "정책 설명"
+        DATETIME     created_at          "생성일시"
+        DATETIME     updated_at          "수정일시"
+    }
 
     %% 관계(논리적 FK)
     USERS ||--o{ BOOK_REQUEST : "희망 도서 신청"
@@ -80,7 +93,9 @@ erDiagram
     BOOK_HOLD ||--o{ RESERVATION : "대출 예약"
     BOOK_HOLD ||--o{ BOOK_BORROW : "대출 도서 대상"
     USERS ||--o{ BOOK_BORROW : "대출 신청"
+    USERS ||--o{ RESERVATION : "예약 신청"
 
+    POLICY ||--o{ BOOK_BORROW : "대출 정책 적용"
+    POLICY ||--o{ RESERVATION : "예약 정책 적용"
 
-    
-
+```

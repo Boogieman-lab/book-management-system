@@ -24,10 +24,11 @@ spring:
     baseline-on-migrate: true
     baseline-version: 0
 
-security:
-  jwt:
-    secret: MySuperSecretKeyForJWTSigning12345
-    expire-ms: 3600000
+
+jwt:
+  secret: DUGJPydQDibKa/c4X/q/60S8xNQw1SD08GVLZJAJyC3X1Sd3IRNlW+vb5EWIkTQWgHykiKpW0T3upDUNLCROow==
+  access-sec: 3600
+  refresh-sec: 604800
 
 kakao:
   api:

@@ -1,10 +1,12 @@
 package com.example.bookmanagementsystembo.book.domain.dto;
 
+import com.example.bookmanagementsystembo.book.domain.Utils;
 import com.example.bookmanagementsystembo.book.domain.entity.Book;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+
 
 public record BookDto(
         List<String> authors,
@@ -23,8 +25,8 @@ public record BookDto(
 
     public static BookDto from(Book book) {
         return new BookDto(
-                Collections.singletonList(book.getAuthors()),
-                Collections.singletonList(book.getTranslators()),
+                Utils.toList(book.getAuthors()),
+                Utils.toList(book.getTranslators()),
                 book.getContents(),
                 book.getDatetime(),
                 book.getIsbn(),

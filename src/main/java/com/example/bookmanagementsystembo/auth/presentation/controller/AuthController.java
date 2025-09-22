@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.auth.presentation;
+package com.example.bookmanagementsystembo.auth.presentation.controller;
 
 import com.example.bookmanagementsystembo.auth.presentation.dto.SignupRequest;
 import com.example.bookmanagementsystembo.auth.domain.service.AuthService;
@@ -13,11 +13,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /**
-     * 회원가입
-     * @param request
-     * @return
-     */
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
         authService.signup(request);

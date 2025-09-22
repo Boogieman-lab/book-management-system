@@ -1,9 +1,9 @@
 package com.example.bookmanagementsystembo.book.presentation.controller;
 
-import com.example.bookmanagementsystembo.book.dto.BookDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookDto;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookCreateRequest;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookResponse;
-import com.example.bookmanagementsystembo.book.service.BookService;
+import com.example.bookmanagementsystembo.book.domain.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,7 @@ public class BookController {
     // 보유 도서 등록
     @PostMapping
     public ResponseEntity<Long> createBook(@RequestBody BookCreateRequest request) {
-        return ResponseEntity.ok(bookService.createBook(request));
+        Long bookId = bookService.createBook(request.toCommand());
+        return ResponseEntity.ok(bookId);
     }
 }

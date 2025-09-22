@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.book.infra;
 
-import com.example.bookmanagementsystembo.book.entity.Book;
+import com.example.bookmanagementsystembo.book.domain.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

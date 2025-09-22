@@ -1,7 +1,7 @@
 package com.example.bookmanagementsystembo.book.infra;
 
-import com.example.bookmanagementsystembo.book.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.book.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDto;
 
 import java.util.List;
 

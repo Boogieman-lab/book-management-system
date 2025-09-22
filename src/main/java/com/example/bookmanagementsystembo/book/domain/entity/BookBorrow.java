@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.book.entity;
+package com.example.bookmanagementsystembo.book.domain.entity;
 
 import com.example.bookmanagementsystembo.book.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;

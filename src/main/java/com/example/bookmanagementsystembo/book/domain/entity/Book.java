@@ -1,5 +1,7 @@
-package com.example.bookmanagementsystembo.book.entity;
+package com.example.bookmanagementsystembo.book.domain.entity;
 
+import com.example.bookmanagementsystembo.book.domain.Utils;
+import com.example.bookmanagementsystembo.book.domain.dto.BookCreateDto;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -68,34 +70,21 @@ public class Book extends BaseEntity {
     @Comment("판매 상태")
     private String status;
 
-    public static Book create(String title,
-                              String contents,
-                              String isbn,
-                              LocalDateTime datetime,
-                              String authorsJson,
-                              String translatorsJson,
-                              String publisher,
-                              Integer price,
-                              Integer salePrice,
-                              String thumbnail,
-                              String status,
-                              String url) {
+    public static Book create(BookCreateDto dto) {
         return new Book(
-                null, // bookId는 DB에서 자동 생성
-                title,
-                contents,
-                url,
-                isbn,
-                datetime,
-                authorsJson,
-                translatorsJson,
-                publisher,
-                price,
-                salePrice,
-                thumbnail,
-                status
+                null,
+                dto.title() ,
+                dto.contents(),
+                dto.url(),
+                dto.isbn(),
+                dto.datetime(),
+                Utils.toJson(dto.authors()),
+                Utils.toJson(dto.translators()),
+                dto.publisher(),
+                dto.price(),
+                dto.salePrice(),
+                dto.thumbnail(),
+                dto.status()
         );
     }
-
-
 }

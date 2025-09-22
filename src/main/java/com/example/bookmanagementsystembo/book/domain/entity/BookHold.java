@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.book.entity;
+package com.example.bookmanagementsystembo.book.domain.entity;
 
 import com.example.bookmanagementsystembo.book.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
@@ -35,7 +35,7 @@ public class BookHold extends BaseEntity {
     @Comment("위치")
     private String location;
 
-    public static BookHold create(Long bookId, String location) {
-        return new BookHold(null, bookId, BookHoldStatus.AVAILABLE, location);
+    public static BookHold create(Long bookId) {
+        return new BookHold(null, bookId, BookHoldStatus.AVAILABLE, null);
     }
 }

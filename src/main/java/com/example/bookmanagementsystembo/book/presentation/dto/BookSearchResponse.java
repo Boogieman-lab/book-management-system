@@ -1,8 +1,8 @@
 package com.example.bookmanagementsystembo.book.presentation.dto;
 
 
-import com.example.bookmanagementsystembo.book.dto.KakaoBookDocumentDto;
-import com.example.bookmanagementsystembo.book.dto.KakaoBookMetaDto;
+import com.example.bookmanagementsystembo.book.domain.dto.KakaoBookDocumentDto;
+import com.example.bookmanagementsystembo.book.domain.dto.KakaoBookMetaDto;
 
 import java.util.List;
 

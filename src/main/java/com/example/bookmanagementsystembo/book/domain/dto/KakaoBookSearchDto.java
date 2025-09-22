@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.book.dto;
+package com.example.bookmanagementsystembo.book.domain.dto;
 
 import java.util.List;
 

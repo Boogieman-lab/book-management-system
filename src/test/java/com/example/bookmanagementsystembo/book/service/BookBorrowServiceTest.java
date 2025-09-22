@@ -1,8 +1,9 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.book.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.book.dto.BookBorrowDto;
-import com.example.bookmanagementsystembo.book.entity.BookBorrow;
+import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.book.domain.entity.BookBorrow;
+import com.example.bookmanagementsystembo.book.domain.service.BookBorrowService;
 import com.example.bookmanagementsystembo.book.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.book.infra.BookBorrowRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;

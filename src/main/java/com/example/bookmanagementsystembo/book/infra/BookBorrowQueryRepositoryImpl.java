@@ -1,10 +1,10 @@
 package com.example.bookmanagementsystembo.book.infra;
 
-import com.example.bookmanagementsystembo.book.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.book.dto.BookBorrowDto;
-import com.example.bookmanagementsystembo.book.entity.QBook;
-import com.example.bookmanagementsystembo.book.entity.QBookBorrow;
-import com.example.bookmanagementsystembo.book.entity.QBookHold;
+import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.book.domain.entity.QBook;
+import com.example.bookmanagementsystembo.book.domain.entity.QBookBorrow;
+import com.example.bookmanagementsystembo.book.domain.entity.QBookHold;
 import com.example.bookmanagementsystembo.department.entity.QDepartment;
 import com.example.bookmanagementsystembo.user.domain.entity.QUsers;
 import com.querydsl.core.types.Projections;

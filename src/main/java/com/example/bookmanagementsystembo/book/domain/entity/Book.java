@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -86,5 +87,11 @@ public class Book extends BaseEntity {
                 dto.thumbnail(),
                 dto.status()
         );
+    }
+
+    public void update(String title, List<String> authors, String publisher) {
+        if (title != null) this.title = title;
+        if (authors != null) this.authors = Utils.toJson(authors);
+        if (publisher != null) this.publisher = publisher;
     }
 }

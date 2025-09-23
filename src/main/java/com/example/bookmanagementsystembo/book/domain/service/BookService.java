@@ -2,6 +2,7 @@ package com.example.bookmanagementsystembo.book.domain.service;
 
 import com.example.bookmanagementsystembo.book.domain.dto.BookCreateDto;
 import com.example.bookmanagementsystembo.book.domain.dto.BookDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookUpdateDto;
 import com.example.bookmanagementsystembo.book.domain.entity.Book;
 import com.example.bookmanagementsystembo.book.domain.entity.BookHold;
 import com.example.bookmanagementsystembo.book.infra.BookHoldRepository;
@@ -37,5 +38,22 @@ public class BookService {
         BookHold savedBookHold = bookHoldRepository.save(bookHold);
 
         return savedBookHold.getBookHoldId();
+    }
+
+    @Transactional
+    public void updateBook(BookUpdateDto request) {
+        Book book = bookRepository.findById(request.bookId())
+                .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, request.bookId()));
+
+        book.update(request.title(), request.authors(), request.publisher());
+    }
+
+    @Transactional
+    public void deleteBook(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, bookId));
+
+        bookRepository.deleteByBookId(book);
+        bookHoldRepository.deleteByBookId(bookId);
     }
 }

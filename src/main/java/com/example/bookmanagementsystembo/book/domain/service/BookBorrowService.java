@@ -35,6 +35,7 @@ public class BookBorrowService {
         bookBorrow.updateStatus(borrowStatus);
     }
 
+    @Transactional
     public Long createBookBorrow(Long bookHoldId, Long userId, String reason) {
         BookBorrow bookBorrow = BookBorrow.create(bookHoldId, userId, reason);
         return bookBorrowRepository.save(bookBorrow).getBookBorrowId();

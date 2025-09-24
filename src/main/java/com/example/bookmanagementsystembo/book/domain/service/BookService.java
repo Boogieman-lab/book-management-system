@@ -45,7 +45,18 @@ public class BookService {
         Book book = bookRepository.findById(request.bookId())
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, request.bookId()));
 
-        book.update(request.title(), request.authors(), request.publisher());
+        book.update(
+            request.title(),
+            request.authors(),
+            request.contents(),
+            request.url(),
+            request.translators(),
+            request.publisher(),
+            request.price(),
+            request.salePrice(),
+            request.thumbnail(),
+            request.status()
+        );
     }
 
     @Transactional

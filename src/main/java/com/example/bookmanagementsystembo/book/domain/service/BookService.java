@@ -64,7 +64,7 @@ public class BookService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, bookId));
 
-        bookRepository.deleteByBookId(book);
+        bookRepository.delete(book);
         bookHoldRepository.deleteByBookId(bookId);
     }
 }

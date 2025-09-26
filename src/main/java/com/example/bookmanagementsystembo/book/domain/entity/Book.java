@@ -101,16 +101,16 @@ public class Book extends BaseEntity {
             String thumbnail,
             String status
     ) {
-        if (title != null) this.title = title;
-        if (authors != null) this.authors = Utils.toJson(authors);
-        if (contents != null) this.contents = contents;
-        if (url != null) this.url = url;
-        if (translators != null) this.translators = Utils.toJson(translators);
-        if (publisher != null) this.publisher = publisher;
-        if (price != null) this.price = price;
-        if (salePrice != null) this.salePrice = salePrice;
-        if (thumbnail != null) this.thumbnail = thumbnail;
-        if (status != null) this.status = status;
+        this.title = title;
+        this.authors = Utils.toJson(authors);
+        this.contents = contents;
+        this.url = url;
+        this.translators = Utils.toJson(translators);
+        this.publisher = publisher;
+        this.price = price;
+        this.salePrice = salePrice;
+        this.thumbnail = thumbnail;
+        this.status = status;
     }
 
 }

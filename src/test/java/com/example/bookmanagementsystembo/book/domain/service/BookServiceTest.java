@@ -173,7 +173,7 @@ class BookServiceTest {
 
         // Then
         verify(bookRepository, times(1)).findById(bookId);
-        verify(bookRepository, times(1)).deleteByBookId(book);
+        verify(bookRepository, times(1)).delete(book);
         verify(bookHoldRepository, times(1)).deleteByBookId(bookId);
     }
 

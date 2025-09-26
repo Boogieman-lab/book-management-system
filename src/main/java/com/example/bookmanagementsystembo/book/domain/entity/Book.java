@@ -2,6 +2,7 @@ package com.example.bookmanagementsystembo.book.domain.entity;
 
 import com.example.bookmanagementsystembo.book.domain.Utils;
 import com.example.bookmanagementsystembo.book.domain.dto.BookCreateDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookUpdateDto;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -89,28 +90,17 @@ public class Book extends BaseEntity {
         );
     }
 
-    public void update(
-            String title,
-            List<String> authors,
-            String contents,
-            String url,
-            List<String> translators,
-            String publisher,
-            Integer price,
-            Integer salePrice,
-            String thumbnail,
-            String status
-    ) {
-        this.title = title;
-        this.authors = Utils.toJson(authors);
-        this.contents = contents;
-        this.url = url;
-        this.translators = Utils.toJson(translators);
-        this.publisher = publisher;
-        this.price = price;
-        this.salePrice = salePrice;
-        this.thumbnail = thumbnail;
-        this.status = status;
+    public void update(BookUpdateDto dto) {
+        this.title = dto.title();
+        this.authors = Utils.toJson(dto.authors());
+        this.contents = dto.contents();
+        this.url = dto.url();
+        this.translators = Utils.toJson(dto.translators());
+        this.publisher = dto.publisher();
+        this.price = dto.price();
+        this.salePrice = dto.salePrice();
+        this.thumbnail = dto.thumbnail();
+        this.status = dto.status();
     }
 
 }

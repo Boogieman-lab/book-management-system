@@ -2,12 +2,14 @@ package com.example.bookmanagementsystembo.book.domain.entity;
 
 import com.example.bookmanagementsystembo.book.domain.Utils;
 import com.example.bookmanagementsystembo.book.domain.dto.BookCreateDto;
+import com.example.bookmanagementsystembo.book.domain.dto.BookUpdateDto;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -87,4 +89,18 @@ public class Book extends BaseEntity {
                 dto.status()
         );
     }
+
+    public void update(BookUpdateDto dto) {
+        this.title = dto.title();
+        this.authors = Utils.toJson(dto.authors());
+        this.contents = dto.contents();
+        this.url = dto.url();
+        this.translators = Utils.toJson(dto.translators());
+        this.publisher = dto.publisher();
+        this.price = dto.price();
+        this.salePrice = dto.salePrice();
+        this.thumbnail = dto.thumbnail();
+        this.status = dto.status();
+    }
+
 }

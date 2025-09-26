@@ -4,11 +4,11 @@ import com.example.bookmanagementsystembo.book.domain.Utils;
 import com.example.bookmanagementsystembo.book.domain.entity.Book;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 
 public record BookDto(
+        Long bookId,
         List<String> authors,
         List<String> translators,
         String contents,
@@ -25,6 +25,7 @@ public record BookDto(
 
     public static BookDto from(Book book) {
         return new BookDto(
+                null,
                 Utils.toList(book.getAuthors()),
                 Utils.toList(book.getTranslators()),
                 book.getContents(),

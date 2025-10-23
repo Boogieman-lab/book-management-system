@@ -68,6 +68,7 @@
 * 🖥 \[페이지 기획서]
 * 📑 \[API 설계]
 * 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/ERD.md)
+* 👀 [사용자 디자인 미리보기](https://boogieman-lab.github.io/book-management-system/src/main/resources/templates/index.html)
 
 ---
 

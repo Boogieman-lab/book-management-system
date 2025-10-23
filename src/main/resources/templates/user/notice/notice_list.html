@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boogieman - 공지사항</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #E8F5E9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 50px;
+            margin-right: 15px;
+        }
+        
+        h1 {
+            color: #00796B;
+            font-size: 24px;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #66BB6A;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .user-name {
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item:hover {
+            background-color: #E8F5E9;
+        }
+        
+        .menu-item.active {
+            background-color: #00796B;
+            color: white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .page-title {
+            color: #00796B;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title i {
+            margin-right: 10px;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: #66BB6A;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-bar button:hover {
+            background-color: #00796B;
+        }
+        
+        .notice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .notice-table th, .notice-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .notice-table th {
+            font-weight: 500;
+            color: #555;
+            background-color: #f9f9f9;
+        }
+        
+        .notice-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .notice-title {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .notice-title:hover {
+            color: #00796B;
+        }
+        
+        .notice-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+        
+        .badge-important {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .badge-new {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .page-item {
+            margin: 0 5px;
+        }
+        
+        .page-link {
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .page-link:hover, .page-item.active .page-link {
+            background-color: #66BB6A;
+            color: white;
+        }
+        
+        .notice-detail {
+            display: none;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .notice-detail-title {
+            font-size: 18px;
+            color: #00796B;
+            margin-bottom: 10px;
+        }
+        
+        .notice-detail-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .notice-detail-content {
+            line-height: 1.8;
+        }
+        
+        .notice-detail-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .notice-table th:nth-child(3), .notice-table td:nth-child(3) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <img src="../../../static/images/logo.png" alt="부기맨 로고" class="logo">
+                <h1>Boogieman</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-profile">홍</div>
+                <span class="user-name">홍길동님</span>
+                <a href="/logout" class="btn btn-secondary">로그아웃</a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <a href="/book/list" class="menu-item">
+                    <i class="fas fa-book"></i> 도서 목록
+                </a>
+                <a href="/book/request" class="menu-item">
+                    <i class="fas fa-file-alt"></i> 희망도서 신청
+                </a>
+                <a href="/loan/mypage" class="menu-item">
+                    <i class="fas fa-user"></i> 마이페이지
+                </a>
+                <a href="/loan/reserve" class="menu-item">
+                    <i class="fas fa-bookmark"></i> 예약 현황
+                </a>
+                <a href="/notice/list" class="menu-item active">
+                    <i class="fas fa-bullhorn"></i> 공지사항
+                </a>
+                <a href="/notice/notification" class="menu-item">
+                    <i class="fas fa-bell"></i> 알림
+                </a>
+                <a href="/about" class="menu-item">
+                    <i class="fas fa-info-circle"></i> 소개
+                </a>
+            </div>
+            
+            <div class="content">
+                <h2 class="page-title">
+                    <i class="fas fa-bullhorn"></i> 공지사항
+                </h2>
+                
+                <div class="search-bar">
+                    <input type="text" placeholder="검색어를 입력하세요">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                
+                <table class="notice-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%">번호</th>
+                            <th style="width: 60%">제목</th>
+                            <th style="width: 15%">작성자</th>
+                            <th style="width: 15%">등록일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>5</td>
+                            <td>
+                                <a href="#" class="notice-title" onclick="toggleNoticeDetail(1); return false;">
+                                    <span class="notice-badge badge-important">중요</span>
+                                    <span class="notice-badge badge-new">NEW</span>
+                                    도서관 이용 시간 변경 안내
+                                </a>
+                                <div id="notice-detail-1" class="notice-detail">
+                                    <h3 class="notice-detail-title">도서관 이용 시간 변경 안내</h3>
+                                    <div class="notice-detail-meta">
+                                        <span>작성자: 관리자</span>
+                                        <span>등록일: 2023-06-15</span>
+                                    </div>
+                                    <div class="notice-detail-content">
+                                        <p>안녕하세요, Boogieman 도서관입니다.</p>
+                                        <p>2023년 7월 1일부터 도서관 이용 시간이 아래와 같이 변경됩니다.</p>
+                                        <p><strong>변경 전:</strong> 평일 09:00 ~ 18:00</p>
+                                        <p><strong>변경 후:</strong> 평일 08:30 ~ 19:30</p>
+                                        <p>더 넓은 시간대에 도서관을 이용하실 수 있도록 운영 시간을 확대하였습니다.</p>
+                                        <p>많은 이용 부탁드립니다.</p>
+                                    </div>
+                                    <div class="notice-detail-actions">
+                                        <button class="btn btn-secondary" onclick="toggleNoticeDetail(1)">닫기</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>관리자</td>
+                            <td>2023-06-15</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>
+                                <a href="#" class="notice-title" onclick="toggleNoticeDetail(2); return false;">
+                                    신규 도서 입고 안내 (6월 2주차)
+                                </a>
+                                <div id="notice-detail-2" class="notice-detail">
+                                    <h3 class="notice-detail-title">신규 도서 입고 안내 (6월 2주차)</h3>
+                                    <div class="notice-detail-meta">
+                                        <span>작성자: 관리자</span>
+                                        <span>등록일: 2023-06-10</span>
+                                    </div>
+                                    <div class="notice-detail-content">
+                                        <p>안녕하세요, Boogieman 도서관입니다.</p>
+                                        <p>6월 2주차 신규 도서가 입고되었습니다. 주요 입고 도서는 다음과 같습니다.</p>
+                                        <ul>
+                                            <li>클린 아키텍처 - 로버트 C. 마틴</li>
+                                            <li>도메인 주도 설계 - 에릭 에반스</li>
+                                            <li>함께 자라기 - 김창준</li>
+                                            <li>모던 자바스크립트 Deep Dive - 이웅모</li>
+                                        </ul>
+                                        <p>도서 목록 페이지에서 자세한 정보를 확인하실 수 있습니다.</p>
+                                    </div>
+                                    <div class="notice-detail-actions">
+                                        <button class="btn btn-secondary" onclick="toggleNoticeDetail(2)">닫기</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>관리자</td>
+                            <td>2023-06-10</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>
+                                <a href="#" class="notice-title" onclick="toggleNoticeDetail(3); return false;">
+                                    <span class="notice-badge badge-important">중요</span>
+                                    도서 대출 규정 변경 안내
+                                </a>
+                                <div id="notice-detail-3" class="notice-detail">
+                                    <h3 class="notice-detail-title">도서 대출 규정 변경 안내</h3>
+                                    <div class="notice-detail-meta">
+                                        <span>작성자: 관리자</span>
+                                        <span>등록일: 2023-06-01</span>
+                                    </div>
+                                    <div class="notice-detail-content">
+                                        <p>안녕하세요, Boogieman 도서관입니다.</p>
+                                        <p>2023년 6월 1일부터 도서 대출 규정이 아래와 같이 변경됩니다.</p>
+                                        <p><strong>변경 사항:</strong></p>
+                                        <ul>
+                                            <li>1인당 최대 대출 가능 권수: 3권 → 5권</li>
+                                            <li>대출 기간: 14일 → 21일</li>
+                                            <li>연장 가능 횟수: 1회 → 2회 (각 7일)</li>
+                                        </ul>
+                                        <p>더 많은 도서를 더 오랜 기간 이용하실 수 있도록 규정을 개선하였습니다.</p>
+                                        <p>단, 연체 시 대출 제한 규정은 기존과 동일하게 유지됩니다.</p>
+                                    </div>
+                                    <div class="notice-detail-actions">
+                                        <button class="btn btn-secondary" onclick="toggleNoticeDetail(3)">닫기</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>관리자</td>
+                            <td>2023-06-01</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>
+                                <a href="#" class="notice-title" onclick="toggleNoticeDetail(4); return false;">
+                                    희망도서 신청 방법 안내
+                                </a>
+                                <div id="notice-detail-4" class="notice-detail">
+                                    <h3 class="notice-detail-title">희망도서 신청 방법 안내</h3>
+                                    <div class="notice-detail-meta">
+                                        <span>작성자: 관리자</span>
+                                        <span>등록일: 2023-05-20</span>
+                                    </div>
+                                    <div class="notice-detail-content">
+                                        <p>안녕하세요, Boogieman 도서관입니다.</p>
+                                        <p>희망도서 신청 방법에 대해 안내드립니다.</p>
+                                        <p><strong>신청 방법:</strong></p>
+                                        <ol>
+                                            <li>로그인 후 '희망도서 신청' 메뉴 접속</li>
+                                            <li>도서명, 저자, 출판사, ISBN 정보 입력</li>
+                                            <li>신청 사유 작성 후 제출</li>
+                                        </ol>
+                                        <p><strong>신청 가능 도서:</strong></p>
+                                        <ul>
+                                            <li>업무 관련 전문 도서</li>
+                                            <li>자기계발 도서</li>
+                                            <li>일반 교양 도서</li>
+                                        </ul>
+                                        <p>신청하신 도서는 검토 후 1-2주 내에 승인 여부를 알려드립니다.</p>
+                                    </div>
+                                    <div class="notice-detail-actions">
+                                        <button class="btn btn-secondary" onclick="toggleNoticeDetail(4)">닫기</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>관리자</td>
+                            <td>2023-05-20</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                <a href="#" class="notice-title" onclick="toggleNoticeDetail(5); return false;">
+                                    Boogieman 도서관 오픈 안내
+                                </a>
+                                <div id="notice-detail-5" class="notice-detail">
+                                    <h3 class="notice-detail-title">Boogieman 도서관 오픈 안내</h3>
+                                    <div class="notice-detail-meta">
+                                        <span>작성자: 관리자</span>
+                                        <span>등록일: 2023-05-01</span>
+                                    </div>
+                                    <div class="notice-detail-content">
+                                        <p>안녕하세요, Boogieman 도서관이 정식 오픈하였습니다.</p>
+                                        <p>Boogieman 도서관은 직원들의 지식 향상과 독서 문화 증진을 위해 설립되었습니다.</p>
+                                        <p><strong>주요 서비스:</strong></p>
+                                        <ul>
+                                            <li>도서 대출 및 반납</li>
+                                            <li>희망도서 신청</li>
+                                            <li>도서 예약</li>
+                                            <li>독서 모임 지원</li>
+                                        </ul>
+                                        <p>많은 이용 부탁드립니다.</p>
+                                    </div>
+                                    <div class="notice-detail-actions">
+                                        <button class="btn btn-secondary" onclick="toggleNoticeDetail(5)">닫기</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>관리자</td>
+                            <td>2023-05-01</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <div class="page-item">
+                        <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
+                    </div>
+                    <div class="page-item active">
+                        <a href="#" class="page-link">1</a>
+                    </div>
+                    <div class="page-item">
+                        <a href="#" class="page-link">2</a>
+                    </div>
+                    <div class="page-item">
+                        <a href="#" class="page-link">3</a>
+                    </div>
+                    <div class="page-item">
+                        <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 공지사항 상세 내용 토글
+        function toggleNoticeDetail(id) {
+            const detailElement = document.getElementById(`notice-detail-${id}`);
+            
+            // 모든 공지사항 상세 내용 닫기
+            document.querySelectorAll('.notice-detail').forEach(detail => {
+                if (detail.id !== `notice-detail-${id}`) {
+                    detail.style.display = 'none';
+                }
+            });
+            
+            // 선택한 공지사항 상세 내용 토글
+            if (detailElement.style.display === 'block') {
+                detailElement.style.display = 'none';
+            } else {
+                detailElement.style.display = 'block';
+            }
+        }
+        
+        // 검색 기능
+        document.querySelector('.search-bar button').addEventListener('click', function() {
+            const searchTerm = document.querySelector('.search-bar input').value.toLowerCase();
+            
+            if (searchTerm.trim() === '') {
+                return;
+            }
+            
+            // 실제 구현에서는 서버에 검색 요청을 보내야 함
+            // 이 예시에서는 클라이언트 측에서 간단히 필터링
+            const rows = document.querySelectorAll('.notice-table tbody tr');
+            
+            rows.forEach(row => {
+                const title = row.querySelector('.notice-title').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
+        // 엔터 키로 검색
+        document.querySelector('.search-bar input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.search-bar button').click();
+            }
+        });
+    </script>
+</body>
+</html>

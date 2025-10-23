@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boogieman - 도서 상세</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #E8F5E9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 50px;
+            margin-right: 15px;
+        }
+        
+        h1 {
+            color: #00796B;
+            font-size: 24px;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #66BB6A;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .user-name {
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item:hover {
+            background-color: #E8F5E9;
+        }
+        
+        .menu-item.active {
+            background-color: #00796B;
+            color: white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .page-title {
+            color: #00796B;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title i {
+            margin-right: 10px;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            color: #00796B;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .back-button i {
+            margin-right: 5px;
+        }
+        
+        .book-detail {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .book-cover {
+            width: 250px;
+            height: 350px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 60px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .book-info {
+            flex: 1;
+        }
+        
+        .book-title {
+            font-size: 24px;
+            color: #00796B;
+            margin-bottom: 10px;
+        }
+        
+        .book-meta {
+            margin-bottom: 20px;
+        }
+        
+        .meta-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .meta-label {
+            width: 100px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .meta-value {
+            flex: 1;
+        }
+        
+        .book-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        .status-available {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .status-unavailable {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #66BB6A;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #00796B;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-disabled {
+            background-color: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .book-description {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .description-title {
+            font-size: 18px;
+            color: #00796B;
+            margin-bottom: 15px;
+        }
+        
+        .loan-history {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .history-title {
+            font-size: 18px;
+            color: #00796B;
+            margin-bottom: 15px;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .history-table th, .history-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-table th {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            color: #00796B;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .book-detail {
+                flex-direction: column;
+            }
+            
+            .book-cover {
+                width: 100%;
+                max-width: 250px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <img src="../../../static/images/logo.png" alt="부기맨 로고" class="logo">
+                <h1>Boogieman</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-profile">홍</div>
+                <span class="user-name">홍길동님</span>
+                <a href="/logout" class="btn btn-secondary">로그아웃</a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <a href="/book/list" class="menu-item active">
+                    <i class="fas fa-book"></i> 도서 목록
+                </a>
+                <a href="/book/request" class="menu-item">
+                    <i class="fas fa-file-alt"></i> 희망도서 신청
+                </a>
+                <a href="/loan/mypage" class="menu-item">
+                    <i class="fas fa-user"></i> 마이페이지
+                </a>
+                <a href="/loan/reserve" class="menu-item">
+                    <i class="fas fa-bookmark"></i> 예약 현황
+                </a>
+                <a href="/notice/list" class="menu-item">
+                    <i class="fas fa-bullhorn"></i> 공지사항
+                </a>
+                <a href="/notice/notification" class="menu-item">
+                    <i class="fas fa-bell"></i> 알림
+                </a>
+                <a href="/about" class="menu-item">
+                    <i class="fas fa-info-circle"></i> 소개
+                </a>
+            </div>
+            
+            <div class="content">
+                <a href="/book/list" class="back-button">
+                    <i class="fas fa-arrow-left"></i> 도서 목록으로 돌아가기
+                </a>
+                
+                <h2 class="page-title">
+                    <i class="fas fa-book"></i> 도서 상세 정보
+                </h2>
+                
+                <div class="book-detail">
+                    <div class="book-cover">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    
+                    <div class="book-info">
+                        <h3 class="book-title">클린 코드</h3>
+                        
+                        <div class="book-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">저자</div>
+                                <div class="meta-value">로버트 C. 마틴</div>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <div class="meta-label">출판사</div>
+                                <div class="meta-value">인사이트</div>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <div class="meta-label">출판일</div>
+                                <div class="meta-value">2013-12-24</div>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <div class="meta-label">ISBN</div>
+                                <div class="meta-value">9788966260959</div>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <div class="meta-label">분류</div>
+                                <div class="meta-value">프로그래밍</div>
+                            </div>
+                        </div>
+                        
+                        <div class="book-status status-unavailable">대출 중 (반납 예정일: 2023-06-30)</div>
+                        
+                        <div class="action-buttons">
+                            <button id="loanBtn" class="btn btn-disabled" disabled>대출하기</button>
+                            <button id="reserveBtn" class="btn btn-primary">예약하기</button>
+                            <button id="extendBtn" class="btn btn-disabled" disabled>연장하기</button>
+                            <button id="returnBtn" class="btn btn-disabled" disabled>반납하기</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="book-description">
+                    <h4 class="description-title">도서 소개</h4>
+                    <p>
+                        『클린 코드』는 오브젝트 멘토(Object Mentor)의 창립자이자 UML과 디자인 패턴, 익스트림 프로그래밍(XP), TDD에 대한 글을 발표해온 저자 로버트 마틴이 오랜 경험을 바탕으로 '개발하며 배우는 진정한 클린 코드의 작성법'에 대한 지침을 제시한다. 이 책은 많은 코드를 읽고 그에 대해 생각하는 시간을 가질 것을 요구한다. 여러분이 이 책을 읽고 연습문제를 풀고, 또 직접 코드를 작성하는 데 시간과 노력을 투자한다면, 열정적인 프로그래머로서 깨끗하고 수준 높은 코드를 만들어내는 능력을 갖추게 될 것이다.
+                    </p>
+                </div>
+                
+                <div class="loan-history">
+                    <h4 class="history-title">대출 이력</h4>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>대출일</th>
+                                <th>반납일</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2023-06-01</td>
+                                <td>-</td>
+                                <td>대출 중</td>
+                            </tr>
+                            <tr>
+                                <td>2023-05-01</td>
+                                <td>2023-05-15</td>
+                                <td>반납 완료</td>
+                            </tr>
+                            <tr>
+                                <td>2023-04-01</td>
+                                <td>2023-04-15</td>
+                                <td>반납 완료</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 예약 확인 모달 -->
+    <div id="reserveModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">도서 예약</h3>
+            <p>
+                '클린 코드' 도서를 예약하시겠습니까?<br>
+                현재 예약 대기 인원: 1명<br>
+                예상 대기 시간: 약 2주
+            </p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('reserveModal')">취소</button>
+                <button class="btn btn-primary" onclick="confirmReservation()">예약하기</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 예약 완료 모달 -->
+    <div id="reserveCompleteModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">예약 완료</h3>
+            <p>
+                '클린 코드' 도서가 성공적으로 예약되었습니다.<br>
+                현재 예약 순위: 2번<br>
+                도서가 반납되면 알림을 보내드립니다.
+            </p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="closeModal('reserveCompleteModal')">확인</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 예약 버튼 클릭 이벤트
+        document.getElementById('reserveBtn').addEventListener('click', function() {
+            // 예약 가능 여부 확인 (실제 구현 필요)
+            checkReservationAvailability();
+        });
+        
+        // 예약 가능 여부 확인 함수 (실제 구현 필요)
+        function checkReservationAvailability() {
+            // 실제로는 서버에 API 요청을 보내 예약 가능 여부 확인
+            // 이 예시에서는 바로 모달 표시
+            openModal('reserveModal');
+        }
+        
+        // 예약 확인 함수
+        function confirmReservation() {
+            // 실제로는 서버에 예약 요청 API 호출
+            // 이 예시에서는 바로 완료 모달 표시
+            closeModal('reserveModal');
+            openModal('reserveCompleteModal');
+        }
+        
+        // 모달 열기
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        // 모달 닫기
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 대출 상태에 따라 버튼 활성화/비활성화 (실제 구현 필요)
+        function updateButtonStatus(status, isCurrentUserBorrower) {
+            const loanBtn = document.getElementById('loanBtn');
+            const reserveBtn = document.getElementById('reserveBtn');
+            const extendBtn = document.getElementById('extendBtn');
+            const returnBtn = document.getElementById('returnBtn');
+            
+            if (status === 'available') {
+                // 대출 가능 상태
+                loanBtn.classList.remove('btn-disabled');
+                loanBtn.classList.add('btn-primary');
+                loanBtn.disabled = false;
+                
+                reserveBtn.classList.add('btn-disabled');
+                reserveBtn.classList.remove('btn-primary');
+                reserveBtn.disabled = true;
+                
+                extendBtn.classList.add('btn-disabled');
+                extendBtn.disabled = true;
+                
+                returnBtn.classList.add('btn-disabled');
+                returnBtn.disabled = true;
+            } else if (status === 'unavailable') {
+                // 대출 중 상태
+                loanBtn.classList.add('btn-disabled');
+                loanBtn.disabled = true;
+                
+                if (isCurrentUserBorrower) {
+                    // 현재 사용자가 대출자인 경우
+                    reserveBtn.classList.add('btn-disabled');
+                    reserveBtn.disabled = true;
+                    
+                    extendBtn.classList.remove('btn-disabled');
+                    extendBtn.classList.add('btn-primary');
+                    extendBtn.disabled = false;
+                    
+                    returnBtn.classList.remove('btn-disabled');
+                    returnBtn.classList.add('btn-primary');
+                    returnBtn.disabled = false;
+                } else {
+                    // 다른 사용자가 대출 중인 경우
+                    reserveBtn.classList.remove('btn-disabled');
+                    reserveBtn.classList.add('btn-primary');
+                    reserveBtn.disabled = false;
+                    
+                    extendBtn.classList.add('btn-disabled');
+                    extendBtn.disabled = true;
+                    
+                    returnBtn.classList.add('btn-disabled');
+                    returnBtn.disabled = true;
+                }
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 실제로는 서버에서 도서 정보와 대출 상태를 가져와야 함
+            // 이 예시에서는 하드코딩된 값 사용
+            const bookStatus = 'unavailable'; // 'available' 또는 'unavailable'
+            const isCurrentUserBorrower = false; // 현재 사용자가 대출자인지 여부
+            
+            updateButtonStatus(bookStatus, isCurrentUserBorrower);
+        });
+    </script>
+</body>
+</html>

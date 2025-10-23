@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boogieman - 마이페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #E8F5E9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 50px;
+            margin-right: 15px;
+        }
+        
+        h1 {
+            color: #00796B;
+            font-size: 24px;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #66BB6A;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .user-name {
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item:hover {
+            background-color: #E8F5E9;
+        }
+        
+        .menu-item.active {
+            background-color: #00796B;
+            color: white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .page-title {
+            color: #00796B;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title i {
+            margin-right: 10px;
+        }
+        
+        .tab-container {
+            margin-top: 20px;
+        }
+        
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-right: 10px;
+            font-weight: 500;
+        }
+        
+        .tab-item.active {
+            border-bottom-color: #00796B;
+            color: #00796B;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .profile-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #E8F5E9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 60px;
+            color: #66BB6A;
+            overflow: hidden;
+        }
+        
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-info h3 {
+            margin-bottom: 15px;
+            color: #00796B;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        
+        .info-label {
+            width: 100px;
+            font-weight: 500;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #66BB6A;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #00796B;
+        }
+        
+        .btn-secondary {
+            background-color: #ccc;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #999;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            border-color: #66BB6A;
+            outline: none;
+        }
+        
+        .book-list {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .book-list th,
+        .book-list td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .book-list th {
+            background-color: #f9f9f9;
+            font-weight: 500;
+        }
+        
+        .book-list tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-overdue {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .status-due-soon {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+        
+        .status-normal {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .status-reserved {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+        
+        .book-cover {
+            width: 50px;
+            height: 70px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 20px;
+            border-radius: 3px;
+        }
+        
+        .book-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .book-details {
+            margin-left: 15px;
+        }
+        
+        .book-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .book-author {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .profile-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .info-item {
+                flex-direction: column;
+            }
+            
+            .info-label {
+                width: auto;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <img src="../../../static/images/logo.png" alt="부기맨 로고" class="logo">
+                <h1>Boogieman</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-profile">홍</div>
+                <span class="user-name">홍길동님</span>
+                <a href="/logout" class="btn btn-secondary">로그아웃</a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <a href="/book/list" class="menu-item">
+                    <i class="fas fa-book"></i> 도서 목록
+                </a>
+                <a href="/book/request" class="menu-item">
+                    <i class="fas fa-file-alt"></i> 희망도서 신청
+                </a>
+                <a href="/loan/mypage" class="menu-item active">
+                    <i class="fas fa-user"></i> 마이페이지
+                </a>
+                <a href="/loan/reserve" class="menu-item">
+                    <i class="fas fa-bookmark"></i> 예약 현황
+                </a>
+                <a href="/notice/list" class="menu-item">
+                    <i class="fas fa-bullhorn"></i> 공지사항
+                </a>
+                <a href="/notice/notification" class="menu-item">
+                    <i class="fas fa-bell"></i> 알림
+                </a>
+                <a href="/about" class="menu-item">
+                    <i class="fas fa-info-circle"></i> 소개
+                </a>
+            </div>
+            
+            <div class="content">
+                <h2 class="page-title">
+                    <i class="fas fa-user"></i> 마이페이지
+                </h2>
+                
+                <div class="tab-container">
+                    <div class="tab-header">
+                        <div class="tab-item active" data-tab="profile">프로필 관리</div>
+                        <div class="tab-item" data-tab="current-loans">대출 현황</div>
+                        <div class="tab-item" data-tab="request-status">신청 현황</div>
+                        <div class="tab-item" data-tab="loan-history">대출/반납 이력</div>
+                        <div class="tab-item" data-tab="reservation-status">예약 현황</div>
+                    </div>
+                    
+                    <!-- 프로필 관리 탭 -->
+                    <div class="tab-content active" id="profile">
+                        <div class="profile-section">
+                            <div class="profile-image">
+                                <i class="fas fa-user"></i>
+                                <!-- 프로필 이미지가 있을 경우 -->
+                                <!-- <img src="/images/profile.jpg" alt="프로필 이미지"> -->
+                            </div>
+                            
+                            <div class="profile-info">
+                                <h3>프로필 정보</h3>
+                                <div class="info-item">
+                                    <span class="info-label">이름</span>
+                                    <span>홍길동</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">부서</span>
+                                    <span>개발팀</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">이메일</span>
+                                    <span>hong@example.com</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">가입일</span>
+                                    <span>2023-01-15</span>
+                                </div>
+                                
+                                <button id="editProfileBtn" class="btn">프로필 수정</button>
+                            </div>
+                        </div>
+                        
+                        <div id="editProfileForm" style="display: none;">
+                            <h3>프로필 수정</h3>
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">이름</label>
+                                    <input type="text" id="name" name="name" value="홍길동">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="department">부서</label>
+                                    <select id="department" name="department">
+                                        <option value="dev">개발팀</option>
+                                        <option value="design">디자인팀</option>
+                                        <option value="marketing">마케팅팀</option>
+                                        <option value="hr">인사팀</option>
+                                        <option value="finance">재무팀</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email">이메일</label>
+                                    <input type="email" id="email" name="email" value="hong@example.com">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="profileImage">프로필 이미지</label>
+                                    <input type="file" id="profileImage" name="profileImage">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn">저장</button>
+                                    <button type="button" id="cancelEditBtn" class="btn btn-secondary">취소</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- 대출 현황 탭 -->
+                    <div class="tab-content" id="current-loans">
+                        <h3>현재 대출 중인 도서</h3>
+                        <table class="book-list">
+                            <thead>
+                                <tr>
+                                    <th>도서 정보</th>
+                                    <th>대출일</th>
+                                    <th>반납 예정일</th>
+                                    <th>상태</th>
+                                    <th>액션</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">클린 코드</div>
+                                                <div class="book-author">로버트 C. 마틴</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-06-01</td>
+                                    <td>2023-06-15</td>
+                                    <td><span class="status status-overdue">연체 (3일)</span></td>
+                                    <td>
+                                        <button class="btn action-btn">반납</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">객체지향의 사실과 오해</div>
+                                                <div class="book-author">조영호</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-06-10</td>
+                                    <td>2023-06-24</td>
+                                    <td><span class="status status-due-soon">반납 임박 (2일)</span></td>
+                                    <td>
+                                        <button class="btn action-btn">반납</button>
+                                        <button class="btn action-btn">연장 요청</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">리팩터링 2판</div>
+                                                <div class="book-author">마틴 파울러</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-06-15</td>
+                                    <td>2023-06-29</td>
+                                    <td><span class="status status-normal">정상</span></td>
+                                    <td>
+                                        <button class="btn action-btn">반납</button>
+                                        <button class="btn action-btn">연장 요청</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 신청 현황 탭 -->
+                    <div class="tab-content" id="request-status">
+                        <h3>희망도서 신청 현황</h3>
+                        <table class="book-list">
+                            <thead>
+                                <tr>
+                                    <th>신청일</th>
+                                    <th>도서명</th>
+                                    <th>저자</th>
+                                    <th>출판사</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023-06-15</td>
+                                    <td>클린 아키텍처</td>
+                                    <td>로버트 C. 마틴</td>
+                                    <td>인사이트</td>
+                                    <td><span class="status status-normal">승인됨</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-06-10</td>
+                                    <td>도메인 주도 설계</td>
+                                    <td>에릭 에반스</td>
+                                    <td>위키북스</td>
+                                    <td><span class="status status-due-soon">승인 대기</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-05-28</td>
+                                    <td>이펙티브 자바</td>
+                                    <td>조슈아 블로크</td>
+                                    <td>인사이트</td>
+                                    <td><span class="status status-overdue">거절됨</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 대출/반납 이력 탭 -->
+                    <div class="tab-content" id="loan-history">
+                        <h3>대출/반납 이력</h3>
+                        <table class="book-list">
+                            <thead>
+                                <tr>
+                                    <th>도서 정보</th>
+                                    <th>대출일</th>
+                                    <th>반납일</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">모던 자바스크립트 Deep Dive</div>
+                                                <div class="book-author">이웅모</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-05-01</td>
+                                    <td>2023-05-15</td>
+                                    <td><span class="status status-normal">정상 반납</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">함께 자라기</div>
+                                                <div class="book-author">김창준</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-04-10</td>
+                                    <td>2023-04-28</td>
+                                    <td><span class="status status-overdue">연체 반납 (3일)</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">토비의 스프링 3.1</div>
+                                                <div class="book-author">이일민</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-03-15</td>
+                                    <td>2023-03-29</td>
+                                    <td><span class="status status-normal">정상 반납</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 예약 현황 탭 -->
+                    <div class="tab-content" id="reservation-status">
+                        <h3>도서 예약 현황</h3>
+                        <table class="book-list">
+                            <thead>
+                                <tr>
+                                    <th>도서 정보</th>
+                                    <th>예약일</th>
+                                    <th>예약 순위</th>
+                                    <th>만료일</th>
+                                    <th>액션</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">클린 아키텍처</div>
+                                                <div class="book-author">로버트 C. 마틴</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-06-05</td>
+                                    <td>1/2</td>
+                                    <td>2023-07-05</td>
+                                    <td>
+                                        <button class="btn action-btn btn-secondary">예약 취소</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-cover">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                            <div class="book-details">
+                                                <div class="book-title">도메인 주도 설계</div>
+                                                <div class="book-author">에릭 에반스</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2023-06-10</td>
+                                    <td>2/2</td>
+                                    <td>2023-07-10</td>
+                                    <td>
+                                        <button class="btn action-btn btn-secondary">예약 취소</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 탭 전환 기능
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 모든 탭 비활성화
+                document.querySelectorAll('.tab-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 모든 탭 콘텐츠 숨기기
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // 클릭한 탭 활성화
+                this.classList.add('active');
+                
+                // 해당 탭 콘텐츠 표시
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 프로필 수정 폼 토글
+        document.getElementById('editProfileBtn').addEventListener('click', function() {
+            document.getElementById('editProfileForm').style.display = 'block';
+        });
+        
+        document.getElementById('cancelEditBtn').addEventListener('click', function() {
+            document.getElementById('editProfileForm').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

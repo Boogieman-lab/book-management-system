@@ -5,46 +5,186 @@
     <title>Sidebar Fragment</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .bm-sidebar { width: 250px; background-color: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px;
-            position: sticky;   /* or fixed */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+        }
+
+        /* 기본 사이드바 스타일 */
+        .bm-sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: sticky;
             top: 20px;
-            height: fit-content;}
-        .bm-menu-item { display: flex; align-items: center; padding: 12px 15px; border-radius: 5px; margin-bottom: 5px; color: #333; text-decoration: none; transition: background-color 0.3s; }
-        .bm-menu-item:hover { background-color: #E8F5E9; }
-        .bm-menu-item i { margin-right: 10px; width: 20px; text-align: center; }
+            height: fit-content;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .bm-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+
+        .bm-menu-item:hover {
+            background-color: #E8F5E9;
+        }
+
+        .bm-menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
         .bm-menu-item.active {
             background-color: #00695C;
             color: #fff;
             font-weight: 500;
         }
 
+        /* 햄버거 버튼 */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: #00796B;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 10px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* 접기 버튼 */
+        .fold-btn {
+            display: block;
+            text-align: right;
+            cursor: pointer;
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        /* 접힌 상태 */
+        .bm-sidebar.folded {
+            width: 70px;
+            padding: 20px 10px;
+        }
+
+        .bm-sidebar.folded .bm-menu-item span {
+            display: none;
+        }
+
+        .bm-sidebar.folded .fold-btn {
+            text-align: center;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .bm-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                border-radius: 0;
+                padding-top: 70px;
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            .bm-sidebar.active {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .fold-btn {
+                display: none; /* 모바일에서는 fold 버튼 숨김 */
+            }
+
+            .bm-menu-item {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
+
+<!-- 햄버거 버튼 -->
+<button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
 <div th:fragment="sidebar(activeMenu)">
-    <aside class="bm-sidebar">
-        <a href="/book/list" class="bm-menu-item active" th:classappend="${activeMenu}=='books' ? ' active' : ''">
-            <i class="fas fa-book"></i> 도서 목록
+    <aside class="bm-sidebar" id="bmSidebar">
+        <div class="fold-btn" onclick="foldSidebar()" id="foldBtn">≪</div>
+
+        <a href="/book/list" class="bm-menu-item" th:classappend="${activeMenu}=='books' ? ' active' : ''">
+            <i class="fas fa-book"></i> <span>도서 목록</span>
         </a>
         <a href="/book/request" class="bm-menu-item" th:classappend="${activeMenu}=='request' ? ' active' : ''">
-            <i class="fas fa-file-alt"></i> 희망도서 신청
+            <i class="fas fa-file-alt"></i> <span>희망도서 신청</span>
         </a>
         <a href="/loan/mypage" class="bm-menu-item" th:classappend="${activeMenu}=='mypage' ? ' active' : ''">
-            <i class="fas fa-user"></i> 마이페이지
+            <i class="fas fa-user"></i> <span>마이페이지</span>
         </a>
         <a href="/loan/reserve" class="bm-menu-item" th:classappend="${activeMenu}=='reserve' ? ' active' : ''">
-            <i class="fas fa-bookmark"></i> 예약 현황
+            <i class="fas fa-bookmark"></i> <span>예약 현황</span>
         </a>
         <a href="/notice/list" class="bm-menu-item" th:classappend="${activeMenu}=='notice' ? ' active' : ''">
-            <i class="fas fa-bullhorn"></i> 공지사항
+            <i class="fas fa-bullhorn"></i> <span>공지사항</span>
         </a>
         <a href="/notice/notification" class="bm-menu-item" th:classappend="${activeMenu}=='notification' ? ' active' : ''">
-            <i class="fas fa-bell"></i> 알림
+            <i class="fas fa-bell"></i> <span>알림</span>
         </a>
         <a href="/about" class="bm-menu-item" th:classappend="${activeMenu}=='about' ? ' active' : ''">
-            <i class="fas fa-info-circle"></i> 소개
+            <i class="fas fa-info-circle"></i> <span>소개</span>
         </a>
     </aside>
 </div>
+
+<script>
+    // 모바일 햄버거 토글
+    function toggleSidebar() {
+        const sidebar = document.getElementById('bmSidebar');
+        sidebar.classList.toggle('active');
+    }
+
+    // 데스크톱 접기/펼치기 버튼
+    function foldSidebar() {
+        const sidebar = document.getElementById('bmSidebar');
+        const foldBtn = document.getElementById('foldBtn');
+        sidebar.classList.toggle('folded');
+        foldBtn.innerHTML = sidebar.classList.contains('folded') ? '≫' : '≪';
+    }
+
+    // 모바일에서 메뉴 클릭 시 자동 닫기
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.getElementById('bmSidebar');
+        const menuItems = sidebar.querySelectorAll('.bm-menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) sidebar.classList.remove('active');
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

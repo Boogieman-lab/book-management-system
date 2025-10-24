@@ -1,0 +1,15 @@
+.bm-footer {
+    text-align: center;
+    margin-top: 50px;
+    color: #555;
+    font-size: 14px;
+    padding: 20px 0;
+    border-top: 1px solid #E0E0E0;
+}
+.bm-footer .links { margin-bottom: 8px; }
+.bm-footer a {
+    color: #2E7D32;
+    text-decoration: none;
+    margin: 0 6px;
+}
+.bm-footer a:hover { text-decoration: underline; }

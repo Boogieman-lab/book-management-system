@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle} ?: 'Library Management System'">Library Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!--    <link rel="stylesheet" th:href="@{/css/common.css}">-->
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- Header -->
+<header th:replace="fragments/header :: header"></header>
+
+<!-- Sidebar + Main -->
+<div style="display:flex; flex:1; min-height: calc(100vh - 60px);">
+    <!-- Sidebar 호출, activeMenu 전달 -->
+    <aside th:replace="fragments/sidebar :: sidebar(${activeMenu})"></aside>
+
+    <!-- Main Content -->
+    <main layout:fragment="content" style="flex:1; padding:30px; background:#fff; margin:20px; border-radius:10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05);">
+<!--        <div th:fragment="content">-->
+            <!-- 페이지별 내용이 여기로 들어감 -->
+<!--        </div>-->
+    </main>
+</div>
+
+<!-- Footer -->
+<footer th:replace="fragments/footer :: footer"></footer>
+
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/header.js}"></script>
+</body>
+</html>

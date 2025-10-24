@@ -1,0 +1,27 @@
+<div th:fragment="sidebar(activeMenu)">
+    <aside class="bm-sidebar" id="bmSidebar">
+        <div class="fold-btn" onclick="foldSidebar()" id="foldBtn">≪</div>
+
+        <a href="/book/list" class="bm-menu-item" th:classappend="${activeMenu}=='books' ? ' active' : ''">
+            <i class="fas fa-book"></i> <span>도서 목록</span>
+        </a>
+        <a href="/book/request" class="bm-menu-item" th:classappend="${activeMenu}=='request' ? ' active' : ''">
+            <i class="fas fa-file-alt"></i> <span>희망도서 신청</span>
+        </a>
+        <a href="/loan/mypage" class="bm-menu-item" th:classappend="${activeMenu}=='mypage' ? ' active' : ''">
+            <i class="fas fa-user"></i> <span>마이페이지</span>
+        </a>
+        <a href="/loan/reserve" class="bm-menu-item" th:classappend="${activeMenu}=='reserve' ? ' active' : ''">
+            <i class="fas fa-bookmark"></i> <span>예약 현황</span>
+        </a>
+        <a href="/notice/list" class="bm-menu-item" th:classappend="${activeMenu}=='notice' ? ' active' : ''">
+            <i class="fas fa-bullhorn"></i> <span>공지사항</span>
+        </a>
+        <a href="/notice/notification" class="bm-menu-item" th:classappend="${activeMenu}=='notification' ? ' active' : ''">
+            <i class="fas fa-bell"></i> <span>알림</span>
+        </a>
+        <a href="/about" class="bm-menu-item" th:classappend="${activeMenu}=='about' ? ' active' : ''">
+            <i class="fas fa-info-circle"></i> <span>소개</span>
+        </a>
+    </aside>
+</div>

@@ -1,0 +1,149 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+}
+
+/* 기본 사이드바 스타일 */
+.bm-sidebar {
+    width: 250px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.bm-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.bm-menu-item:hover {
+    background-color: #E8F5E9;
+}
+
+.bm-menu-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.bm-menu-item.active {
+    background-color: #00695C;
+    color: #fff;
+    font-weight: 500;
+}
+
+/* 햄버거 버튼 */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: #00796B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* 접기 버튼 */
+.fold-btn {
+    display: block;
+    text-align: right;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+/* 접힌 상태 */
+.bm-sidebar.folded {
+    width: 70px;
+    padding: 20px 10px;
+}
+
+.bm-sidebar.folded .bm-menu-item span {
+    display: none;
+}
+
+.bm-sidebar.folded .fold-btn {
+    text-align: center;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    /* 기본 사이드바 스타일 (모바일) */
+    .bm-sidebar {
+        /* position: fixed; -> Keep it fixed */
+        /* top: 0; -> Keep it at the top */
+        /* left: 0; -> Keep it on the left */
+        height: 100%;
+        border-radius: 0;
+        /* padding-top: 70px; -> Keep padding */
+
+        /* 🔥 이전 스타일: 완전 숨김 */
+        /* transform: translateX(-100%);
+        opacity: 0; */
+
+        /* 🔥 새 스타일: 접힌 상태로 시작 (folded 클래스의 기본 너비 적용) */
+        width: 70px;
+        padding: 20px 10px; /* folded 클래스의 패딩 적용 */
+        transform: none; /* 화면에 보이게 */
+        opacity: 1; /* 화면에 보이게 */
+
+        /* 모바일에서는 기본적으로 스크롤을 막는게 좋을 수 있습니다 */
+        overflow-y: auto;
+    }
+
+    /* 접힌 상태 스타일 적용 */
+    .bm-sidebar .bm-menu-item span {
+        display: none;
+    }
+
+    .bm-sidebar .fold-btn {
+        text-align: center;
+        display: none; /* 모바일에서는 fold 버튼 숨김 */
+    }
+
+    /* 햄버거 버튼은 필요 없어지거나, '펼치기' 버튼으로 사용될 수 있습니다. */
+    /* 현재는 사이드바가 항상 보이므로 햄버거 버튼은 숨기겠습니다. */
+    .sidebar-toggle {
+        display: none;
+    }
+
+    /* 활성화 상태 (전체 펼침)는 필요 없지만,
+       만약 햄버거 버튼을 이용해 전체를 펼치는 기능을 원한다면 이 부분을 수정해야 합니다.
+       현재 요청에 따라 '접힌 상태'로만 보이게 설정합니다.
+    */
+    /* .bm-sidebar.active {
+        transform: translateX(0);
+        opacity: 1;
+    } */
+
+    .bm-menu-item {
+        font-size: 14px; /* 좁은 공간에 맞게 폰트 크기 조정 */
+        padding: 10px 5px; /* 좁은 공간에 맞게 패딩 조정 */
+        justify-content: center; /* 아이콘 중앙 정렬 */
+    }
+
+    .bm-menu-item i {
+        margin-right: 0; /* 아이콘 옆 텍스트가 사라졌으므로 마진 제거 */
+    }
+}

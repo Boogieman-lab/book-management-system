@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boogieman - 회원가입</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #E8F5E9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .signup-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #00796B;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #00796B;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        
+        .signup-form {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #66BB6A;
+            outline: none;
+        }
+        
+        .email-verification {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .email-verification input {
+            flex-grow: 1;
+        }
+        
+        .verify-btn {
+            padding: 0 15px;
+            background-color: #66BB6A;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        
+        .verify-btn:hover {
+            background-color: #00796B;
+        }
+        
+        .verification-code {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .signup-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #66BB6A;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        .signup-btn:hover {
+            background-color: #00796B;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .divider::before {
+            margin-right: 10px;
+        }
+        
+        .divider::after {
+            margin-left: 10px;
+        }
+        
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: white;
+            color: #555;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .google-btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .google-icon {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .login-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .login-link a {
+            color: #66BB6A;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 30px 20px;
+                margin: 0 15px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .email-verification {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <img src="../../../images/logo.png"  alt="부기맨 로고" class="logo">
+        <h1>Boogieman</h1>
+        <p class="subtitle">부기맨과 도서 탐험을 시작해보세요!</p>
+        
+        <form class="signup-form" action="/signup" method="post" id="signupForm">
+            <div class="form-group">
+                <label for="email">이메일 *</label>
+                <div class="email-verification">
+                    <input type="email" id="email" name="email" placeholder="example@company.com" required>
+                    <button type="button" class="verify-btn" id="sendVerificationBtn">인증번호 발송</button>
+                </div>
+                <div class="error-message" id="emailError">유효한 이메일 주소를 입력해주세요.</div>
+            </div>
+            
+            <div class="form-group verification-code" id="verificationCodeGroup">
+                <label for="verificationCode">인증번호 *</label>
+                <div class="email-verification">
+                    <input type="text" id="verificationCode" name="verificationCode" placeholder="인증번호 6자리" maxlength="6">
+                    <button type="button" class="verify-btn" id="verifyCodeBtn">인증 확인</button>
+                </div>
+                <div class="error-message" id="verificationError">인증번호가 일치하지 않습니다.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">이름 *</label>
+                <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required>
+                <div class="error-message" id="nameError">이름을 입력해주세요.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="department">부서</label>
+                <select id="department" name="departmentId">
+                    <option value="">부서 선택</option>
+                    <!-- 부서 목록은 서버에서 동적으로 로드됩니다 -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">비밀번호 *</label>
+                <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                <div class="error-message" id="passwordError">비밀번호는 8자 이상, 영문, 숫자, 특수문자를 포함해야 합니다.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">비밀번호 확인 *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
+                <div class="error-message" id="confirmPasswordError">비밀번호가 일치하지 않습니다.</div>
+            </div>
+            
+            <input type="hidden" name="isEmailVerified" id="isEmailVerified" value="false">
+            <button type="submit" class="signup-btn" id="signupBtn" disabled>회원가입</button>
+        </form>
+        
+        <div class="divider">또는</div>
+        
+        <button class="google-btn" onclick="location.href='/oauth2/authorization/google'">
+            <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                <path fill="none" d="M0 0h48v48H0z"/>
+            </svg>
+            Google 계정으로 가입
+        </button>
+        
+        <div class="login-link">
+            이미 계정이 있으신가요? <a href="/login">로그인</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            const sendVerificationBtn = document.getElementById('sendVerificationBtn');
+            const verificationCodeGroup = document.getElementById('verificationCodeGroup');
+            const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+            const signupBtn = document.getElementById('signupBtn');
+            const isEmailVerified = document.getElementById('isEmailVerified');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const nameInput = document.getElementById('name');
+            
+            // 이메일 유효성 검사
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+            
+            // 비밀번호 유효성 검사
+            function validatePassword(password) {
+                // 8자 이상, 영문, 숫자, 특수문자 포함
+                const re = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+                return re.test(password);
+            }
+            
+            // 인증번호 발송 버튼 클릭 이벤트
+            sendVerificationBtn.addEventListener('click', function() {
+                const email = emailInput.value.trim();
+                const emailError = document.getElementById('emailError');
+                
+                if (!validateEmail(email)) {
+                    emailError.style.display = 'block';
+                    return;
+                }
+                
+                emailError.style.display = 'none';
+                
+                // 서버에 인증번호 발송 요청 (실제 구현 필요)
+                fetch('/api/auth/send-verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 인증번호 입력 필드 표시
+                        verificationCodeGroup.style.display = 'block';
+                        sendVerificationBtn.textContent = '재발송';
+                        alert('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
+                    } else {
+                        alert('인증번호 발송에 실패했습니다. 다시 시도해주세요.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('인증번호 발송 중 오류가 발생했습니다.');
+                });
+            });
+            
+            // 인증번호 확인 버튼 클릭 이벤트
+            verifyCodeBtn.addEventListener('click', function() {
+                const email = emailInput.value.trim();
+                const code = document.getElementById('verificationCode').value.trim();
+                const verificationError = document.getElementById('verificationError');
+                
+                if (code.length !== 6) {
+                    verificationError.style.display = 'block';
+                    return;
+                }
+                
+                // 서버에 인증번호 확인 요청 (실제 구현 필요)
+                fetch('/api/auth/verify-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        email: email,
+                        code: code 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        verificationError.style.display = 'none';
+                        isEmailVerified.value = 'true';
+                        verifyCodeBtn.textContent = '인증완료';
+                        verifyCodeBtn.disabled = true;
+                        document.getElementById('verificationCode').disabled = true;
+                        alert('이메일 인증이 완료되었습니다.');
+                        
+                        // 다른 필드가 모두 유효하면 회원가입 버튼 활성화
+                        validateForm();
+                    } else {
+                        verificationError.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('인증번호 확인 중 오류가 발생했습니다.');
+                });
+            });
+            
+            // 폼 유효성 검사 및 회원가입 버튼 활성화
+            function validateForm() {
+                const email = emailInput.value.trim();
+                const name = nameInput.value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const emailVerified = isEmailVerified.value === 'true';
+                
+                const isValid = validateEmail(email) && 
+                               name.length > 0 && 
+                               validatePassword(password) && 
+                               password === confirmPassword && 
+                               emailVerified;
+                
+                signupBtn.disabled = !isValid;
+            }
+            
+            // 폼 제출 이벤트
+            document.getElementById('signupForm').addEventListener('submit', function(e) {
+                const emailVerified = isEmailVerified.value === 'true';
+                if (!emailVerified) {
+                    e.preventDefault();
+                    alert('이메일 인증을 완료해주세요.');
+                }
+            });
+            
+            // 부서 목록 로드
+            fetch('/api/departments')
+                .then(response => response.json())
+                .then(data => {
+                    const departmentSelect = document.getElementById('department');
+                    data.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept.id;
+                        option.textContent = dept.name;
+                        departmentSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading departments:', error);
+                });
+            
+            // 입력 필드 변경 시 유효성 검사
+            const formInputs = document.querySelectorAll('input');
+            formInputs.forEach(input => {
+                input.addEventListener('input', validateForm);
+            });
+        });
+    </script>
+</body>
+</html>

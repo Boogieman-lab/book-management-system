@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boogieman - 소개</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #E8F5E9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #00796B;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #00796B;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: #00796B;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title .icon {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .problem-list {
+            list-style-type: none;
+            margin: 20px 0;
+        }
+        
+        .problem-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .problem-list li:before {
+            content: "•";
+            color: #66BB6A;
+            font-size: 20px;
+            position: absolute;
+            left: 0;
+        }
+        
+        .highlight {
+            background-color: #E8F5E9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .highlight p {
+            margin-bottom: 10px;
+        }
+        
+        .name-meaning {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 30px;
+        }
+        
+        .ghost-icon {
+            font-size: 40px;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .name-content {
+            flex-grow: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #66BB6A;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #00796B;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .section-title {
+                font-size: 22px;
+            }
+            
+            .name-meaning {
+                flex-direction: column;
+            }
+            
+            .ghost-icon {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="../../images/logo.png" alt="부기맨 로고" class="logo">
+            <h1>Boogieman</h1>
+            <p class="subtitle">부기맨과 도서 탐험을 시작해보세요!</p>
+        </header>
+        
+        <section class="section">
+            <h2 class="section-title">
+                <span class="icon">📖</span>
+                프로젝트 개요
+            </h2>
+            <p>
+                사내 복지로 희망 도서를 신청하면 회사에서 구매 후 대출할 수 있는 제도가 운영되고 있지만, 
+                현재는 별도의 관리 시스템이 없어 다음과 같은 불편함이 존재합니다.
+            </p>
+            
+            <ul class="problem-list">
+                <li>이미 보유한 도서를 다시 신청하는 중복 발생</li>
+                <li>누가 해당 도서를 대출 중인지 확인 불가</li>
+                <li>도서 신청 및 대출 현황 관리의 비효율성</li>
+            </ul>
+            
+            <div class="highlight">
+                <p>
+                    이를 해결하기 위해 도서 관리 시스템, <strong>부기맨(Boogieman)</strong>을 기획했습니다.
+                </p>
+                <p>
+                    부기맨은 귀여운 이름처럼 친근하게, 구성원 누구나 쉽고 빠르게 희망도서 신청과 도서 대출/반납 관리를 할 수 있도록 지원합니다.
+                </p>
+                <p>
+                    앞으로도 꾸준히 새로운 기능을 추가하며 발전시켜 나갈 예정입니다.
+                </p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">
+                <span class="icon">👻</span>
+                이름의 의미 – "부기맨(Boogieman)"
+            </h2>
+            
+            <div class="name-meaning">
+                <div class="ghost-icon">👻</div>
+                <div class="name-content">
+                    <p>
+                        원래 영어의 Bogeyman(부기맨)은 아이들을 무서워하게 만드는 상상의 괴물을 뜻합니다.
+                    </p>
+                    <p>
+                        하지만 이 프로젝트에서는 "책(Book)"에서 착안하여 책을 지켜주는 귀여운 부기맨으로 재해석했습니다.
+                    </p>
+                    <p>
+                        이제 부기맨은 괴물이 아니라, 사내 도서 복지를 지켜주는 든든한 관리자입니다. 📖✨
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">
+                <span class="icon">🚀</span>
+                주요 기능
+            </h2>
+            
+            <ul class="problem-list">
+                <li>도서 검색 및 조회 - 현재 보유 중인 도서 목록을 쉽게 검색하고 조회할 수 있습니다.</li>
+                <li>도서 신청 - 원하는 도서를 간편하게 신청하고 진행 상태를 확인할 수 있습니다.</li>
+                <li>대출/반납 관리 - 도서 대출과 반납을 손쉽게 관리할 수 있습니다.</li>
+                <li>알림 서비스 - 반납 예정일, 신청 도서 입고 등 중요 정보를 알림으로 받을 수 있습니다.</li>
+            </ul>
+            
+            <div class="text-center">
+                <a href="/login" class="btn">시작하기</a>
+            </div>
+        </section>
+        
+        <footer class="footer">
+            <p>© 2023 Boogieman. 모든 권리 보유.</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boogieman - 알림 목록</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #E8F5E9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 50px;
+            margin-right: 15px;
+        }
+        
+        h1 {
+            color: #00796B;
+            font-size: 24px;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #66BB6A;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .user-name {
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item:hover {
+            background-color: #E8F5E9;
+        }
+        
+        .menu-item.active {
+            background-color: #00796B;
+            color: white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .page-title {
+            color: #00796B;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .page-title i {
+            margin-right: 10px;
+        }
+        
+        .notification-list {
+            margin-top: 20px;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: flex-start;
+            transition: background-color 0.3s;
+        }
+        
+        .notification-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .notification-item.unread {
+            background-color: #F1F8E9;
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E8F5E9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #66BB6A;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .notification-icon.warning {
+            background-color: #FFF3E0;
+            color: #FF9800;
+        }
+        
+        .notification-icon.success {
+            background-color: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .notification-icon.danger {
+            background-color: #FFEBEE;
+            color: #F44336;
+        }
+        
+        .notification-icon.info {
+            background-color: #E3F2FD;
+            color: #2196F3;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .notification-message {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .notification-time {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .notification-actions {
+            display: flex;
+            margin-left: 10px;
+        }
+        
+        .notification-action {
+            padding: 5px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .notification-action:hover {
+            color: #333;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .empty-state p {
+            font-size: 16px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .filter-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .filter-tab.active {
+            color: #00796B;
+            border-bottom-color: #00796B;
+            font-weight: 500;
+        }
+        
+        .filter-tab:hover {
+            color: #00796B;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .notification-item {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <img src="../../../images/logo.png" alt="부기맨 로고" class="logo">
+                <h1>Boogieman</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-profile">홍</div>
+                <span class="user-name">홍길동님</span>
+                <a href="/logout" class="btn btn-secondary">로그아웃</a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <a href="/book/list" class="menu-item">
+                    <i class="fas fa-book"></i> 도서 목록
+                </a>
+                <a href="/book/request" class="menu-item">
+                    <i class="fas fa-file-alt"></i> 희망도서 신청
+                </a>
+                <a href="/loan/mypage" class="menu-item">
+                    <i class="fas fa-user"></i> 마이페이지
+                </a>
+                <a href="/loan/reserve" class="menu-item">
+                    <i class="fas fa-bookmark"></i> 예약 현황
+                </a>
+                <a href="/notice/list" class="menu-item">
+                    <i class="fas fa-bullhorn"></i> 공지사항
+                </a>
+                <a href="/notice/notification" class="menu-item active">
+                    <i class="fas fa-bell"></i> 알림
+                </a>
+                <a href="/about" class="menu-item">
+                    <i class="fas fa-info-circle"></i> 소개
+                </a>
+            </div>
+            
+            <div class="content">
+                <div class="page-title">
+                    <div>
+                        <i class="fas fa-bell"></i> 알림 목록
+                    </div>
+                    <button class="btn btn-secondary" id="readAllBtn">모두 읽음 표시</button>
+                </div>
+                
+                <div class="filter-tabs">
+                    <div class="filter-tab active" data-filter="all">전체</div>
+                    <div class="filter-tab" data-filter="loan">대출/반납</div>
+                    <div class="filter-tab" data-filter="reserve">예약</div>
+                    <div class="filter-tab" data-filter="request">희망도서</div>
+                    <div class="filter-tab" data-filter="overdue">연체</div>
+                </div>
+                
+                <div class="notification-list">
+                    <!-- 알림 항목 1 (읽지 않음) -->
+                    <div class="notification-item unread" data-type="reserve">
+                        <div class="notification-icon success">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">예약 도서 도착 알림</div>
+                            <div class="notification-message">
+                                예약하신 '리팩터링 2판' 도서가 반납되어 대출 가능합니다. 3일 이내에 대출해주세요.
+                            </div>
+                            <div class="notification-time">2023-06-15 14:30</div>
+                        </div>
+                        <div class="notification-actions">
+                            <div class="notification-action" onclick="markAsRead(this)">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 알림 항목 2 (읽지 않음) -->
+                    <div class="notification-item unread" data-type="request">
+                        <div class="notification-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">희망도서 신청 승인</div>
+                            <div class="notification-message">
+                                신청하신 '클린 아키텍처' 도서가 승인되었습니다. 도서 입고 후 알림을 드리겠습니다.
+                            </div>
+                            <div class="notification-time">2023-06-14 11:20</div>
+                        </div>
+                        <div class="notification-actions">
+                            <div class="notification-action" onclick="markAsRead(this)">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 알림 항목 3 (읽음) -->
+                    <div class="notification-item" data-type="loan">
+                        <div class="notification-icon warning">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">반납 예정일 알림</div>
+                            <div class="notification-message">
+                                대출하신 '모던 자바스크립트 Deep Dive' 도서의 반납 예정일이 3일 남았습니다.
+                            </div>
+                            <div class="notification-time">2023-06-12 09:00</div>
+                        </div>
+                        <div class="notification-actions">
+                            <div class="notification-action" onclick="deleteNotification(this)">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 알림 항목 4 (읽음) -->
+                    <div class="notification-item" data-type="overdue">
+                        <div class="notification-icon danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">연체 안내</div>
+                            <div class="notification-message">
+                                대출하신 '함께 자라기' 도서가 연체되었습니다. 빠른 시일 내에 반납해주세요.
+                            </div>
+                            <div class="notification-time">2023-06-10 10:15</div>
+                        </div>
+                        <div class="notification-actions">
+                            <div class="notification-action" onclick="deleteNotification(this)">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 알림 항목 5 (읽음) -->
+                    <div class="notification-item" data-type="request">
+                        <div class="notification-icon danger">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">희망도서 신청 거절</div>
+                            <div class="notification-message">
+                                신청하신 '프로그래밍 심리학' 도서가 이미 소장 중이어서 거절되었습니다.
+                            </div>
+                            <div class="notification-time">2023-06-05 16:45</div>
+                        </div>
+                        <div class="notification-actions">
+                            <div class="notification-action" onclick="deleteNotification(this)">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 알림이 없는 경우 -->
+                <div class="empty-state" style="display: none;">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>새로운 알림이 없습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 알림 읽음 표시
+        function markAsRead(element) {
+            const notificationItem = element.closest('.notification-item');
+            notificationItem.classList.remove('unread');
+            
+            // 읽음 버튼을 삭제 버튼으로 변경
+            element.innerHTML = '<i class="fas fa-trash"></i>';
+            element.onclick = function() {
+                deleteNotification(this);
+            };
+            
+            // 실제 구현에서는 서버에 읽음 상태 업데이트 API 호출
+            console.log('알림을 읽음으로 표시');
+        }
+        
+        // 알림 삭제
+        function deleteNotification(element) {
+            const notificationItem = element.closest('.notification-item');
+            notificationItem.style.height = notificationItem.offsetHeight + 'px';
+            
+            // 애니메이션 효과로 삭제
+            setTimeout(() => {
+                notificationItem.style.height = '0';
+                notificationItem.style.padding = '0';
+                notificationItem.style.opacity = '0';
+                notificationItem.style.overflow = 'hidden';
+                notificationItem.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    notificationItem.remove();
+                    
+                    // 알림이 모두 삭제되었는지 확인
+                    if (document.querySelectorAll('.notification-item').length === 0) {
+                        document.querySelector('.empty-state').style.display = 'block';
+                    }
+                }, 300);
+            }, 10);
+            
+            // 실제 구현에서는 서버에 알림 삭제 API 호출
+            console.log('알림 삭제');
+        }
+        
+        // 모두 읽음 표시 버튼 클릭 이벤트
+        document.getElementById('readAllBtn').addEventListener('click', function() {
+            const unreadItems = document.querySelectorAll('.notification-item.unread');
+            unreadItems.forEach(item => {
+                item.classList.remove('unread');
+                
+                // 읽음 버튼을 삭제 버튼으로 변경
+                const actionBtn = item.querySelector('.notification-action');
+                actionBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                actionBtn.onclick = function() {
+                    deleteNotification(this);
+                };
+            });
+            
+            // 실제 구현에서는 서버에 모든 알림 읽음 상태 업데이트 API 호출
+            console.log('모든 알림을 읽음으로 표시');
+        });
+        
+        // 필터 탭 클릭 이벤트
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 모든 탭 비활성화
+                document.querySelectorAll('.filter-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // 클릭한 탭 활성화
+                this.classList.add('active');
+                
+                // 필터 적용
+                const filter = this.dataset.filter;
+                filterNotifications(filter);
+            });
+        });
+        
+        // 알림 필터링 함수
+        function filterNotifications(filter) {
+            const items = document.querySelectorAll('.notification-item');
+            
+            items.forEach(item => {
+                if (filter === 'all' || item.dataset.type === filter) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 표시된 알림이 없는 경우 빈 상태 표시
+            const visibleItems = document.querySelectorAll('.notification-item[style="display: flex;"]');
+            if (visibleItems.length === 0) {
+                document.querySelector('.empty-state').style.display = 'block';
+            } else {
+                document.querySelector('.empty-state').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

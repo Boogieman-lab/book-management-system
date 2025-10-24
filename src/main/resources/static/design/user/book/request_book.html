@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boogieman - 희망도서 신청</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #E8F5E9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 50px;
+            margin-right: 15px;
+        }
+        
+        h1 {
+            color: #00796B;
+            font-size: 24px;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #66BB6A;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .user-name {
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item:hover {
+            background-color: #E8F5E9;
+        }
+        
+        .menu-item.active {
+            background-color: #00796B;
+            color: white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .page-title {
+            color: #00796B;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title i {
+            margin-right: 10px;
+        }
+        
+        .form-container {
+            max-width: 800px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #66BB6A;
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #66BB6A;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #00796B;
+        }
+        
+        .btn-secondary {
+            background-color: #ccc;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #999;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-warning {
+            background-color: #FFF3E0;
+            color: #E65100;
+            border: 1px solid #FFE0B2;
+        }
+        
+        .alert-success {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #C8E6C9;
+        }
+        
+        .tab-container {
+            margin-top: 30px;
+        }
+        
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-right: 10px;
+            font-weight: 500;
+        }
+        
+        .tab-item.active {
+            border-bottom-color: #00796B;
+            color: #00796B;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .request-list {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .request-list th,
+        .request-list td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .request-list th {
+            background-color: #f9f9f9;
+            font-weight: 500;
+        }
+        
+        .request-list tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+        
+        .status-approved {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .status-rejected {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <img src="../../../images/logo.png" alt="부기맨 로고" class="logo">
+                <h1>Boogieman</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-profile">홍</div>
+                <span class="user-name">홍길동님</span>
+                <a href="/logout" class="btn btn-secondary">로그아웃</a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <a href="/book/list" class="menu-item">
+                    <i class="fas fa-book"></i> 도서 목록
+                </a>
+                <a href="/book/request" class="menu-item active">
+                    <i class="fas fa-file-alt"></i> 희망도서 신청
+                </a>
+                <a href="/loan/mypage" class="menu-item">
+                    <i class="fas fa-user"></i> 마이페이지
+                </a>
+                <a href="/loan/reserve" class="menu-item">
+                    <i class="fas fa-bookmark"></i> 예약 현황
+                </a>
+                <a href="/notice/list" class="menu-item">
+                    <i class="fas fa-bullhorn"></i> 공지사항
+                </a>
+                <a href="/notice/notification" class="menu-item">
+                    <i class="fas fa-bell"></i> 알림
+                </a>
+                <a href="/about" class="menu-item">
+                    <i class="fas fa-info-circle"></i> 소개
+                </a>
+            </div>
+            
+            <div class="content">
+                <h2 class="page-title">
+                    <i class="fas fa-file-alt"></i> 희망도서 신청
+                </h2>
+                
+                <div class="tab-container">
+                    <div class="tab-header">
+                        <div class="tab-item active" data-tab="new-request">신청하기</div>
+                        <div class="tab-item" data-tab="request-history">신청 내역</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="new-request">
+                        <div class="form-container">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-circle"></i> 신청 전 도서 목록에서 중복 여부를 확인해주세요.
+                            </div>
+                            
+                            <form id="requestForm">
+                                <div class="form-group">
+                                    <label for="bookTitle">도서명 *</label>
+                                    <input type="text" id="bookTitle" name="bookTitle" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="author">저자 *</label>
+                                    <input type="text" id="author" name="author" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="publisher">출판사 *</label>
+                                    <input type="text" id="publisher" name="publisher" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="isbn">ISBN</label>
+                                    <input type="text" id="isbn" name="isbn" placeholder="예: 9788956746425">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="reason">신청 사유 *</label>
+                                    <textarea id="reason" name="reason" required placeholder="도서가 필요한 이유를 간략히 작성해주세요."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn">신청하기</button>
+                                    <button type="reset" class="btn btn-secondary">초기화</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="request-history">
+                        <div class="search-bar">
+                            <input type="text" placeholder="도서명 또는 저자 검색">
+                            <button class="btn">검색</button>
+                        </div>
+                        
+                        <table class="request-list">
+                            <thead>
+                                <tr>
+                                    <th>신청일</th>
+                                    <th>도서명</th>
+                                    <th>저자</th>
+                                    <th>출판사</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023-06-15</td>
+                                    <td>클린 코드</td>
+                                    <td>로버트 C. 마틴</td>
+                                    <td>인사이트</td>
+                                    <td><span class="status status-approved">승인됨</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-06-10</td>
+                                    <td>객체지향의 사실과 오해</td>
+                                    <td>조영호</td>
+                                    <td>위키북스</td>
+                                    <td><span class="status status-pending">승인 대기</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-05-28</td>
+                                    <td>리팩터링 2판</td>
+                                    <td>마틴 파울러</td>
+                                    <td>한빛미디어</td>
+                                    <td><span class="status status-rejected">거절됨</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 탭 전환 기능
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 모든 탭 비활성화
+                document.querySelectorAll('.tab-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 모든 탭 콘텐츠 숨기기
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // 클릭한 탭 활성화
+                this.classList.add('active');
+                
+                // 해당 탭 콘텐츠 표시
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 폼 제출 처리
+        document.getElementById('requestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const bookTitle = document.getElementById('bookTitle').value;
+            const author = document.getElementById('author').value;
+            const publisher = document.getElementById('publisher').value;
+            const isbn = document.getElementById('isbn').value;
+            
+            // 중복 도서 확인 API 호출 (실제 구현 필요)
+            checkDuplicateBook(bookTitle, author, isbn)
+                .then(isDuplicate => {
+                    if (isDuplicate) {
+                        alert('이미 보유 중인 도서입니다. 도서 목록을 확인해주세요.');
+                    } else {
+                        // 폼 제출 처리 (실제 구현 필요)
+                        submitRequestForm();
+                    }
+                });
+        });
+        
+        // 중복 도서 확인 함수 (실제 구현 필요)
+        function checkDuplicateBook(title, author, isbn) {
+            // 실제로는 서버에 API 요청을 보내야 함
+            return new Promise(resolve => {
+                // 임시 구현: 5%의 확률로 중복 도서로 판단
+                const isDuplicate = Math.random() < 0.05;
+                setTimeout(() => resolve(isDuplicate), 500);
+            });
+        }
+        
+        // 폼 제출 함수 (실제 구현 필요)
+        function submitRequestForm() {
+            // 실제로는 서버에 API 요청을 보내야 함
+            setTimeout(() => {
+                alert('희망도서 신청이 완료되었습니다.');
+                document.getElementById('requestForm').reset();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

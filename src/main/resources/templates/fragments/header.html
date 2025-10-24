@@ -1,0 +1,21 @@
+<div th:fragment="header">
+    <header class="bm-header">
+        <div class="logo-section">
+            <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+<!--                <img src="../../static/images/logo.png" alt="부기맨 로고" class="logo">-->
+                <img th:src="@{/images/logo.png}" alt="부기맨 로고" class="logo">
+                <h1>Boogieman</h1>
+            </a>
+        </div>
+
+        <!-- 햄버거 버튼 -->
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+        <div class="user-section" id="userSection">
+            <div class="user-profile" th:text="${#strings.substring(session?.userName?:'G',0,1)}">U</div>
+            <span class="user-name" th:text="${session?.userName?:'게스트'}">게스트</span>
+            <a href="/logout" class="bm-btn" th:if="${session?.userName}">로그아웃</a>
+            <a href="../user/auth/login.html" class="bm-btn" th:unless="${session?.userName}">로그인</a>
+        </div>
+    </header>
+</div>

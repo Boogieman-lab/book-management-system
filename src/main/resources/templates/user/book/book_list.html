@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,117 +10,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
             font-family: 'Noto Sans KR', sans-serif;
         }
-        
+
         body {
             background-color: #E8F5E9;
             color: #333;
             line-height: 1.6;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .logo-section {
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo {
-            width: 50px;
-            margin-right: 15px;
-        }
-        
-        h1 {
-            color: #00796B;
-            font-size: 24px;
-        }
-        
-        .user-section {
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-profile {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #66BB6A;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        
-        .user-name {
-            margin-right: 15px;
-        }
-        
-        .main-content {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .sidebar {
-            width: 250px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-        
-        .menu-item:hover {
-            background-color: #E8F5E9;
-        }
-        
-        .menu-item.active {
-            background-color: #00796B;
-            color: white;
-        }
-        
-        .menu-item i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
+
         .content {
             flex: 1;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 30px;
+            margin-bottom: 20px;
         }
-        
+
         .page-title {
             color: #00796B;
             margin-bottom: 20px;
@@ -126,32 +36,18 @@
             display: flex;
             align-items: center;
         }
-        
+
         .page-title i {
             margin-right: 10px;
         }
-        
+
         .search-filter-section {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             margin-bottom: 30px;
         }
-        
-        .search-bar {
-            flex: 1;
-            min-width: 300px;
-            display: flex;
-        }
-        
-        .search-bar input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
-            font-size: 16px;
-        }
-        
+
         .search-bar button {
             padding: 12px 20px;
             background-color: #66BB6A;
@@ -161,17 +57,17 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        
+
         .search-bar button:hover {
             background-color: #00796B;
         }
-        
+
         .filter-section {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-        
+
         .filter-item {
             padding: 8px 15px;
             background-color: #f5f5f5;
@@ -180,12 +76,12 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        
+
         .filter-item:hover, .filter-item.active {
             background-color: #E8F5E9;
             color: #00796B;
         }
-        
+
         .book-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -193,6 +89,20 @@
             margin-bottom: 30px;
         }
         
+        /* 검색 결과 없음 표시 */
+        .empty-state {
+            display: none; /* 기본은 숨김, JS/Thymeleaf로 제어 */
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px dashed #CFD8DC;
+            background: #FAFAFA;
+            color: #607D8B;
+            font-size: 16px;
+        }
+
         .book-card {
             background-color: #fff;
             border-radius: 8px;
@@ -201,12 +111,12 @@
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
-        
+
         .book-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        
+
         .book-cover {
             height: 200px;
             background-color: #f0f0f0;
@@ -216,52 +126,52 @@
             color: #999;
             font-size: 40px;
         }
-        
+
         .book-cover img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .book-info {
             padding: 15px;
         }
-        
+
         .book-title {
             font-weight: 500;
             margin-bottom: 5px;
             font-size: 16px;
             color: #333;
         }
-        
+
         .book-author {
             font-size: 14px;
             color: #666;
             margin-bottom: 10px;
         }
-        
+
         .book-status {
             font-size: 13px;
             padding: 3px 8px;
             border-radius: 10px;
             display: inline-block;
         }
-        
+
         .status-available {
             background-color: #E8F5E9;
             color: #2E7D32;
         }
-        
+
         .status-unavailable {
             background-color: #FFEBEE;
             color: #C62828;
         }
-        
+
         .popular-section {
             margin-top: 40px;
             margin-bottom: 30px;
         }
-        
+
         .section-title {
             font-size: 20px;
             color: #00796B;
@@ -269,33 +179,33 @@
             display: flex;
             align-items: center;
         }
-        
+
         .section-title i {
             margin-right: 10px;
         }
-        
+
         .popular-books {
             display: flex;
             gap: 20px;
             overflow-x: auto;
             padding-bottom: 20px;
         }
-        
+
         .popular-book {
             min-width: 150px;
             max-width: 150px;
         }
-        
+
         .pagination {
             display: flex;
             justify-content: center;
             margin-top: 30px;
         }
-        
+
         .page-item {
             margin: 0 5px;
         }
-        
+
         .page-link {
             display: block;
             padding: 8px 12px;
@@ -305,274 +215,394 @@
             text-decoration: none;
             transition: background-color 0.3s;
         }
-        
+
         .page-link:hover, .page-item.active .page-link {
             background-color: #66BB6A;
             color: white;
         }
-        
+
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
             }
-            
-            .sidebar {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-            
+
+            /*.sidebar {*/
+            /*    width: 100%;*/
+            /*    margin-bottom: 20px;*/
+            /*}*/
+
             .content {
                 padding: 20px;
             }
-            
+
             .book-grid {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
         }
+        /* 베스트 도서 Top 30 슬라이더 */
+        .best-section { margin-bottom: 24px; overflow: hidden; }
+        .best-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+        .best-title { font-size:20px; color:#00796B; display:flex; align-items:center; }
+        .best-title i { margin-right:8px; }
+        .best-slider { position:relative; }
+        .best-viewport { overflow:hidden; padding: 8px 0; min-width: 0;}
+        .best-track { display:flex; gap:16px; transition:transform .35s ease; will-change:transform; padding:8px 2px; }
+        .best-item { width:150px; flex:0 0 150px; }
+        .best-card { position:relative; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden; transition: transform 0.3s, box-shadow 0.3s; }
+        .best-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .best-cover { height:190px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:36px; }
+        .best-info { padding:10px; }
+        .best-title-text { font-size:14px; font-weight:500; color:#333; margin-bottom:4px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .best-author { font-size:13px; color:#666; }
+        .rank-badge { position:absolute; top:6px; left:6px; background:#2E7D32; color:#fff; width:26px; height:26px; border-radius:4px; font-size:13px; display:flex; align-items:center; justify-content:center; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+        .ebook-badge { position:absolute; top:6px; right:6px; background:#E8F5E9; color:#2E7D32; padding:2px 6px; border-radius:10px; font-size:11px; border:1px solid #C8E6C9; }
+        .best-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+        .best-btn { padding:8px 12px; background:#fff; border:1px solid #ddd; color:#00796B; border-radius:6px; cursor:pointer; }
+        .best-btn:hover { background:#E8F5E9; }
+        .best-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+        /* 슬라이더 반응형 */
+        @media (max-width: 1200px) {
+            .best-item { width:140px; flex:0 0 140px; }
+            .best-cover { height:180px; }
+        }
+        @media (max-width: 992px) {
+            .best-item { width:135px; flex:0 0 135px; }
+            .best-cover { height:175px; }
+        }
+        @media (max-width: 768px) {
+            .best-item { width:130px; flex:0 0 130px; }
+            .best-cover { height:170px; }
+            /*.nav-btn { width: 32px; height: 32px; }*/
+        }
+        @media (max-width: 576px) {
+            .best-item { width:120px; flex:0 0 120px; }
+            .best-cover { height:160px; }
+        }
+
+        main {
+            min-width: 0; /* 핵심: Grid/Slider가 부모를 밀지 못하도록 */
+        }
+
+        .search-bar {
+            display: flex;
+            flex: 1;
+            min-width: 300px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden; /* 경계 자연스러움 핵심 */
+        }
+
+        /* Select, Input, Button 공통 */
+        .search-select,
+        .search-bar input,
+        .search-bar button {
+            border: none;
+            outline: none;
+            transition: background-color .2s ease, box-shadow .2s ease;
+        }
+
+        /* Select 박스 */
+        .search-select {
+            padding: 12px 10px;
+            cursor: pointer;
+            min-width: 110px;
+            border-right: 1px solid #eee; /* 아주 약한 구분선 */
+        }
+
+        /* Input */
+        .search-bar input {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 16px;
+        }
+
+        /* 버튼 */
+        .search-bar button {
+            padding: 12px 20px;
+            background-color: #66BB6A;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Hover & Focus 효과 */
+        .search-select:hover,
+        .search-bar input:hover {
+            background-color: #f7fdf8;
+        }
+
+        .search-select:focus,
+        .search-bar input:focus {
+            background-color: #f0fbf3;
+            box-shadow: inset 0 0 0 2px #66BB6A; /* Focus 시 강조 */
+        }
+
+        /* 버튼 hover */
+        .search-bar button:hover {
+            background-color: #00796B;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo-section">
-                <img src="../../../static/images/logo.png" alt="부기맨 로고" class="logo">
-                <h1>Boogieman</h1>
+<main layout:fragment="content" th:with="activeMenu='books'">
+    <h2 class="page-title">
+        <i class="fas fa-book"></i> 도서 목록
+    </h2>
+
+    <!-- 베스트 도서 Top 30 슬라이더 -->
+    <div class="content">
+        <div class="best-section">
+            <div class="best-header">
+                <h3 class="best-title"><i class="fas fa-crown"></i> 베스트 도서 Top 30</h3>
             </div>
-            <div class="user-section">
-                <div class="user-profile">홍</div>
-                <span class="user-name">홍길동님</span>
-                <a href="/logout" class="btn btn-secondary">로그아웃</a>
-            </div>
-        </header>
-        
-        <div class="main-content">
-            <div class="sidebar">
-                <a href="/book/list" class="menu-item active">
-                    <i class="fas fa-book"></i> 도서 목록
-                </a>
-                <a href="/book/request" class="menu-item">
-                    <i class="fas fa-file-alt"></i> 희망도서 신청
-                </a>
-                <a href="/loan/mypage" class="menu-item">
-                    <i class="fas fa-user"></i> 마이페이지
-                </a>
-                <a href="/loan/reserve" class="menu-item">
-                    <i class="fas fa-bookmark"></i> 예약 현황
-                </a>
-                <a href="/notice/list" class="menu-item">
-                    <i class="fas fa-bullhorn"></i> 공지사항
-                </a>
-                <a href="/notice/notification" class="menu-item">
-                    <i class="fas fa-bell"></i> 알림
-                </a>
-                <a href="/about" class="menu-item">
-                    <i class="fas fa-info-circle"></i> 소개
-                </a>
-            </div>
-            
-            <div class="content">
-                <h2 class="page-title">
-                    <i class="fas fa-book"></i> 도서 목록
-                </h2>
-                
-                <div class="search-filter-section">
-                    <div class="search-bar">
-                        <input type="text" placeholder="도서명, 저자, 출판사, ISBN 검색">
-                        <button><i class="fas fa-search"></i></button>
-                    </div>
-                    
-                    <div class="filter-section">
-                        <div class="filter-item active">전체</div>
-                        <div class="filter-item">대출 가능</div>
-                        <div class="filter-item">인기순</div>
-                        <div class="filter-item">최신순</div>
-                        <div class="filter-item">가나다순</div>
+            <div class="best-slider">
+                <div class="best-viewport">
+                    <div class="best-track" id="bestTrack">
+                        <!-- JS로 30개 항목을 렌더링합니다 -->
                     </div>
                 </div>
-                
-                <div class="book-grid">
-                    <!-- 도서 카드 1 -->
-                    <div class="book-card" onclick="location.href='/book/detail/1'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">클린 코드</h3>
-                            <p class="book-author">로버트 C. 마틴</p>
-                            <span class="book-status status-unavailable">대출 중</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 도서 카드 2 -->
-                    <div class="book-card" onclick="location.href='/book/detail/2'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">객체지향의 사실과 오해</h3>
-                            <p class="book-author">조영호</p>
-                            <span class="book-status status-available">대출 가능</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 도서 카드 3 -->
-                    <div class="book-card" onclick="location.href='/book/detail/3'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">리팩터링 2판</h3>
-                            <p class="book-author">마틴 파울러</p>
-                            <span class="book-status status-available">대출 가능</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 도서 카드 4 -->
-                    <div class="book-card" onclick="location.href='/book/detail/4'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
-                            <p class="book-author">이웅모</p>
-                            <span class="book-status status-unavailable">대출 중</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 도서 카드 5 -->
-                    <div class="book-card" onclick="location.href='/book/detail/5'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">함께 자라기</h3>
-                            <p class="book-author">김창준</p>
-                            <span class="book-status status-available">대출 가능</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 도서 카드 6 -->
-                    <div class="book-card" onclick="location.href='/book/detail/6'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">토비의 스프링 3.1</h3>
-                            <p class="book-author">이일민</p>
-                            <span class="book-status status-unavailable">대출 중</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 도서 카드 7 -->
-                    <div class="book-card" onclick="location.href='/book/detail/7'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">클린 아키텍처</h3>
-                            <p class="book-author">로버트 C. 마틴</p>
-                            <span class="book-status status-available">대출 가능</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 도서 카드 8 -->
-                    <div class="book-card" onclick="location.href='/book/detail/8'">
-                        <div class="book-cover">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="book-info">
-                            <h3 class="book-title">도메인 주도 설계</h3>
-                            <p class="book-author">에릭 에반스</p>
-                            <span class="book-status status-unavailable">대출 중</span>
-                        </div>
-                    </div>
+            </div>
+            <div class="best-footer">
+                <button class="best-btn" id="bestPrevBottom"><i class="fas fa-chevron-left"></i> 이전</button>
+                <button class="best-btn" id="bestNextBottom">다음 <i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-filter-section">
+        <div class="search-bar">
+            <select class="search-select">
+                <option value="title">제목</option>
+                <option value="author">저자</option>
+                <option value="publisher">출판사</option>
+                <option value="isbn">ISBN</option>
+            </select>
+
+            <input type="text" placeholder="도서명, 저자, 출판사, ISBN 검색">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-item active">전체</div>
+            <div class="filter-item">대출 가능</div>
+            <div class="filter-item">인기순</div>
+            <div class="filter-item">최신순</div>
+            <div class="filter-item">가나다순</div>
+        </div>
+    </div>
+
+    <div class="book-grid">
+        <!-- 도서 카드 1 -->
+        <div class="book-card" onclick="location.href='/book/detail/1'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">클린 코드</h3>
+                <p class="book-author">로버트 C. 마틴</p>
+                <span class="book-status status-unavailable">대출 중</span>
+            </div>
+        </div>
+
+        <!-- 도서 카드 2 -->
+        <div class="book-card" onclick="location.href='/book/detail/2'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">객체지향의 사실과 오해</h3>
+                <p class="book-author">조영호</p>
+                <span class="book-status status-available">대출 가능</span>
+            </div>
+        </div>
+
+        <!-- 도서 카드 3 -->
+        <div class="book-card" onclick="location.href='/book/detail/3'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">리팩터링 2판</h3>
+                <p class="book-author">마틴 파울러</p>
+                <span class="book-status status-available">대출 가능</span>
+            </div>
+        </div>
+
+        <!-- 도서 카드 4 -->
+        <div class="book-card" onclick="location.href='/book/detail/4'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
+                <p class="book-author">이웅모</p>
+                <span class="book-status status-unavailable">대출 중</span>
+            </div>
+        </div>
+
+        <!-- 도서 카드 5 -->
+        <div class="book-card" onclick="location.href='/book/detail/5'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">함께 자라기</h3>
+                <p class="book-author">김창준</p>
+                <span class="book-status status-available">대출 가능</span>
+            </div>
+        </div>
+
+        <!-- 도서 카드 6 -->
+        <div class="book-card" onclick="location.href='/book/detail/6'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">토비의 스프링 3.1</h3>
+                <p class="book-author">이일민</p>
+                <span class="book-status status-unavailable">대출 중</span>
+            </div>
+        </div>
+
+        <!-- 도서 카드 7 -->
+        <div class="book-card" onclick="location.href='/book/detail/7'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">클린 아키텍처</h3>
+                <p class="book-author">로버트 C. 마틴</p>
+                <span class="book-status status-available">대출 가능</span>
+            </div>
+        </div>
+
+        <!-- 도서 카드 8 -->
+        <div class="book-card" onclick="location.href='/book/detail/8'">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">도메인 주도 설계</h3>
+                <p class="book-author">에릭 에반스</p>
+                <span class="book-status status-unavailable">대출 중</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 검색 결과 없음 상태 영역 -->
+    <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
+    
+    <div class="popular-section">
+        <h3 class="section-title">
+            <i class="fas fa-star"></i> 인기 도서 추천
+        </h3>
+
+        <div class="popular-books">
+            <!-- 인기 도서 1 -->
+            <div class="book-card popular-book" onclick="location.href='/book/detail/1'">
+                <div class="book-cover">
+                    <i class="fas fa-book"></i>
                 </div>
-                
-                <div class="popular-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-star"></i> 인기 도서 추천
-                    </h3>
-                    
-                    <div class="popular-books">
-                        <!-- 인기 도서 1 -->
-                        <div class="book-card popular-book" onclick="location.href='/book/detail/1'">
-                            <div class="book-cover">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="book-info">
-                                <h3 class="book-title">클린 코드</h3>
-                                <p class="book-author">로버트 C. 마틴</p>
-                            </div>
-                        </div>
-                        
-                        <!-- 인기 도서 2 -->
-                        <div class="book-card popular-book" onclick="location.href='/book/detail/5'">
-                            <div class="book-cover">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="book-info">
-                                <h3 class="book-title">함께 자라기</h3>
-                                <p class="book-author">김창준</p>
-                            </div>
-                        </div>
-                        
-                        <!-- 인기 도서 3 -->
-                        <div class="book-card popular-book" onclick="location.href='/book/detail/4'">
-                            <div class="book-cover">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="book-info">
-                                <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
-                                <p class="book-author">이웅모</p>
-                            </div>
-                        </div>
-                        
-                        <!-- 인기 도서 4 -->
-                        <div class="book-card popular-book" onclick="location.href='/book/detail/2'">
-                            <div class="book-cover">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="book-info">
-                                <h3 class="book-title">객체지향의 사실과 오해</h3>
-                                <p class="book-author">조영호</p>
-                            </div>
-                        </div>
-                        
-                        <!-- 인기 도서 5 -->
-                        <div class="book-card popular-book" onclick="location.href='/book/detail/7'">
-                            <div class="book-cover">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="book-info">
-                                <h3 class="book-title">클린 아키텍처</h3>
-                                <p class="book-author">로버트 C. 마틴</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="book-info">
+                    <h3 class="book-title">클린 코드</h3>
+                    <p class="book-author">로버트 C. 마틴</p>
                 </div>
-                
-                <div class="pagination">
-                    <div class="page-item">
-                        <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
-                    </div>
-                    <div class="page-item active">
-                        <a href="#" class="page-link">1</a>
-                    </div>
-                    <div class="page-item">
-                        <a href="#" class="page-link">2</a>
-                    </div>
-                    <div class="page-item">
-                        <a href="#" class="page-link">3</a>
-                    </div>
-                    <div class="page-item">
-                        <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
-                    </div>
+            </div>
+
+            <!-- 인기 도서 2 -->
+            <div class="book-card popular-book" onclick="location.href='/book/detail/5'">
+                <div class="book-cover">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">함께 자라기</h3>
+                    <p class="book-author">김창준</p>
+                </div>
+            </div>
+
+            <!-- 인기 도서 3 -->
+            <div class="book-card popular-book" onclick="location.href='/book/detail/4'">
+                <div class="book-cover">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
+                    <p class="book-author">이웅모</p>
+                </div>
+            </div>
+
+            <!-- 인기 도서 4 -->
+            <div class="book-card popular-book" onclick="location.href='/book/detail/2'">
+                <div class="book-cover">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">객체지향의 사실과 오해</h3>
+                    <p class="book-author">조영호</p>
+                </div>
+            </div>
+
+            <!-- 인기 도서 5 -->
+            <div class="book-card popular-book" onclick="location.href='/book/detail/7'">
+                <div class="book-cover">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">클린 아키텍처</h3>
+                    <p class="book-author">로버트 C. 마틴</p>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <div class="pagination">
+        <div class="page-item">
+            <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
+        </div>
+        <div class="page-item active">
+            <a href="#" class="page-link">1</a>
+        </div>
+        <div class="page-item">
+            <a href="#" class="page-link">2</a>
+        </div>
+        <div class="page-item">
+            <a href="#" class="page-link">3</a>
+        </div>
+        <div class="page-item">
+            <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
+        </div>
+    </div>
+
     <script>
+        // 검색 입력/버튼으로 그리드 필터링 및 빈 상태 표시
+        const searchInput = document.querySelector('.search-bar input');
+        const searchBtn = document.querySelector('.search-bar button');
+        const emptyStateEl = document.getElementById('emptyState');
+        const bookGridEl = document.querySelector('.book-grid');
+        
+        function applySearchFilter() {
+            const q = (searchInput?.value || '').trim().toLowerCase();
+            const cards = document.querySelectorAll('.book-grid .book-card');
+            let visible = 0;
+            cards.forEach(card => {
+                const title = card.querySelector('.book-title')?.textContent.toLowerCase() || '';
+                const author = card.querySelector('.book-author')?.textContent.toLowerCase() || '';
+                const show = q === '' || title.includes(q) || author.includes(q);
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            // 빈 결과 상태/그리드 표시 토글
+            if (emptyStateEl) emptyStateEl.style.display = visible === 0 ? 'flex' : 'none';
+            if (bookGridEl) bookGridEl.style.display = visible === 0 ? 'none' : '';
+        }
+        
+        searchBtn?.addEventListener('click', applySearchFilter);
+        searchInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') applySearchFilter();
+        });
+        
         // 필터 아이템 클릭 이벤트
         document.querySelectorAll('.filter-item').forEach(item => {
             item.addEventListener('click', function() {
@@ -580,25 +610,129 @@
                 document.querySelectorAll('.filter-item').forEach(filter => {
                     filter.classList.remove('active');
                 });
-                
+
                 // 클릭한 필터 아이템 활성화
                 this.classList.add('active');
-                
+
                 // 실제 구현에서는 여기에 필터링 로직 추가
                 const filterType = this.textContent;
                 console.log('필터 적용:', filterType);
-                
+
                 // 예시: 필터에 따라 도서 목록 업데이트 (실제 구현 필요)
                 filterBooks(filterType);
             });
         });
-        
+
         // 도서 필터링 함수 (실제 구현 필요)
         function filterBooks(filterType) {
             // 실제로는 서버에 API 요청을 보내거나 클라이언트 측에서 필터링
             // 이 예시에서는 콘솔에 로그만 출력
             console.log(`${filterType} 기준으로 도서 목록 필터링`);
         }
+        // 베스트 도서 Top 30 데이터 (샘플)
+        const bestBooks = Array.from({ length: 30 }, (_, i) => ({
+            rank: i + 1,
+            title: [
+                '저스비 생활','박곰곰 연금 부자 수업','행동하지 않으면 인생은 바뀌지 않는다','긴지 지방의 어느 장소에 대하여','잠미와 나이프','다정한 사람이 이긴다',
+                '위버멘쉬','데일 카네기 인간관계론','돈의 심리학','고전이 답했다','머니 트렌드 2026','작은 습관의 힘',
+                '원씽','부의 인문학','트렌드 코리아','아주 작은 습관의 힘','부의 추월차선','부의 감각',
+                '부자 아빠 가난한 아빠','누구나 1등이 될 수 있다','최고의 변명','어떻게 살 것인가','미움받을 용기','나는 나로 살기로 했다',
+                '원칙','일의 기쁨과 슬픔','정의란 무엇인가','데이터 분석의 힘','소크라테스 익스프레스','클린 코드'
+            ][i % 30],
+            author: ['가제노타미','박곰곰','브라이언 트레이시','셰즈키','하가시노 게이고','이해인'][i % 6],
+            isEbook: i % 3 === 0
+        }));
+
+        function renderBest() {
+            const track = document.getElementById('bestTrack');
+            track.innerHTML = bestBooks.map(b => `
+                <div class="best-item">
+                    <div class="best-card" onclick="location.href='/book/detail/${b.rank}'">
+                        <div class="rank-badge">${b.rank}</div>
+                        ${b.isEbook ? '<div class="ebook-badge">전자책</div>' : ''}
+                        <div class="best-cover"><i class="fas fa-book"></i></div>
+                        <div class="best-info">
+                            <div class="best-title-text">${b.title}</div>
+                            <div class="best-author">${b.author}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initBestSlider() {
+            const viewport = document.querySelector('.best-viewport');
+            const track = document.getElementById('bestTrack');
+            // const prev = document.getElementById('bestPrev');
+            // const next = document.getElementById('bestNext');
+            const prevBottom = document.getElementById('bestPrevBottom');
+            const nextBottom = document.getElementById('bestNextBottom');
+
+            const PAGE_SIZE = 8; // 최대 8개씩
+            let currentIndex = 0; // 페이지 인덱스
+            let itemFullWidth = 166; // item width 150 + gap 16 (default)
+            let itemsPerPage = PAGE_SIZE; // 화면 너비에 맞춰 조정
+            let maxIndex = 0; // 마지막 페이지 인덱스
+
+            const recompute = () => {
+                const firstItem = track.querySelector('.best-item');
+                if (firstItem) {
+                    const style = getComputedStyle(track);
+                    const gap = parseInt(style.columnGap || style.gap || '16', 10);
+                    itemFullWidth = firstItem.offsetWidth + gap;
+                }
+
+                // 화면 너비에 맞게 페이지당 아이템 수 계산 (최대 8)
+                itemsPerPage = Math.max(1, Math.min(PAGE_SIZE, Math.floor(viewport.clientWidth / itemFullWidth)));
+
+                // 총 페이지 계산
+                const totalPages = Math.ceil(bestBooks.length / itemsPerPage);
+                maxIndex = Math.max(0, totalPages - 1);
+
+                // 현재 인덱스 조정
+                currentIndex = Math.min(currentIndex, maxIndex);
+
+                update();
+            };
+
+            const update = () => {
+                const offset = currentIndex * itemFullWidth * itemsPerPage;
+                track.style.transform = `translateX(-${offset}px)`;
+
+                const atStart = currentIndex === 0;
+                const atEnd = currentIndex >= maxIndex;
+
+                [/*prev, */prevBottom].forEach(btn => { if (btn) { btn.disabled = atStart; btn.style.opacity = atStart ? '0.5' : '1'; btn.style.cursor = atStart ? 'not-allowed' : 'pointer'; } });
+                [/*next, */nextBottom].forEach(btn => { if (btn) { btn.disabled = atEnd; btn.style.opacity = atEnd ? '0.5' : '1'; btn.style.cursor = atEnd ? 'not-allowed' : 'pointer'; } });
+            };
+
+            const goPrev = () => {
+                if (currentIndex > 0) {
+                    currentIndex = Math.max(0, currentIndex - 1);
+                    update();
+                }
+            };
+            const goNext = () => {
+                if (currentIndex < maxIndex) {
+                    currentIndex = Math.min(maxIndex, currentIndex + 1);
+                    update();
+                }
+            };
+
+            // 버튼 이벤트
+            // prev.addEventListener('click', goPrev);
+            // next.addEventListener('click', goNext);
+            if (prevBottom) prevBottom.addEventListener('click', goPrev);
+            if (nextBottom) nextBottom.addEventListener('click', goNext);
+
+            window.addEventListener('resize', recompute);
+            recompute();
+        }
+
+        // 초기화
+        renderBest();
+        initBestSlider();
     </script>
+</main>
 </body>
 </html>

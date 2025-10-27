@@ -88,6 +88,20 @@
             gap: 20px;
             margin-bottom: 30px;
         }
+        
+        /* 검색 결과 없음 표시 */
+        .empty-state {
+            display: none; /* 기본은 숨김, JS/Thymeleaf로 제어 */
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px dashed #CFD8DC;
+            background: #FAFAFA;
+            color: #607D8B;
+            font-size: 16px;
+        }
 
         .book-card {
             background-color: #fff;
@@ -477,6 +491,9 @@
         </div>
     </div>
 
+    <!-- 검색 결과 없음 상태 영역 -->
+    <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
+    
     <div class="popular-section">
         <h3 class="section-title">
             <i class="fas fa-star"></i> 인기 도서 추천
@@ -559,6 +576,33 @@
     </div>
 
     <script>
+        // 검색 입력/버튼으로 그리드 필터링 및 빈 상태 표시
+        const searchInput = document.querySelector('.search-bar input');
+        const searchBtn = document.querySelector('.search-bar button');
+        const emptyStateEl = document.getElementById('emptyState');
+        const bookGridEl = document.querySelector('.book-grid');
+        
+        function applySearchFilter() {
+            const q = (searchInput?.value || '').trim().toLowerCase();
+            const cards = document.querySelectorAll('.book-grid .book-card');
+            let visible = 0;
+            cards.forEach(card => {
+                const title = card.querySelector('.book-title')?.textContent.toLowerCase() || '';
+                const author = card.querySelector('.book-author')?.textContent.toLowerCase() || '';
+                const show = q === '' || title.includes(q) || author.includes(q);
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            // 빈 결과 상태/그리드 표시 토글
+            if (emptyStateEl) emptyStateEl.style.display = visible === 0 ? 'flex' : 'none';
+            if (bookGridEl) bookGridEl.style.display = visible === 0 ? 'none' : '';
+        }
+        
+        searchBtn?.addEventListener('click', applySearchFilter);
+        searchInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') applySearchFilter();
+        });
+        
         // 필터 아이템 클릭 이벤트
         document.querySelectorAll('.filter-item').forEach(item => {
             item.addEventListener('click', function() {

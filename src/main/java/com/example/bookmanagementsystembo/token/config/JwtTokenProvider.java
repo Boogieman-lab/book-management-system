@@ -1,7 +1,10 @@
 package com.example.bookmanagementsystembo.token.config;
 
 import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -13,7 +16,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
@@ -28,10 +31,9 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-
     public String createAccessToken(String email, Role role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
+        claims.put("role", role.name());
 
         Instant now = Instant.now();
         Instant expirationInstant = now.plusSeconds(jwtProperties.accessSec());
@@ -39,6 +41,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
+                .setId(UUID.randomUUID().toString())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expirationInstant))
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -51,6 +54,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(email)
+                .setId(UUID.randomUUID().toString())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expirationInstant))
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -60,6 +64,10 @@ public class JwtTokenProvider {
 
     public String getUsername(String refreshToken) {
         return getClaims(refreshToken).getSubject();
+    }
+
+    public String getJti(String token) {
+        return getClaims(token).getId();
     }
 
     public long getRefreshSec() {
@@ -75,15 +83,13 @@ public class JwtTokenProvider {
         }
     }
 
-    public long getRemainingTime(String accessToken) {
+    public long getRemainingTime(String token) {
         try {
-            Date expiration = getClaims(accessToken).getExpiration();
-            long now = new Date().getTime();
-
-            if (expiration.getTime() > now) {
-                return TimeUnit.MILLISECONDS.toSeconds(expiration.getTime() - now);
-            }
-            return 0;
+            Claims claims = getClaims(token);
+            long nowSec = Instant.now().getEpochSecond();
+            long expSec = claims.getExpiration().toInstant().getEpochSecond();
+            long remain = expSec - nowSec;
+            return Math.max(0, remain);
         } catch (Exception e) {
             return 0;
         }
@@ -96,4 +102,5 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 }

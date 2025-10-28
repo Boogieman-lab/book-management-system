@@ -25,20 +25,19 @@ public class TokenService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    private static final String BLACKLIST_PREFIX = "AT_BLACKLIST:";
+    private static final String BL_ACCESS_PREFIX = "bl:access:";
 
     private final UserRepository userRepository;
 
-    public CreateTokenDto issue(String userId) {
-        Users user = userRepository.findByEmail(userId)
-                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
+    public CreateTokenDto issue(String userEmail) {
+        Users user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userEmail));
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId);
-        long expirationSeconds = jwtTokenProvider.getRefreshSec();
+        String refreshToken = jwtTokenProvider.createRefreshToken(userEmail);
+        long expirationSec = jwtTokenProvider.getRefreshSec();
 
-
-        Token token = Token.create(userId, refreshToken, expirationSeconds);
+        Token token = Token.create(userEmail, refreshToken, expirationSec);
         tokenRepository.save(token);
 
         return CreateTokenDto.of(accessToken, refreshToken);
@@ -72,14 +71,21 @@ public class TokenService {
         tokenRepository.deleteById(userEmail);
 
         long remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
-
-        if (remainingTime > 0) {
-            redisTemplate.opsForValue().set(
-                    BLACKLIST_PREFIX + accessToken,
-                    "logout refresh token",
-                    remainingTime,
-                    TimeUnit.SECONDS // TTL 단위를 초로 설정
-            );
+        if(remainingTime <= 0) {
+            return;
         }
+
+        String jti = jwtTokenProvider.getJti(accessToken);
+
+        if(jti == null || jti.isBlank()) {
+            return;
+        }
+
+        redisTemplate.opsForValue().set(
+                BL_ACCESS_PREFIX + jti,
+                "logout",
+                remainingTime,
+                TimeUnit.SECONDS
+        );
     }
 }

@@ -1,4 +1,4 @@
 package com.example.bookmanagementsystembo.token.presentation.dto;
 
-public record TokenIssueReq(String userId) {
+public record TokenIssueReq(String userEmail) {
 }

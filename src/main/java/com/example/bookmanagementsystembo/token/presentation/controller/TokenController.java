@@ -23,7 +23,7 @@ public class TokenController {
 
     @PostMapping("/issue")
     public ResponseEntity<TokenRes> issueToken(@RequestBody TokenIssueReq req) {
-        CreateTokenDto createToken = tokenService.issue(req.userId());
+        CreateTokenDto createToken = tokenService.issue(req.userEmail());
         return ResponseEntity.ok(TokenRes.from(createToken));
     }
 

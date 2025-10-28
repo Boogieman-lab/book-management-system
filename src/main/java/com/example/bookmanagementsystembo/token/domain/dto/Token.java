@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -20,7 +21,7 @@ public class Token {
     private String userEmail;
     private String token;
     private LocalDateTime createdAt;
-    @TimeToLive
+    @TimeToLive(unit = TimeUnit.SECONDS)
     private Long expiration;
 
     public void updateToken(String newToken, Long newExpiration) {

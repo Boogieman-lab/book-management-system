@@ -250,12 +250,16 @@
         .best-item { width:150px; flex:0 0 150px; }
         .best-card { position:relative; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden; transition: transform 0.3s, box-shadow 0.3s; }
         .best-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
-        .best-cover { height:190px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:36px; }
+        .best-cover { position:relative; height:218px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:36px; overflow:hidden; }
+        .best-cover img { width:100%; height:100%; object-fit:cover; display:block; }
         .best-info { padding:10px; }
         .best-title-text { font-size:14px; font-weight:500; color:#333; margin-bottom:4px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
         .best-author { font-size:13px; color:#666; }
         .rank-badge { position:absolute; top:6px; left:6px; background:#2E7D32; color:#fff; width:26px; height:26px; border-radius:4px; font-size:13px; display:flex; align-items:center; justify-content:center; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.2); }
         .ebook-badge { position:absolute; top:6px; right:6px; background:#E8F5E9; color:#2E7D32; padding:2px 6px; border-radius:10px; font-size:11px; border:1px solid #C8E6C9; }
+        /* 표지 이미지를 담는 변형 */
+        .ebook-badge.image { position:absolute; top:6px; right:6px; width:120px; height:174px; padding:0; background:transparent; border:none; z-index:2; }
+        .ebook-badge.image img { width:100%; height:100%; object-fit:cover; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
         .best-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
         .best-btn { padding:8px 12px; background:#fff; border:1px solid #ddd; color:#00796B; border-radius:6px; cursor:pointer; }
         .best-btn:hover { background:#E8F5E9; }
@@ -629,18 +633,168 @@
             // 이 예시에서는 콘솔에 로그만 출력
             console.log(`${filterType} 기준으로 도서 목록 필터링`);
         }
-        // 베스트 도서 Top 30 데이터 (샘플)
-        const bestBooks = Array.from({ length: 30 }, (_, i) => ({
-            rank: i + 1,
-            title: [
-                '저스비 생활','박곰곰 연금 부자 수업','행동하지 않으면 인생은 바뀌지 않는다','긴지 지방의 어느 장소에 대하여','잠미와 나이프','다정한 사람이 이긴다',
-                '위버멘쉬','데일 카네기 인간관계론','돈의 심리학','고전이 답했다','머니 트렌드 2026','작은 습관의 힘',
-                '원씽','부의 인문학','트렌드 코리아','아주 작은 습관의 힘','부의 추월차선','부의 감각',
-                '부자 아빠 가난한 아빠','누구나 1등이 될 수 있다','최고의 변명','어떻게 살 것인가','미움받을 용기','나는 나로 살기로 했다',
-                '원칙','일의 기쁨과 슬픔','정의란 무엇인가','데이터 분석의 힘','소크라테스 익스프레스','클린 코드'
-            ][i % 30],
-            author: ['가제노타미','박곰곰','브라이언 트레이시','셰즈키','하가시노 게이고','이해인'][i % 6],
-            isEbook: i % 3 === 0
+
+        // API 응답 샘플 데이터를 기반으로 변환
+        const documents = [
+            {
+                "authors": ["김기수"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6052846%3Ftimestamp%3D20250716142640",
+                "title": "코딩 자율학습 HTML + CSS + 자바스크립트"
+            },
+            {
+                "authors": ["Savitch", "Mock"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3383739%3Ftimestamp%3D20190220072908",
+                "title": "Java"
+            },
+            {
+                "authors": ["Schildt Herbert"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3506724%3Ftimestamp%3D20230918205000",
+                "title": "Java"
+            },
+            {
+                "authors": ["Herbert Schildt"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3189332%3Ftimestamp%3D20190218082046",
+                "title": "Java"
+            },
+            {
+                "authors": ["이태동", "임정목", "오연재"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5585286%3Ftimestamp%3D20240810152637",
+                "title": "Java Programming 입문 마스터"
+            },
+            {
+                "authors": ["천인국", "하상호"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1377153%3Ftimestamp%3D20230217191354",
+                "title": "Power JAVA"
+            },
+            {
+                "authors": ["Levenick James"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2586230%3Ftimestamp%3D20250122113548",
+                "title": "Simply Java : An Introduction to Java Programming"
+            },
+            {
+                "authors": ["남궁성"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1422248%3Ftimestamp%3D20250904110259",
+                "title": "Java의 정석"
+            },
+            {
+                "authors": ["황기태"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F961292%3Ftimestamp%3D20230310155338",
+                "title": "HTML5 + CSS3 + Javascript 웹 프로그래밍"
+            },
+            {
+                "authors": ["Walter Savitch"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4897617%3Ftimestamp%3D20250328131041",
+                "title": "Java"
+            },
+            {
+                "authors": ["윤인성"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F945010%3Ftimestamp%3D20211206153147",
+                "title": "JavaScript + jQuery 입문(모던 웹을 위한)(3판)"
+            },
+            {
+                "authors": ["김충석"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5458557%3Ftimestamp%3D20231024182203",
+                "title": "JAVA"
+            },
+            {
+                "authors": ["채현석", "김성학"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F956074%3Ftimestamp%3D20230217220905",
+                "title": "JAVA 언어"
+            },
+            {
+                "authors": ["케이시 시에라", "버트 베이츠"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1102941%3Ftimestamp%3D20240721112431",
+                "title": "Head First Java"
+            },
+            {
+                "authors": ["임정목", "이태동", "김점구"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1126768%3Ftimestamp%3D20221108001540",
+                "title": "JAVA 8.0 쉽게 배우기"
+            },
+            {
+                "authors": ["모리 요시나오"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4854277%3Ftimestamp%3D20240420131734",
+                "title": "자바(Java) 1학년"
+            },
+            {
+                "authors": ["Michael Sikora"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4638033%3Ftimestamp%3D20190301223939",
+                "title": "Java"
+            },
+            {
+                "authors": ["Walter Savitch", "Mock Kenrick"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4879676%3Ftimestamp%3D20230714215226",
+                "title": "Java"
+            },
+            {
+                "authors": ["Schildt Herbert"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2885923%3Ftimestamp%3D20230714191648",
+                "title": "Java"
+            },
+            {
+                "authors": ["Arnold V Willemer"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4471001%3Ftimestamp%3D20190301011740",
+                "title": "Java"
+            },
+            {
+                "authors": ["Turner Peter"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1815624%3Ftimestamp%3D20230802195406",
+                "title": "Java"
+            },
+            {
+                "authors": ["Adams Joel/ Nyhoff Jeffrey L/ Nyhoff Larry R"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2105237%3Ftimestamp%3D20230714203149",
+                "title": "Java"
+            },
+            {
+                "authors": ["Chongqing"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3470105%3Ftimestamp%3D20230718191656",
+                "title": "Bible (18 Books in 1 -- HTML, CSS, JavaScript, PHP, SQL, XML, Svg..."
+            },
+            {
+                "authors": ["Herbert Schildt", "Danny Coward"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F7019948%3Ftimestamp%3D20251025143701",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F7046703%3Ftimestamp%3D20251027150103",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6106032%3Ftimestamp%3D20251027144727",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6023665%3Ftimestamp%3D20251027144259",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5017838%3Ftimestamp%3D20251027124007",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5021768%3Ftimestamp%3D20251027124246",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3877987%3Ftimestamp%3D20251027115423",
+                "title": "Java"
+            }
+        ];
+
+        // Best Books Top 30 샘플 → documents 기반으로 변경
+        const bestBooks = documents.map((doc, idx) => ({
+            rank: idx + 1,
+            title: doc.title,
+            image: doc.thumbnail,
+            author: doc.authors.join(', '),
+            isEbook: false // 필요 시 문서 데이터 기반 조건으로 수정 가능
         }));
 
         function renderBest() {
@@ -650,7 +804,11 @@
                     <div class="best-card" onclick="location.href='/book/detail/${b.rank}'">
                         <div class="rank-badge">${b.rank}</div>
                         ${b.isEbook ? '<div class="ebook-badge">전자책</div>' : ''}
-                        <div class="best-cover"><i class="fas fa-book"></i></div>
+                        <div class="best-cover">
+                            ${b.image
+                                ? `<img src=${b.image} alt="전자책 표지">`
+                                : '<i class="fas fa-book"></i>'}
+                        </div>
                         <div class="best-info">
                             <div class="best-title-text">${b.title}</div>
                             <div class="best-author">${b.author}</div>

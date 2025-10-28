@@ -64,6 +64,7 @@
 
         .filter-section {
             display: flex;
+            align-items: center; /* 섹션 높이 내에서 아이템 세로 중앙 */
             flex-wrap: wrap;
             gap: 10px;
         }
@@ -83,11 +84,67 @@
         }
 
         .book-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
             margin-bottom: 30px;
         }
+        /* 세로 리스트 레이아웃 */
+        .book-grid .book-card {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 12px 150px 12px 12px; /* 우측 버튼 공간 확보 */
+            background-color: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        /*.book-grid .book-cover {*/
+        /*    flex: 0 0 120px;*/
+        /*    !*width: 120px;*!*/
+        /*    !*height: 174px;*!*/
+        /*    background-color: #f0f0f0;*/
+        /*    display: flex;*/
+        /*    justify-content: center;*/
+        /*    align-items: center;*/
+        /*    color: #999;*/
+        /*    overflow: hidden;*/
+        /*    border-radius: 4px;*/
+        /*}*/
+        .book-grid .book-cover { flex: 0 0 120px; width:120px; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; overflow:hidden; border-radius:4px; }
+        .book-grid .book-cover img { width:100%; height:100%; object-fit:cover; display:block; }
+        /* book-grid 내 best-cover를 리스트 규격(120x174)로 오버라이드 */
+        .book-grid .best-cover { flex: 0 0 120px; width:120px; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; overflow:hidden; border-radius:4px; }
+        .book-grid .best-cover img { width:100%; height:100%; object-fit:cover; display:block; }
+        .book-grid .book-info { flex: 1; padding: 0; }
+        .book-grid .book-title { font-size: 18px; margin-bottom: 6px; color: #333; }
+        .book-grid .book-author { font-size: 14px; color: #666; margin-bottom: 8px; }
+        .book-grid .book-status { margin-top: 4px; }
+        /* 추가: 메타/디테일/상태/소개, 액션 버튼 스타일 */
+
+
+        .book-grid .book-title-lg { font-size: 20px; font-weight:600; color:#333; margin: 2px 0 6px; }
+        .book-grid .detail-line { font-size: 13px; color:#666; margin-bottom:6px; }
+        .book-grid .status-line { display:flex; gap:14px; font-size:13px; margin:6px 0; color:#607D8B; }
+        .book-grid .status-line .danger { color:#C62828; font-weight:600; }
+        .book-grid .desc { font-size:13px; color:#555; margin-top:6px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .book-grid .book-actions { position:absolute; top:50%; right:16px; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-width:92px; margin:0; }
+        .book-grid .action-btn { width:92px; padding:8px 0; border:1.5px solid #666; background:#fff; color:#666; border-radius:8px; font-weight:600; font-size:14px; }
+        .book-grid .loan-btn:hover {
+            border: 1px solid #2E7D32;
+            background-color: #E8F5E9;
+            box-shadow: inset 0 0 1px 1px #2E7D32;
+        }
+        .book-grid .wish-btn:hover {     color: #b90057;
+            border: 1px solid #e33d8b;
+            background-color: #FCE4EC;
+            box-shadow: inset 0 0 1px 1px #e33d8b;
+        }
+        .book-grid .wish-btn i { margin-right:6px; }
+        .book-grid .wish-btn { border-color:#e0245e; color:#e0245e; }
+        .book-grid .wish-btn.liked i { color:#e0245e; }
         
         /* 검색 결과 없음 표시 */
         .empty-state {
@@ -115,22 +172,6 @@
         .book-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .book-cover {
-            height: 200px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #999;
-            font-size: 40px;
-        }
-
-        .book-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .book-info {
@@ -250,12 +291,16 @@
         .best-item { width:150px; flex:0 0 150px; }
         .best-card { position:relative; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden; transition: transform 0.3s, box-shadow 0.3s; }
         .best-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
-        .best-cover { height:190px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:36px; }
+        .best-cover { position:relative; height:218px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:36px; overflow:hidden; z-index:1; }
+        .best-cover img { width:100%; height:100%; object-fit:cover; display:block; }
         .best-info { padding:10px; }
         .best-title-text { font-size:14px; font-weight:500; color:#333; margin-bottom:4px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
         .best-author { font-size:13px; color:#666; }
-        .rank-badge { position:absolute; top:6px; left:6px; background:#2E7D32; color:#fff; width:26px; height:26px; border-radius:4px; font-size:13px; display:flex; align-items:center; justify-content:center; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+        .rank-badge { position:absolute; top:6px; left:6px; background:#2E7D32; color:#fff; width:26px; height:26px; border-radius:4px; font-size:13px; display:flex; align-items:center; justify-content:center; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.2); z-index:3; pointer-events:none; }
         .ebook-badge { position:absolute; top:6px; right:6px; background:#E8F5E9; color:#2E7D32; padding:2px 6px; border-radius:10px; font-size:11px; border:1px solid #C8E6C9; }
+        /* 표지 이미지를 담는 변형 */
+        .ebook-badge.image { position:absolute; top:6px; right:6px; width:120px; height:174px; padding:0; background:transparent; border:none; z-index:2; }
+        .ebook-badge.image img { width:100%; height:100%; object-fit:cover; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
         .best-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
         .best-btn { padding:8px 12px; background:#fff; border:1px solid #ddd; color:#00796B; border-radius:6px; cursor:pointer; }
         .best-btn:hover { background:#E8F5E9; }
@@ -396,97 +441,185 @@
     <div class="book-grid">
         <!-- 도서 카드 1 -->
         <div class="book-card" onclick="location.href='/book/detail/1'">
-            <div class="book-cover">
-                <i class="fas fa-book"></i>
+            <div class="best-cover">
+                <img src="https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F927035%3Ftimestamp%3D20251017110311" alt="전자책 표지">
             </div>
             <div class="book-info">
-                <h3 class="book-title">클린 코드</h3>
-                <p class="book-author">로버트 C. 마틴</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">클린 코드</h3>
+                <div class="detail-line"><span class="author">로버트 C. 마틴</span> / <span class="publisher">한빛미디어</span> / <span class="pubdate">2023-02-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">“클린 코드”는 읽기 좋은 코드 작성을 위한 원칙과 사례를 다룬 베스트 셀러로, 실제 프로젝트에서 적용 가능한 실천 방안을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 2 -->
         <div class="book-card" onclick="location.href='/book/detail/2'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">객체지향의 사실과 오해</h3>
-                <p class="book-author">조영호</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">객체지향의 사실과 오해</h3>
+                <div class="detail-line"><span class="author">조영호</span> / <span class="publisher">위키북스</span> / <span class="pubdate">2015-01-15</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">객체지향의 핵심 개념과 설계 원칙을 쉽게 설명하며 올바른 모델링 감각을 기릅니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 3 -->
         <div class="book-card" onclick="location.href='/book/detail/3'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">리팩터링 2판</h3>
-                <p class="book-author">마틴 파울러</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">리팩터링 2판</h3>
+                <div class="detail-line"><span class="author">마틴 파울러</span> / <span class="publisher">한빛미디어</span> / <span class="pubdate">2020-06-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">리팩터링 원칙과 기법을 최신 언어와 사례로 재구성한 개정판입니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 4 -->
         <div class="book-card" onclick="location.href='/book/detail/4'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
-                <p class="book-author">이웅모</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">모던 자바스크립트 Deep Dive</h3>
+                <div class="detail-line"><span class="author">이웅모</span> / <span class="publisher">위키북스</span> / <span class="pubdate">2021-09-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">자바스크립트 핵심 개념을 깊이 있게 다루며 언어 내부를 이해하기 쉽게 설명합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 5 -->
         <div class="book-card" onclick="location.href='/book/detail/5'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">함께 자라기</h3>
-                <p class="book-author">김창준</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">함께 자라기</h3>
+                <div class="detail-line"><span class="author">김창준</span> / <span class="publisher">인사이트</span> / <span class="pubdate">2018-07-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">개발자 성장과 협업 문화를 다루며 조직과 개인의 성장을 돕는 실천을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 6 -->
         <div class="book-card" onclick="location.href='/book/detail/6'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">토비의 스프링 3.1</h3>
-                <p class="book-author">이일민</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">토비의 스프링 3.1</h3>
+                <div class="detail-line"><span class="author">이일민</span> / <span class="publisher">에이콘</span> / <span class="pubdate">2012-09-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">스프링 프레임워크의 핵심을 깊이 있게 다룬 고전으로, 실무 적용에 뛰어납니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 7 -->
         <div class="book-card" onclick="location.href='/book/detail/7'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">클린 아키텍처</h3>
-                <p class="book-author">로버트 C. 마틴</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">클린 아키텍처</h3>
+                <div class="detail-line"><span class="author">로버트 C. 마틴</span> / <span class="publisher">인사이트</span> / <span class="pubdate">2017-10-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">소프트웨어 아키텍처 원칙과 경계를 설명하며 유지보수 가능한 시스템을 설계하는 방법을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 8 -->
         <div class="book-card" onclick="location.href='/book/detail/8'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">도메인 주도 설계</h3>
-                <p class="book-author">에릭 에반스</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">도메인 주도 설계</h3>
+                <div class="detail-line"><span class="author">에릭 에반스</span> / <span class="publisher">에이콘</span> / <span class="pubdate">2004-08-30</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">DDD의 핵심 개념과 전략을 정리하여 복잡한 도메인을 모델링하는 방법을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
     </div>
@@ -502,7 +635,7 @@
         <div class="popular-books">
             <!-- 인기 도서 1 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/1'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -513,7 +646,7 @@
 
             <!-- 인기 도서 2 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/5'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -524,7 +657,7 @@
 
             <!-- 인기 도서 3 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/4'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -535,7 +668,7 @@
 
             <!-- 인기 도서 4 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/2'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -546,7 +679,7 @@
 
             <!-- 인기 도서 5 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/7'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -629,18 +762,168 @@
             // 이 예시에서는 콘솔에 로그만 출력
             console.log(`${filterType} 기준으로 도서 목록 필터링`);
         }
-        // 베스트 도서 Top 30 데이터 (샘플)
-        const bestBooks = Array.from({ length: 30 }, (_, i) => ({
-            rank: i + 1,
-            title: [
-                '저스비 생활','박곰곰 연금 부자 수업','행동하지 않으면 인생은 바뀌지 않는다','긴지 지방의 어느 장소에 대하여','잠미와 나이프','다정한 사람이 이긴다',
-                '위버멘쉬','데일 카네기 인간관계론','돈의 심리학','고전이 답했다','머니 트렌드 2026','작은 습관의 힘',
-                '원씽','부의 인문학','트렌드 코리아','아주 작은 습관의 힘','부의 추월차선','부의 감각',
-                '부자 아빠 가난한 아빠','누구나 1등이 될 수 있다','최고의 변명','어떻게 살 것인가','미움받을 용기','나는 나로 살기로 했다',
-                '원칙','일의 기쁨과 슬픔','정의란 무엇인가','데이터 분석의 힘','소크라테스 익스프레스','클린 코드'
-            ][i % 30],
-            author: ['가제노타미','박곰곰','브라이언 트레이시','셰즈키','하가시노 게이고','이해인'][i % 6],
-            isEbook: i % 3 === 0
+
+        // API 응답 샘플 데이터를 기반으로 변환
+        const documents = [
+            {
+                "authors": ["김기수"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6052846%3Ftimestamp%3D20250716142640",
+                "title": "코딩 자율학습 HTML + CSS + 자바스크립트"
+            },
+            {
+                "authors": ["Savitch", "Mock"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3383739%3Ftimestamp%3D20190220072908",
+                "title": "Java"
+            },
+            {
+                "authors": ["Schildt Herbert"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3506724%3Ftimestamp%3D20230918205000",
+                "title": "Java"
+            },
+            {
+                "authors": ["Herbert Schildt"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3189332%3Ftimestamp%3D20190218082046",
+                "title": "Java"
+            },
+            {
+                "authors": ["이태동", "임정목", "오연재"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5585286%3Ftimestamp%3D20240810152637",
+                "title": "Java Programming 입문 마스터"
+            },
+            {
+                "authors": ["천인국", "하상호"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1377153%3Ftimestamp%3D20230217191354",
+                "title": "Power JAVA"
+            },
+            {
+                "authors": ["Levenick James"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2586230%3Ftimestamp%3D20250122113548",
+                "title": "Simply Java : An Introduction to Java Programming"
+            },
+            {
+                "authors": ["남궁성"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1422248%3Ftimestamp%3D20250904110259",
+                "title": "Java의 정석"
+            },
+            {
+                "authors": ["황기태"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F961292%3Ftimestamp%3D20230310155338",
+                "title": "HTML5 + CSS3 + Javascript 웹 프로그래밍"
+            },
+            {
+                "authors": ["Walter Savitch"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4897617%3Ftimestamp%3D20250328131041",
+                "title": "Java"
+            },
+            {
+                "authors": ["윤인성"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F945010%3Ftimestamp%3D20211206153147",
+                "title": "JavaScript + jQuery 입문(모던 웹을 위한)(3판)"
+            },
+            {
+                "authors": ["김충석"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5458557%3Ftimestamp%3D20231024182203",
+                "title": "JAVA"
+            },
+            {
+                "authors": ["채현석", "김성학"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F956074%3Ftimestamp%3D20230217220905",
+                "title": "JAVA 언어"
+            },
+            {
+                "authors": ["케이시 시에라", "버트 베이츠"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1102941%3Ftimestamp%3D20240721112431",
+                "title": "Head First Java"
+            },
+            {
+                "authors": ["임정목", "이태동", "김점구"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1126768%3Ftimestamp%3D20221108001540",
+                "title": "JAVA 8.0 쉽게 배우기"
+            },
+            {
+                "authors": ["모리 요시나오"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4854277%3Ftimestamp%3D20240420131734",
+                "title": "자바(Java) 1학년"
+            },
+            {
+                "authors": ["Michael Sikora"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4638033%3Ftimestamp%3D20190301223939",
+                "title": "Java"
+            },
+            {
+                "authors": ["Walter Savitch", "Mock Kenrick"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4879676%3Ftimestamp%3D20230714215226",
+                "title": "Java"
+            },
+            {
+                "authors": ["Schildt Herbert"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2885923%3Ftimestamp%3D20230714191648",
+                "title": "Java"
+            },
+            {
+                "authors": ["Arnold V Willemer"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4471001%3Ftimestamp%3D20190301011740",
+                "title": "Java"
+            },
+            {
+                "authors": ["Turner Peter"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1815624%3Ftimestamp%3D20230802195406",
+                "title": "Java"
+            },
+            {
+                "authors": ["Adams Joel/ Nyhoff Jeffrey L/ Nyhoff Larry R"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2105237%3Ftimestamp%3D20230714203149",
+                "title": "Java"
+            },
+            {
+                "authors": ["Chongqing"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3470105%3Ftimestamp%3D20230718191656",
+                "title": "Bible (18 Books in 1 -- HTML, CSS, JavaScript, PHP, SQL, XML, Svg..."
+            },
+            {
+                "authors": ["Herbert Schildt", "Danny Coward"],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F7019948%3Ftimestamp%3D20251025143701",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F7046703%3Ftimestamp%3D20251027150103",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6106032%3Ftimestamp%3D20251027144727",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6023665%3Ftimestamp%3D20251027144259",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5017838%3Ftimestamp%3D20251027124007",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5021768%3Ftimestamp%3D20251027124246",
+                "title": "Java"
+            },
+            {
+                "authors": [],
+                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3877987%3Ftimestamp%3D20251027115423",
+                "title": "Java"
+            }
+        ];
+
+        // Best Books Top 30 샘플 → documents 기반으로 변경
+        const bestBooks = documents.map((doc, idx) => ({
+            rank: idx + 1,
+            title: doc.title,
+            image: doc.thumbnail,
+            author: doc.authors.join(', '),
+            isEbook: false // 필요 시 문서 데이터 기반 조건으로 수정 가능
         }));
 
         function renderBest() {
@@ -650,7 +933,11 @@
                     <div class="best-card" onclick="location.href='/book/detail/${b.rank}'">
                         <div class="rank-badge">${b.rank}</div>
                         ${b.isEbook ? '<div class="ebook-badge">전자책</div>' : ''}
-                        <div class="best-cover"><i class="fas fa-book"></i></div>
+                        <div class="best-cover">
+                            ${b.image
+                                ? `<img src=${b.image} alt="전자책 표지">`
+                                : '<i class="fas fa-book"></i>'}
+                        </div>
                         <div class="best-info">
                             <div class="best-title-text">${b.title}</div>
                             <div class="best-author">${b.author}</div>
@@ -728,6 +1015,26 @@
             window.addEventListener('resize', recompute);
             recompute();
         }
+
+        // 찜 버튼 토글: 하트 채우기 및 색상 빨강
+        document.querySelectorAll('.wish-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                const liked = btn.classList.toggle('liked');
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    if (liked) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    }
+                }
+                btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+            });
+        });
 
         // 초기화
         renderBest();

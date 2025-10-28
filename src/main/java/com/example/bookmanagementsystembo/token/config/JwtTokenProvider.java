@@ -1,20 +1,19 @@
-package com.example.bookmanagementsystembo.auth.config;
+package com.example.bookmanagementsystembo.token.config;
 
+import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Component
@@ -30,7 +29,7 @@ public class JwtTokenProvider {
     }
 
 
-    public String createAccessToken(String email, String role) {
+    public String createAccessToken(String email, Role role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
 
@@ -60,7 +59,7 @@ public class JwtTokenProvider {
 
 
     public String getUsername(String refreshToken) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody().getSubject();
+        return getClaims(refreshToken).getSubject();
     }
 
     public long getRefreshSec() {
@@ -74,5 +73,27 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public long getRemainingTime(String accessToken) {
+        try {
+            Date expiration = getClaims(accessToken).getExpiration();
+            long now = new Date().getTime();
+
+            if (expiration.getTime() > now) {
+                return TimeUnit.MILLISECONDS.toSeconds(expiration.getTime() - now);
+            }
+            return 0;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

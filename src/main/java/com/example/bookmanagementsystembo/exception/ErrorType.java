@@ -26,8 +26,8 @@ public enum ErrorType {
 
     REFRESH_TOKEN_EXPIRED(ErrorCode.UNAUTHORIZED, "만료된 토큰입니다.", LogLevel.WARN),
     TOKEN_NOT_FOUND(ErrorCode.NOT_FOUND, "토큰을 찾을 수 없습니다.", LogLevel.WARN),
-    JSON_PROCESSING_ERROR(ErrorCode.BAD_REQUEST, "JSON 변환 오류입니다.", LogLevel.WARN);
-
+    JSON_PROCESSING_ERROR(ErrorCode.BAD_REQUEST, "JSON 변환 오류입니다.", LogLevel.WARN),
+    TOKEN_MISMATCH(ErrorCode.BAD_REQUEST,"토큰 일치하지 않습니다.", LogLevel.WARN);
     private final ErrorCode code;
     private final String message;
     private final LogLevel logLevel;

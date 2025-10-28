@@ -44,6 +44,8 @@ dependencies {
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    implementation "org.springframework.boot:spring-boot-starter-data-redis"
 }
 
 tasks.named('test') {

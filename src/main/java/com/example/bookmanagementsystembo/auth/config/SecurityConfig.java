@@ -1,5 +1,7 @@
 package com.example.bookmanagementsystembo.auth.config;
 
+import com.example.bookmanagementsystembo.token.config.JwtAuthenticationFilter;
+import com.example.bookmanagementsystembo.token.config.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

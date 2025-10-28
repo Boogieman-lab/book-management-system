@@ -83,11 +83,67 @@
         }
 
         .book-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
             margin-bottom: 30px;
         }
+        /* 세로 리스트 레이아웃 */
+        .book-grid .book-card {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 12px 150px 12px 12px; /* 우측 버튼 공간 확보 */
+            background-color: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        /*.book-grid .book-cover {*/
+        /*    flex: 0 0 120px;*/
+        /*    !*width: 120px;*!*/
+        /*    !*height: 174px;*!*/
+        /*    background-color: #f0f0f0;*/
+        /*    display: flex;*/
+        /*    justify-content: center;*/
+        /*    align-items: center;*/
+        /*    color: #999;*/
+        /*    overflow: hidden;*/
+        /*    border-radius: 4px;*/
+        /*}*/
+        .book-grid .book-cover { flex: 0 0 120px; width:120px; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; overflow:hidden; border-radius:4px; }
+        .book-grid .book-cover img { width:100%; height:100%; object-fit:cover; display:block; }
+        /* book-grid 내 best-cover를 리스트 규격(120x174)로 오버라이드 */
+        .book-grid .best-cover { flex: 0 0 120px; width:120px; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; overflow:hidden; border-radius:4px; }
+        .book-grid .best-cover img { width:100%; height:100%; object-fit:cover; display:block; }
+        .book-grid .book-info { flex: 1; padding: 0; }
+        .book-grid .book-title { font-size: 18px; margin-bottom: 6px; color: #333; }
+        .book-grid .book-author { font-size: 14px; color: #666; margin-bottom: 8px; }
+        .book-grid .book-status { margin-top: 4px; }
+        /* 추가: 메타/디테일/상태/소개, 액션 버튼 스타일 */
+
+
+        .book-grid .book-title-lg { font-size: 20px; font-weight:600; color:#333; margin: 2px 0 6px; }
+        .book-grid .detail-line { font-size: 13px; color:#666; margin-bottom:6px; }
+        .book-grid .status-line { display:flex; gap:14px; font-size:13px; margin:6px 0; color:#607D8B; }
+        .book-grid .status-line .danger { color:#C62828; font-weight:600; }
+        .book-grid .desc { font-size:13px; color:#555; margin-top:6px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .book-grid .book-actions { position:absolute; top:50%; right:16px; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-width:92px; margin:0; }
+        .book-grid .action-btn { width:92px; padding:8px 0; border:1.5px solid #666; background:#fff; color:#666; border-radius:8px; font-weight:600; font-size:14px; }
+        .book-grid .loan-btn:hover {
+            border: 1px solid #2E7D32;
+            background-color: #E8F5E9;
+            box-shadow: inset 0 0 1px 1px #2E7D32;
+        }
+        .book-grid .wish-btn:hover {     color: #b90057;
+            border: 1px solid #e33d8b;
+            background-color: #FCE4EC;
+            box-shadow: inset 0 0 1px 1px #e33d8b;
+        }
+        .book-grid .wish-btn i { margin-right:6px; }
+        .book-grid .wish-btn { border-color:#e0245e; color:#e0245e; }
+        .book-grid .wish-btn.liked i { color:#e0245e; }
         
         /* 검색 결과 없음 표시 */
         .empty-state {
@@ -115,22 +171,6 @@
         .book-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .book-cover {
-            height: 200px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #999;
-            font-size: 40px;
-        }
-
-        .book-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .book-info {
@@ -400,97 +440,185 @@
     <div class="book-grid">
         <!-- 도서 카드 1 -->
         <div class="book-card" onclick="location.href='/book/detail/1'">
-            <div class="book-cover">
-                <i class="fas fa-book"></i>
+            <div class="best-cover">
+                <img src="https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F927035%3Ftimestamp%3D20251017110311" alt="전자책 표지">
             </div>
             <div class="book-info">
-                <h3 class="book-title">클린 코드</h3>
-                <p class="book-author">로버트 C. 마틴</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">클린 코드</h3>
+                <div class="detail-line"><span class="author">로버트 C. 마틴</span> / <span class="publisher">한빛미디어</span> / <span class="pubdate">2023-02-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">“클린 코드”는 읽기 좋은 코드 작성을 위한 원칙과 사례를 다룬 베스트 셀러로, 실제 프로젝트에서 적용 가능한 실천 방안을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 2 -->
         <div class="book-card" onclick="location.href='/book/detail/2'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">객체지향의 사실과 오해</h3>
-                <p class="book-author">조영호</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">객체지향의 사실과 오해</h3>
+                <div class="detail-line"><span class="author">조영호</span> / <span class="publisher">위키북스</span> / <span class="pubdate">2015-01-15</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">객체지향의 핵심 개념과 설계 원칙을 쉽게 설명하며 올바른 모델링 감각을 기릅니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 3 -->
         <div class="book-card" onclick="location.href='/book/detail/3'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">리팩터링 2판</h3>
-                <p class="book-author">마틴 파울러</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">리팩터링 2판</h3>
+                <div class="detail-line"><span class="author">마틴 파울러</span> / <span class="publisher">한빛미디어</span> / <span class="pubdate">2020-06-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">리팩터링 원칙과 기법을 최신 언어와 사례로 재구성한 개정판입니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 4 -->
         <div class="book-card" onclick="location.href='/book/detail/4'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
-                <p class="book-author">이웅모</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">모던 자바스크립트 Deep Dive</h3>
+                <div class="detail-line"><span class="author">이웅모</span> / <span class="publisher">위키북스</span> / <span class="pubdate">2021-09-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">자바스크립트 핵심 개념을 깊이 있게 다루며 언어 내부를 이해하기 쉽게 설명합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 5 -->
         <div class="book-card" onclick="location.href='/book/detail/5'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">함께 자라기</h3>
-                <p class="book-author">김창준</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">함께 자라기</h3>
+                <div class="detail-line"><span class="author">김창준</span> / <span class="publisher">인사이트</span> / <span class="pubdate">2018-07-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">개발자 성장과 협업 문화를 다루며 조직과 개인의 성장을 돕는 실천을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 6 -->
         <div class="book-card" onclick="location.href='/book/detail/6'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">토비의 스프링 3.1</h3>
-                <p class="book-author">이일민</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">토비의 스프링 3.1</h3>
+                <div class="detail-line"><span class="author">이일민</span> / <span class="publisher">에이콘</span> / <span class="pubdate">2012-09-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">스프링 프레임워크의 핵심을 깊이 있게 다룬 고전으로, 실무 적용에 뛰어납니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 7 -->
         <div class="book-card" onclick="location.href='/book/detail/7'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">클린 아키텍처</h3>
-                <p class="book-author">로버트 C. 마틴</p>
-                <span class="book-status status-available">대출 가능</span>
+
+                <h3 class="book-title-lg">클린 아키텍처</h3>
+                <div class="detail-line"><span class="author">로버트 C. 마틴</span> / <span class="publisher">인사이트</span> / <span class="pubdate">2017-10-01</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">소프트웨어 아키텍처 원칙과 경계를 설명하며 유지보수 가능한 시스템을 설계하는 방법을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
 
         <!-- 도서 카드 8 -->
         <div class="book-card" onclick="location.href='/book/detail/8'">
-            <div class="book-cover">
+            <div class="best-cover">
                 <i class="fas fa-book"></i>
             </div>
             <div class="book-info">
-                <h3 class="book-title">도메인 주도 설계</h3>
-                <p class="book-author">에릭 에반스</p>
-                <span class="book-status status-unavailable">대출 중</span>
+
+                <h3 class="book-title-lg">도메인 주도 설계</h3>
+                <div class="detail-line"><span class="author">에릭 에반스</span> / <span class="publisher">에이콘</span> / <span class="pubdate">2004-08-30</span></div>
+                <div class="status-line">
+                    <span class="status-loan danger">대출 0/1</span>
+                    <span class="status-reserve">예약 0</span>
+                    <span class="status-total">누적대출 7</span>
+                    <span class="status-recommend">추천 0</span>
+                </div>
+                <p class="desc">DDD의 핵심 개념과 전략을 정리하여 복잡한 도메인을 모델링하는 방법을 제시합니다.</p>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn loan-btn">대출</button>
+                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
     </div>
@@ -506,7 +634,7 @@
         <div class="popular-books">
             <!-- 인기 도서 1 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/1'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -517,7 +645,7 @@
 
             <!-- 인기 도서 2 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/5'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -528,7 +656,7 @@
 
             <!-- 인기 도서 3 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/4'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -539,7 +667,7 @@
 
             <!-- 인기 도서 4 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/2'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -550,7 +678,7 @@
 
             <!-- 인기 도서 5 -->
             <div class="book-card popular-book" onclick="location.href='/book/detail/7'">
-                <div class="book-cover">
+                <div class="best-cover">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="book-info">
@@ -886,6 +1014,26 @@
             window.addEventListener('resize', recompute);
             recompute();
         }
+
+        // 찜 버튼 토글: 하트 채우기 및 색상 빨강
+        document.querySelectorAll('.wish-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                const liked = btn.classList.toggle('liked');
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    if (liked) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    }
+                }
+                btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+            });
+        });
 
         // 초기화
         renderBest();

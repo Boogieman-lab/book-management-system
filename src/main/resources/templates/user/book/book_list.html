@@ -29,17 +29,17 @@
             margin-bottom: 20px;
         }
 
-        .page-title {
-            color: #00796B;
-            margin-bottom: 20px;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-        }
+        /*.page-title {*/
+        /*    color: #00796B;*/
+        /*    margin-bottom: 20px;*/
+        /*    font-size: 22px;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*}*/
 
-        .page-title i {
-            margin-right: 10px;
-        }
+        /*.page-title i {*/
+        /*    margin-right: 10px;*/
+        /*}*/
 
         .search-filter-section {
             display: flex;
@@ -405,9 +405,9 @@
         </div>
     </div>
     
-    <h2 class="page-title">
-        <i class="fas fa-book"></i> 도서 목록
-    </h2>
+<!--    <h2 class="page-title">-->
+<!--        <i class="fas fa-book"></i> 도서 목록-->
+<!--    </h2>-->
 
     <!-- 베스트 도서 Top 30 슬라이더 -->
     <div class="content">
@@ -429,18 +429,21 @@
         </div>
     </div>
 
-    <div class="new-section">
-        <div class="best-header">
-            <h3 class="best-title"><i class="fas fa-star"></i> 신착 도서</h3>
-        </div>
-        <div class="best-slider">
-            <div class="best-viewport">
-                <div class="best-track" id="newTrack"></div>
+    <div class="content">
+        <div class="new-section">
+            <div class="best-header">
+                <h3 class="best-title"><i class="fas fa-star"></i> 신착 도서</h3>
+                <a href="#" class="best-btn" id="newMore">더보기 +</a>
             </div>
-        </div>
-        <div class="best-footer">
-            <button class="best-btn" id="newPrev"><i class="fas fa-chevron-left"></i> 이전</button>
-            <button class="best-btn" id="newNext">다음 <i class="fas fa-chevron-right"></i></button>
+            <div class="best-slider">
+                <div class="best-viewport">
+                    <div class="best-track" id="newTrack"></div>
+                </div>
+            </div>
+            <div class="best-footer">
+                <button class="best-btn" id="newPrev"><i class="fas fa-chevron-left"></i> 이전</button>
+                <button class="best-btn" id="newNext">다음 <i class="fas fa-chevron-right"></i></button>
+            </div>
         </div>
     </div>
 
@@ -1020,6 +1023,80 @@
         // 초기화
         renderBest();
         initBestSlider();
+
+        // 신착 도서 데이터: 샘플 documents 기반으로 구성 (임시)
+        const newArrivals = documents.slice(0, 20).map((doc) => ({
+            title: doc.title,
+            image: doc.thumbnail,
+            author: doc.authors.join(', '),
+        }));
+
+        function renderNewArrivals() {
+            const track = document.getElementById('newTrack');
+            if (!track) return;
+            track.innerHTML = newArrivals.map(b => `
+                <div class="best-item">
+                    <div class="best-card" onclick="location.href='/book/detail'">
+                        <div class="best-cover">
+                            ${b.image ? `<img src=${b.image} alt="표지">` : '<i class="fas fa-book"></i>'}
+                        </div>
+                        <div class="best-info">
+                            <div class="best-title-text">${b.title}</div>
+                            <div class="best-author">${b.author}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initNewSlider() {
+            const track = document.getElementById('newTrack');
+            if (!track) return;
+            const viewport = track.closest('.best-viewport');
+            const prev = document.getElementById('newPrev');
+            const next = document.getElementById('newNext');
+
+            const PAGE_SIZE = 8;
+            let currentIndex = 0;
+            let itemFullWidth = 166; // item width 150 + gap 16
+            let itemsPerPage = PAGE_SIZE;
+            let maxIndex = 0;
+
+            const recompute = () => {
+                const firstItem = track.querySelector('.best-item');
+                if (firstItem) {
+                    const style = getComputedStyle(track);
+                    const gap = parseInt(style.columnGap || style.gap || '16', 10);
+                    itemFullWidth = firstItem.offsetWidth + gap;
+                }
+                itemsPerPage = Math.max(1, Math.min(PAGE_SIZE, Math.floor(viewport.clientWidth / itemFullWidth)));
+                const totalPages = Math.ceil(newArrivals.length / itemsPerPage);
+                maxIndex = Math.max(0, totalPages - 1);
+                currentIndex = Math.min(currentIndex, maxIndex);
+                update();
+            };
+
+            const update = () => {
+                const offset = currentIndex * itemFullWidth * itemsPerPage;
+                track.style.transform = `translateX(-${offset}px)`;
+                const atStart = currentIndex === 0;
+                const atEnd = currentIndex >= maxIndex;
+                [prev].forEach(btn => { if (btn) { btn.disabled = atStart; btn.style.opacity = atStart ? '0.5' : '1'; btn.style.cursor = atStart ? 'not-allowed' : 'pointer'; } });
+                [next].forEach(btn => { if (btn) { btn.disabled = atEnd; btn.style.opacity = atEnd ? '0.5' : '1'; btn.style.cursor = atEnd ? 'not-allowed' : 'pointer'; } });
+            };
+
+            const goPrev = () => { if (currentIndex > 0) { currentIndex = Math.max(0, currentIndex - 1); update(); } };
+            const goNext = () => { if (currentIndex < maxIndex) { currentIndex = Math.min(maxIndex, currentIndex + 1); update(); } };
+
+            if (prev) prev.addEventListener('click', goPrev);
+            if (next) next.addEventListener('click', goNext);
+            window.addEventListener('resize', recompute);
+            recompute();
+        }
+
+        // 신착 도서 초기화
+        renderNewArrivals();
+        initNewSlider();
     </script>
 </main>
 </body>

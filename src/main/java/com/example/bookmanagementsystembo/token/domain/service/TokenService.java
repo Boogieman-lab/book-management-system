@@ -45,8 +45,8 @@ public class TokenService {
 
     @Transactional
     public CreateTokenDto reissue(String clientRefreshToken) {
-        if (!jwtTokenProvider.validate(clientRefreshToken)) {
-            throw new CoreException(ErrorType.REFRESH_TOKEN_EXPIRED, clientRefreshToken);
+        if (!jwtTokenProvider.isValid(clientRefreshToken)) {
+            throw new CoreException(ErrorType.TOKEN_INVALID, clientRefreshToken);
         }
 
         String email = jwtTokenProvider.getUsername(clientRefreshToken);

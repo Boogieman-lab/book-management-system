@@ -74,7 +74,16 @@ public class JwtTokenProvider {
         return jwtProperties.refreshSec();
     }
 
-    public boolean validate(String refreshToken) {
+    public boolean isInvalid(String accessToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken);
+            return false;
+        } catch (JwtException | IllegalArgumentException e) {
+            return true;
+        }
+    }
+
+    public boolean isValid(String refreshToken) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken);
             return true;

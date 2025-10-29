@@ -62,26 +62,10 @@
             background-color: #00796B;
         }
 
-        .filter-section {
-            display: flex;
-            align-items: center; /* 섹션 높이 내에서 아이템 세로 중앙 */
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .filter-item {
-            padding: 8px 15px;
-            background-color: #f5f5f5;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .filter-item:hover, .filter-item.active {
-            background-color: #E8F5E9;
-            color: #00796B;
-        }
+        /* 필터 칩 */
+        .filter-section { display:flex; align: right; gap:8px; align-items:center; margin-top:20px; margin-bottom:20px; }
+        .filter-item { display:inline-flex; align-items:center; justify-content:center; min-height:32px; line-height:1; padding:6px 12px; border:1px solid #ddd; border-radius:16px; background:#fff; color:#555; cursor:pointer; }
+        .filter-item.active, .filter-item:hover { background:#E8F5E9; color:#2E7D32; border-color:#C8E6C9; }
 
         .book-grid {
             display: flex;
@@ -429,7 +413,7 @@
         </div>
     </div>
 
-    <div class="content">
+    <div class="content" th:if="${searchResults == null or #lists.isEmpty(searchResults)}">
         <div class="new-section">
             <div class="best-header">
                 <h3 class="best-title"><i class="fas fa-star"></i> 신착 도서</h3>
@@ -447,19 +431,9 @@
         </div>
     </div>
 
-    <div class="search-filter-section">
-        <div class="search-bar">
-            <select class="search-select">
-                <option value="title">제목</option>
-                <option value="author">저자</option>
-                <option value="publisher">출판사</option>
-                <option value="isbn">ISBN</option>
-            </select>
 
-            <input type="text" placeholder="도서명, 저자, 출판사, ISBN 검색">
-            <button><i class="fas fa-search"></i></button>
-        </div>
 
+    <div class="book-grid">
         <div class="filter-section">
             <div class="filter-item active">전체</div>
             <div class="filter-item">대출 가능</div>
@@ -467,9 +441,6 @@
             <div class="filter-item">최신순</div>
             <div class="filter-item">가나다순</div>
         </div>
-    </div>
-
-    <div class="book-grid">
         <!-- 도서 카드 1 -->
         <div class="book-card" onclick="location.href='/book/detail/1'">
             <div class="best-cover">
@@ -653,30 +624,28 @@
                 <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
+
+        <div class="pagination">
+            <div class="page-item">
+                <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
+            </div>
+            <div class="page-item active">
+                <a href="#" class="page-link">1</a>
+            </div>
+            <div class="page-item">
+                <a href="#" class="page-link">2</a>
+            </div>
+            <div class="page-item">
+                <a href="#" class="page-link">3</a>
+            </div>
+            <div class="page-item">
+                <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
+            </div>
+        </div>
     </div>
 
     <!-- 검색 결과 없음 상태 영역 -->
     <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
-    
-
-
-    <div class="pagination">
-        <div class="page-item">
-            <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
-        </div>
-        <div class="page-item active">
-            <a href="#" class="page-link">1</a>
-        </div>
-        <div class="page-item">
-            <a href="#" class="page-link">2</a>
-        </div>
-        <div class="page-item">
-            <a href="#" class="page-link">3</a>
-        </div>
-        <div class="page-item">
-            <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
-        </div>
-    </div>
 
     <script>
         // 검색 입력/버튼으로 그리드 필터링 및 빈 상태 표시
@@ -689,14 +658,10 @@
             const q = (searchInput?.value || '').trim().toLowerCase();
             const mainEl = document.querySelector('main');
             const searchFilterSectionEl = document.querySelector('.search-filter-section');
+            const bestContentEl = document.querySelector('.best-section')?.closest('.content');
+            const newContentEl = document.querySelector('.new-section')?.closest('.content');
+
             const inSearch = q.length > 0;
-            // 모드 토글: 검색 중이면 결과/필터 노출, 아니면 감춤
-            if (mainEl) {
-                mainEl.classList.toggle('search-mode', inSearch);
-                mainEl.classList.toggle('no-search', !inSearch);
-            }
-            if (searchFilterSectionEl) searchFilterSectionEl.style.display = inSearch ? '' : 'none';
-            if (bookGridEl) bookGridEl.style.display = inSearch ? '' : 'none';
 
             // 간단한 제목/저자 필터링 (검색 모드일 때만 의미 있음)
             const cards = document.querySelectorAll('.book-grid .book-card');
@@ -708,8 +673,23 @@
                 card.style.display = show ? '' : 'none';
                 if (show) visible++;
             });
+
+            const hasResults = inSearch && visible > 0;
+
+            // 모드 토글: 검색 결과 유무에 따라 표시 제어
+            if (mainEl) {
+                mainEl.classList.toggle('search-mode', hasResults);
+                mainEl.classList.toggle('no-search', !hasResults);
+            }
+            if (searchFilterSectionEl) searchFilterSectionEl.style.display = hasResults ? '' : 'none';
+            if (bookGridEl) bookGridEl.style.display = hasResults ? '' : 'none';
+
+            // 베스트/신착 섹션은 "검색 중"이면 결과 여부와 관계없이 숨김
+            if (bestContentEl) bestContentEl.style.display = inSearch ? 'none' : '';
+            if (newContentEl) newContentEl.style.display = inSearch ? 'none' : '';
+
             // 빈 결과 상태 표시
-            if (emptyStateEl) emptyStateEl.style.display = inSearch && visible === 0 ? 'flex' : 'none';
+            if (emptyStateEl) emptyStateEl.style.display = inSearch && !hasResults ? 'flex' : 'none';
         }
         
         searchBtn?.addEventListener('click', applySearchFilter);

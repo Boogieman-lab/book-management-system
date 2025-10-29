@@ -208,10 +208,7 @@
             color: #C62828;
         }
 
-        .popular-section {
-            margin-top: 40px;
-            margin-bottom: 30px;
-        }
+
 
         .section-title {
             font-size: 20px;
@@ -225,17 +222,9 @@
             margin-right: 10px;
         }
 
-        .popular-books {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding-bottom: 20px;
-        }
 
-        .popular-book {
-            min-width: 150px;
-            max-width: 150px;
-        }
+
+
 
         .pagination {
             display: flex;
@@ -666,68 +655,7 @@
     <!-- 검색 결과 없음 상태 영역 -->
     <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
     
-    <div class="popular-section">
-        <h3 class="section-title">
-            <i class="fas fa-star"></i> 인기 도서 추천
-        </h3>
 
-        <div class="popular-books">
-            <!-- 인기 도서 1 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/1'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">클린 코드</h3>
-                    <p class="book-author">로버트 C. 마틴</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 2 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/5'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">함께 자라기</h3>
-                    <p class="book-author">김창준</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 3 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/4'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
-                    <p class="book-author">이웅모</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 4 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/2'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">객체지향의 사실과 오해</h3>
-                    <p class="book-author">조영호</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 5 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/7'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">클린 아키텍처</h3>
-                    <p class="book-author">로버트 C. 마틴</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="pagination">
         <div class="page-item">

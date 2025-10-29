@@ -327,7 +327,17 @@
 
         main {
             min-width: 0; /* 핵심: Grid/Slider가 부모를 밀지 못하도록 */
+            padding-top: 0; /* 고정 검색바 높이 보정 제거 */
         }
+
+        /* 상단 고정 검색바 */
+        .fixed-searchbar { position: sticky; top: 0; left: 0; right: 0; background: #fff; border-bottom: 1px solid #eaeaea; box-shadow: 0 2px 6px rgba(0,0,0,.06); z-index: 1000; padding: 8px 16px; display: flex; justify-content: center; }
+        .fixed-searchbar .search-bar { max-width: 720px; width: 100%; }
+
+        /* 검색 모드 토글 */
+        .no-search .search-filter-section, .no-search .book-grid { display: none; }
+        .search-mode .search-filter-section { display: block; }
+        .search-mode .book-grid { display: flex; }
 
         .search-bar {
             display: flex;
@@ -391,7 +401,21 @@
     </style>
 </head>
 <body>
-<main layout:fragment="content" th:with="activeMenu='books'">
+
+<main layout:fragment="content" th:with="activeMenu='books'" class="no-search">
+    <div class="fixed-searchbar">
+        <div class="search-bar">
+            <select class="search-select">
+                <option value="title">제목</option>
+                <option value="author">저자</option>
+                <option value="publisher">출판사</option>
+                <option value="isbn">ISBN</option>
+            </select>
+            <input type="text" placeholder="도서명, 저자, 출판사, ISBN 검색">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+    
     <h2 class="page-title">
         <i class="fas fa-book"></i> 도서 목록
     </h2>
@@ -413,6 +437,21 @@
                 <button class="best-btn" id="bestPrevBottom"><i class="fas fa-chevron-left"></i> 이전</button>
                 <button class="best-btn" id="bestNextBottom">다음 <i class="fas fa-chevron-right"></i></button>
             </div>
+        </div>
+    </div>
+
+    <div class="new-section">
+        <div class="best-header">
+            <h3 class="best-title"><i class="fas fa-star"></i> 신착 도서</h3>
+        </div>
+        <div class="best-slider">
+            <div class="best-viewport">
+                <div class="best-track" id="newTrack"></div>
+            </div>
+        </div>
+        <div class="best-footer">
+            <button class="best-btn" id="newPrev"><i class="fas fa-chevron-left"></i> 이전</button>
+            <button class="best-btn" id="newNext">다음 <i class="fas fa-chevron-right"></i></button>
         </div>
     </div>
 
@@ -717,24 +756,38 @@
         
         function applySearchFilter() {
             const q = (searchInput?.value || '').trim().toLowerCase();
+            const mainEl = document.querySelector('main');
+            const searchFilterSectionEl = document.querySelector('.search-filter-section');
+            const inSearch = q.length > 0;
+            // 모드 토글: 검색 중이면 결과/필터 노출, 아니면 감춤
+            if (mainEl) {
+                mainEl.classList.toggle('search-mode', inSearch);
+                mainEl.classList.toggle('no-search', !inSearch);
+            }
+            if (searchFilterSectionEl) searchFilterSectionEl.style.display = inSearch ? '' : 'none';
+            if (bookGridEl) bookGridEl.style.display = inSearch ? '' : 'none';
+
+            // 간단한 제목/저자 필터링 (검색 모드일 때만 의미 있음)
             const cards = document.querySelectorAll('.book-grid .book-card');
             let visible = 0;
             cards.forEach(card => {
                 const title = card.querySelector('.book-title')?.textContent.toLowerCase() || '';
                 const author = card.querySelector('.book-author')?.textContent.toLowerCase() || '';
-                const show = q === '' || title.includes(q) || author.includes(q);
+                const show = !inSearch || title.includes(q) || author.includes(q);
                 card.style.display = show ? '' : 'none';
                 if (show) visible++;
             });
-            // 빈 결과 상태/그리드 표시 토글
-            if (emptyStateEl) emptyStateEl.style.display = visible === 0 ? 'flex' : 'none';
-            if (bookGridEl) bookGridEl.style.display = visible === 0 ? 'none' : '';
+            // 빈 결과 상태 표시
+            if (emptyStateEl) emptyStateEl.style.display = inSearch && visible === 0 ? 'flex' : 'none';
         }
         
         searchBtn?.addEventListener('click', applySearchFilter);
         searchInput?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') applySearchFilter();
         });
+        
+        // 초기 화면: 검색어 없음 -> 메인(인기/신착)만 노출
+        applySearchFilter();
         
         // 필터 아이템 클릭 이벤트
         document.querySelectorAll('.filter-item').forEach(item => {

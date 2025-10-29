@@ -29,17 +29,17 @@
             margin-bottom: 20px;
         }
 
-        .page-title {
-            color: #00796B;
-            margin-bottom: 20px;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-        }
+        /*.page-title {*/
+        /*    color: #00796B;*/
+        /*    margin-bottom: 20px;*/
+        /*    font-size: 22px;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*}*/
 
-        .page-title i {
-            margin-right: 10px;
-        }
+        /*.page-title i {*/
+        /*    margin-right: 10px;*/
+        /*}*/
 
         .search-filter-section {
             display: flex;
@@ -62,26 +62,10 @@
             background-color: #00796B;
         }
 
-        .filter-section {
-            display: flex;
-            align-items: center; /* 섹션 높이 내에서 아이템 세로 중앙 */
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .filter-item {
-            padding: 8px 15px;
-            background-color: #f5f5f5;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .filter-item:hover, .filter-item.active {
-            background-color: #E8F5E9;
-            color: #00796B;
-        }
+        /* 필터 칩 */
+        .filter-section { display:flex; align: right; gap:8px; align-items:center; margin-top:20px; margin-bottom:20px; }
+        .filter-item { display:inline-flex; align-items:center; justify-content:center; min-height:32px; line-height:1; padding:6px 12px; border:1px solid #ddd; border-radius:16px; background:#fff; color:#555; cursor:pointer; }
+        .filter-item.active, .filter-item:hover { background:#E8F5E9; color:#2E7D32; border-color:#C8E6C9; }
 
         .book-grid {
             display: flex;
@@ -208,10 +192,7 @@
             color: #C62828;
         }
 
-        .popular-section {
-            margin-top: 40px;
-            margin-bottom: 30px;
-        }
+
 
         .section-title {
             font-size: 20px;
@@ -225,17 +206,9 @@
             margin-right: 10px;
         }
 
-        .popular-books {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding-bottom: 20px;
-        }
 
-        .popular-book {
-            min-width: 150px;
-            max-width: 150px;
-        }
+
+
 
         .pagination {
             display: flex;
@@ -327,7 +300,17 @@
 
         main {
             min-width: 0; /* 핵심: Grid/Slider가 부모를 밀지 못하도록 */
+            padding-top: 0; /* 고정 검색바 높이 보정 제거 */
         }
+
+        /* 상단 고정 검색바 */
+        .fixed-searchbar { position: sticky; top: 0; left: 0; right: 0; background: #fff; border-bottom: 1px solid #eaeaea; box-shadow: 0 2px 6px rgba(0,0,0,.06); z-index: 1000; padding: 8px 16px; display: flex; justify-content: center; }
+        .fixed-searchbar .search-bar { max-width: 720px; width: 100%; }
+
+        /* 검색 모드 토글 */
+        .no-search .search-filter-section, .no-search .book-grid { display: none; }
+        .search-mode .search-filter-section { display: block; }
+        .search-mode .book-grid { display: flex; }
 
         .search-bar {
             display: flex;
@@ -391,10 +374,24 @@
     </style>
 </head>
 <body>
-<main layout:fragment="content" th:with="activeMenu='books'">
-    <h2 class="page-title">
-        <i class="fas fa-book"></i> 도서 목록
-    </h2>
+
+<main layout:fragment="content" th:with="activeMenu='books'" class="no-search">
+    <div class="fixed-searchbar">
+        <div class="search-bar">
+            <select class="search-select">
+                <option value="title">제목</option>
+                <option value="author">저자</option>
+                <option value="publisher">출판사</option>
+                <option value="isbn">ISBN</option>
+            </select>
+            <input type="text" placeholder="도서명, 저자, 출판사, ISBN 검색">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+    
+<!--    <h2 class="page-title">-->
+<!--        <i class="fas fa-book"></i> 도서 목록-->
+<!--    </h2>-->
 
     <!-- 베스트 도서 Top 30 슬라이더 -->
     <div class="content">
@@ -416,19 +413,27 @@
         </div>
     </div>
 
-    <div class="search-filter-section">
-        <div class="search-bar">
-            <select class="search-select">
-                <option value="title">제목</option>
-                <option value="author">저자</option>
-                <option value="publisher">출판사</option>
-                <option value="isbn">ISBN</option>
-            </select>
-
-            <input type="text" placeholder="도서명, 저자, 출판사, ISBN 검색">
-            <button><i class="fas fa-search"></i></button>
+    <div class="content" th:if="${searchResults == null or #lists.isEmpty(searchResults)}">
+        <div class="new-section">
+            <div class="best-header">
+                <h3 class="best-title"><i class="fas fa-star"></i> 신착 도서</h3>
+                <a href="#" class="best-btn" id="newMore">더보기 +</a>
+            </div>
+            <div class="best-slider">
+                <div class="best-viewport">
+                    <div class="best-track" id="newTrack"></div>
+                </div>
+            </div>
+            <div class="best-footer">
+                <button class="best-btn" id="newPrev"><i class="fas fa-chevron-left"></i> 이전</button>
+                <button class="best-btn" id="newNext">다음 <i class="fas fa-chevron-right"></i></button>
+            </div>
         </div>
+    </div>
 
+
+
+    <div class="book-grid">
         <div class="filter-section">
             <div class="filter-item active">전체</div>
             <div class="filter-item">대출 가능</div>
@@ -436,9 +441,6 @@
             <div class="filter-item">최신순</div>
             <div class="filter-item">가나다순</div>
         </div>
-    </div>
-
-    <div class="book-grid">
         <!-- 도서 카드 1 -->
         <div class="book-card" onclick="location.href='/book/detail/1'">
             <div class="best-cover">
@@ -622,91 +624,28 @@
                 <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
             </div>
         </div>
+
+        <div class="pagination">
+            <div class="page-item">
+                <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
+            </div>
+            <div class="page-item active">
+                <a href="#" class="page-link">1</a>
+            </div>
+            <div class="page-item">
+                <a href="#" class="page-link">2</a>
+            </div>
+            <div class="page-item">
+                <a href="#" class="page-link">3</a>
+            </div>
+            <div class="page-item">
+                <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
+            </div>
+        </div>
     </div>
 
     <!-- 검색 결과 없음 상태 영역 -->
     <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
-    
-    <div class="popular-section">
-        <h3 class="section-title">
-            <i class="fas fa-star"></i> 인기 도서 추천
-        </h3>
-
-        <div class="popular-books">
-            <!-- 인기 도서 1 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/1'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">클린 코드</h3>
-                    <p class="book-author">로버트 C. 마틴</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 2 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/5'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">함께 자라기</h3>
-                    <p class="book-author">김창준</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 3 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/4'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">모던 자바스크립트 Deep Dive</h3>
-                    <p class="book-author">이웅모</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 4 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/2'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">객체지향의 사실과 오해</h3>
-                    <p class="book-author">조영호</p>
-                </div>
-            </div>
-
-            <!-- 인기 도서 5 -->
-            <div class="book-card popular-book" onclick="location.href='/book/detail/7'">
-                <div class="best-cover">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">클린 아키텍처</h3>
-                    <p class="book-author">로버트 C. 마틴</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="pagination">
-        <div class="page-item">
-            <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
-        </div>
-        <div class="page-item active">
-            <a href="#" class="page-link">1</a>
-        </div>
-        <div class="page-item">
-            <a href="#" class="page-link">2</a>
-        </div>
-        <div class="page-item">
-            <a href="#" class="page-link">3</a>
-        </div>
-        <div class="page-item">
-            <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
-        </div>
-    </div>
 
     <script>
         // 검색 입력/버튼으로 그리드 필터링 및 빈 상태 표시
@@ -717,24 +656,49 @@
         
         function applySearchFilter() {
             const q = (searchInput?.value || '').trim().toLowerCase();
+            const mainEl = document.querySelector('main');
+            const searchFilterSectionEl = document.querySelector('.search-filter-section');
+            const bestContentEl = document.querySelector('.best-section')?.closest('.content');
+            const newContentEl = document.querySelector('.new-section')?.closest('.content');
+
+            const inSearch = q.length > 0;
+
+            // 간단한 제목/저자 필터링 (검색 모드일 때만 의미 있음)
             const cards = document.querySelectorAll('.book-grid .book-card');
             let visible = 0;
             cards.forEach(card => {
-                const title = card.querySelector('.book-title')?.textContent.toLowerCase() || '';
+                const title = card.querySelector('.book-title-lg')?.textContent.toLowerCase() || '';
                 const author = card.querySelector('.book-author')?.textContent.toLowerCase() || '';
-                const show = q === '' || title.includes(q) || author.includes(q);
+                const show = !inSearch || title.includes(q) || author.includes(q);
                 card.style.display = show ? '' : 'none';
                 if (show) visible++;
             });
-            // 빈 결과 상태/그리드 표시 토글
-            if (emptyStateEl) emptyStateEl.style.display = visible === 0 ? 'flex' : 'none';
-            if (bookGridEl) bookGridEl.style.display = visible === 0 ? 'none' : '';
+
+            const hasResults = inSearch && visible > 0;
+
+            // 모드 토글: 검색 결과 유무에 따라 표시 제어
+            if (mainEl) {
+                mainEl.classList.toggle('search-mode', hasResults);
+                mainEl.classList.toggle('no-search', !hasResults);
+            }
+            if (searchFilterSectionEl) searchFilterSectionEl.style.display = hasResults ? '' : 'none';
+            if (bookGridEl) bookGridEl.style.display = hasResults ? '' : 'none';
+
+            // 베스트/신착 섹션은 "검색 중"이면 결과 여부와 관계없이 숨김
+            if (bestContentEl) bestContentEl.style.display = inSearch ? 'none' : '';
+            if (newContentEl) newContentEl.style.display = inSearch ? 'none' : '';
+
+            // 빈 결과 상태 표시
+            if (emptyStateEl) emptyStateEl.style.display = inSearch && !hasResults ? 'flex' : 'none';
         }
         
         searchBtn?.addEventListener('click', applySearchFilter);
         searchInput?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') applySearchFilter();
         });
+        
+        // 초기 화면: 검색어 없음 -> 메인(인기/신착)만 노출
+        applySearchFilter();
         
         // 필터 아이템 클릭 이벤트
         document.querySelectorAll('.filter-item').forEach(item => {
@@ -1039,6 +1003,80 @@
         // 초기화
         renderBest();
         initBestSlider();
+
+        // 신착 도서 데이터: 샘플 documents 기반으로 구성 (임시)
+        const newArrivals = documents.slice(0, 20).map((doc) => ({
+            title: doc.title,
+            image: doc.thumbnail,
+            author: doc.authors.join(', '),
+        }));
+
+        function renderNewArrivals() {
+            const track = document.getElementById('newTrack');
+            if (!track) return;
+            track.innerHTML = newArrivals.map(b => `
+                <div class="best-item">
+                    <div class="best-card" onclick="location.href='/book/detail'">
+                        <div class="best-cover">
+                            ${b.image ? `<img src=${b.image} alt="표지">` : '<i class="fas fa-book"></i>'}
+                        </div>
+                        <div class="best-info">
+                            <div class="best-title-text">${b.title}</div>
+                            <div class="best-author">${b.author}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initNewSlider() {
+            const track = document.getElementById('newTrack');
+            if (!track) return;
+            const viewport = track.closest('.best-viewport');
+            const prev = document.getElementById('newPrev');
+            const next = document.getElementById('newNext');
+
+            const PAGE_SIZE = 8;
+            let currentIndex = 0;
+            let itemFullWidth = 166; // item width 150 + gap 16
+            let itemsPerPage = PAGE_SIZE;
+            let maxIndex = 0;
+
+            const recompute = () => {
+                const firstItem = track.querySelector('.best-item');
+                if (firstItem) {
+                    const style = getComputedStyle(track);
+                    const gap = parseInt(style.columnGap || style.gap || '16', 10);
+                    itemFullWidth = firstItem.offsetWidth + gap;
+                }
+                itemsPerPage = Math.max(1, Math.min(PAGE_SIZE, Math.floor(viewport.clientWidth / itemFullWidth)));
+                const totalPages = Math.ceil(newArrivals.length / itemsPerPage);
+                maxIndex = Math.max(0, totalPages - 1);
+                currentIndex = Math.min(currentIndex, maxIndex);
+                update();
+            };
+
+            const update = () => {
+                const offset = currentIndex * itemFullWidth * itemsPerPage;
+                track.style.transform = `translateX(-${offset}px)`;
+                const atStart = currentIndex === 0;
+                const atEnd = currentIndex >= maxIndex;
+                [prev].forEach(btn => { if (btn) { btn.disabled = atStart; btn.style.opacity = atStart ? '0.5' : '1'; btn.style.cursor = atStart ? 'not-allowed' : 'pointer'; } });
+                [next].forEach(btn => { if (btn) { btn.disabled = atEnd; btn.style.opacity = atEnd ? '0.5' : '1'; btn.style.cursor = atEnd ? 'not-allowed' : 'pointer'; } });
+            };
+
+            const goPrev = () => { if (currentIndex > 0) { currentIndex = Math.max(0, currentIndex - 1); update(); } };
+            const goNext = () => { if (currentIndex < maxIndex) { currentIndex = Math.min(maxIndex, currentIndex + 1); update(); } };
+
+            if (prev) prev.addEventListener('click', goPrev);
+            if (next) next.addEventListener('click', goNext);
+            window.addEventListener('resize', recompute);
+            recompute();
+        }
+
+        // 신착 도서 초기화
+        renderNewArrivals();
+        initNewSlider();
     </script>
 </main>
 </body>

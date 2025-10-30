@@ -64,8 +64,21 @@
 
         /* 필터 칩 */
         .filter-section { display:flex; align: right; gap:8px; align-items:center; margin-top:20px; margin-bottom:20px; }
-        .filter-item { display:inline-flex; align-items:center; justify-content:center; min-height:32px; line-height:1; padding:6px 12px; border:1px solid #ddd; border-radius:16px; background:#fff; color:#555; cursor:pointer; }
-        .filter-item.active, .filter-item:hover { background:#E8F5E9; color:#2E7D32; border-color:#C8E6C9; }
+        .filter-item { display:inline-flex; align-items:center; justify-content:center; min-height:32px; line-height:1; padding:8px 14px; border:1px solid #ddd; border-radius:20px; background:#fff; color:#555; cursor:pointer; transition: all 0.2s ease; }
+        .filter-item.active, .filter-item:hover {
+            background: #66bb6a;
+            color: #fff;
+            border-color: #4caf50;
+            box-shadow: 0 2px 4px rgba(102,187,106,0.2);
+        }
+
+        @media (max-width: 600px) {
+            .filter-section {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 8px;
+            }
+        }
 
         .book-grid {
             display: flex;
@@ -79,7 +92,7 @@
             display: flex;
             align-items: flex-start;
             gap: 16px;
-            padding: 12px 150px 12px 12px; /* 우측 버튼 공간 확보 */
+            padding: 16px 140px 16px 16px; /* 우측 버튼 공간 확보 */
             background-color: #fff;
             border: 1px solid #eaeaea;
             border-radius: 8px;
@@ -109,12 +122,12 @@
         /* 추가: 메타/디테일/상태/소개, 액션 버튼 스타일 */
 
 
-        .book-grid .book-title-lg { font-size: 20px; font-weight:600; color:#333; margin: 2px 0 6px; }
+        .book-grid .book-title-lg { font-size: 20px; font-weight:600; color:#333; margin: 2px 0 6px; line-height: 1.4;}
         .book-grid .detail-line { font-size: 13px; color:#666; margin-bottom:6px; }
         .book-grid .status-line { display:flex; gap:14px; font-size:13px; margin:6px 0; color:#607D8B; }
         .book-grid .status-line .danger { color:#C62828; font-weight:600; }
         .book-grid .desc { font-size:13px; color:#555; margin-top:6px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .book-grid .book-actions { position:absolute; top:50%; right:16px; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-width:92px; margin:0; }
+        .book-grid .book-actions { position:absolute; top:50%; right:20px; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-width:92px; margin:0; }
         .book-grid .action-btn { width:92px; padding:8px 0; border:1.5px solid #666; background:#fff; color:#666; border-radius:8px; font-weight:600; font-size:14px; }
         .book-grid .loan-btn:hover {
             border: 1px solid #2E7D32;
@@ -144,14 +157,14 @@
             font-size: 16px;
         }
 
-        .book-card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        }
+        /*.book-card {*/
+        /*    background-color: #fff;*/
+        /*    border-radius: 8px;*/
+        /*    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
+        /*    overflow: hidden;*/
+        /*    transition: transform 0.3s, box-shadow 0.3s;*/
+        /*    cursor: pointer;*/
+        /*}*/
 
         .book-card:hover {
             transform: translateY(-5px);
@@ -236,6 +249,23 @@
         }
 
         @media (max-width: 768px) {
+            .best-item { width:130px; flex:0 0 130px; }
+            .best-cover { height:170px; }
+            .best-btn { width:32px; height:32px; font-size:14px; margin:0 4px; }
+
+            .book-grid .book-card {
+                flex-direction: column;
+                padding: 12px;
+                align-items: center;
+            }
+            .book-actions {
+                position: static;
+                transform: none;
+                flex-direction: row;
+                justify-content: center;
+                margin-top: 10px;
+            }
+
             .main-content {
                 flex-direction: column;
             }
@@ -254,7 +284,7 @@
             }
         }
         /* 베스트 도서 Top 30 슬라이더 */
-        .best-section { overflow: hidden; }
+        .best-section { overflow: hidden; border-bottom: 1px solid #e0e0e0; }
         .best-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
         .best-title { font-size:18px; color: #000000FF; display:flex; align-items:center; }
         .best-title i { margin-right:8px; }
@@ -289,11 +319,6 @@
             .best-item { width:135px; flex:0 0 135px; }
             .best-cover { height:175px; }
         }
-        @media (max-width: 768px) {
-            .best-item { width:130px; flex:0 0 130px; }
-            .best-cover { height:170px; }
-            .best-btn { width:32px; height:32px; font-size:14px; margin:0 4px; }
-        }
         @media (max-width: 576px) {
             .best-item { width:120px; flex:0 0 120px; }
             .best-cover { height:160px; }
@@ -306,7 +331,7 @@
         }
 
         /* 상단 고정 검색바 */
-        .fixed-searchbar { position: sticky; top: 0; left: 0; right: 0; background: #fff; border-bottom: 1px solid #eaeaea; box-shadow: 0 2px 6px rgba(0,0,0,.06); z-index: 1000; padding: 8px 16px; display: flex; justify-content: center; }
+        .fixed-searchbar { position: sticky; top: 0; left: 0; right: 0; background: #fff; border-bottom: 1px solid #eaeaea; box-shadow: 0 3px 8px rgba(0,0,0,0.05); z-index: 1000; padding: 8px 16px; display: flex; justify-content: center; }
         .fixed-searchbar .search-bar { max-width: 720px; width: 100%; }
 
         /* 검색 모드 토글 */

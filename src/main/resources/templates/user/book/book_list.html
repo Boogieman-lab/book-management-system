@@ -23,10 +23,10 @@
         .content {
             flex: 1;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-bottom: 20px;
+            /*border-radius: 10px;*/
+            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+            padding: 10px;
+            /*margin-bottom: 20px;*/
         }
 
         /*.page-title {*/
@@ -254,27 +254,27 @@
             }
         }
         /* 베스트 도서 Top 30 슬라이더 */
-        .best-section { margin-bottom: 24px; overflow: hidden; }
-        .best-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-        .best-title { font-size:20px; color:#00796B; display:flex; align-items:center; }
+        .best-section { overflow: hidden; }
+        .best-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .best-title { font-size:18px; color: #000000FF; display:flex; align-items:center; }
         .best-title i { margin-right:8px; }
         .best-slider { position:relative; }
-        .best-viewport { overflow:hidden; padding: 8px 0; min-width: 0;}
-        .best-track { display:flex; gap:16px; transition:transform .35s ease; will-change:transform; padding:8px 2px; }
-        .best-item { width:150px; flex:0 0 150px; }
+        .best-viewport { overflow:hidden; min-width: 0; padding: 0; }
+        .best-track { display:flex; gap:12px; transition:transform .35s ease; will-change:transform; }
+        .best-item { width:120px; flex:0 0 120px; }
         .best-card { position:relative; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden; transition: transform 0.3s, box-shadow 0.3s; }
-        .best-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
-        .best-cover { position:relative; height:218px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:36px; overflow:hidden; z-index:1; }
+        .best-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18); }
+        .best-cover { position:relative; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:32px; overflow:hidden; z-index:1; }
         .best-cover img { width:100%; height:100%; object-fit:cover; display:block; }
-        .best-info { padding:10px; }
-        .best-title-text { font-size:14px; font-weight:500; color:#333; margin-bottom:4px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-        .best-author { font-size:13px; color:#666; }
-        .rank-badge { position:absolute; top:6px; left:6px; background:#2E7D32; color:#fff; width:26px; height:26px; border-radius:4px; font-size:13px; display:flex; align-items:center; justify-content:center; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.2); z-index:3; pointer-events:none; }
+        .best-info { padding:6px; }
+        .best-title-text { font-size:12px; font-weight:600; color:#333; margin-bottom:3px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .best-author { font-size:12px; color:#666; }
+        .rank-badge { position:absolute; top:6px; left:6px; background:#2E7D32; color:#fff; width:24px; height:24px; border-radius:4px; font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.2); z-index:3; pointer-events:none; }
         .ebook-badge { position:absolute; top:6px; right:6px; background:#E8F5E9; color:#2E7D32; padding:2px 6px; border-radius:10px; font-size:11px; border:1px solid #C8E6C9; }
         /* 표지 이미지를 담는 변형 */
         .ebook-badge.image { position:absolute; top:6px; right:6px; width:120px; height:174px; padding:0; background:transparent; border:none; z-index:2; }
         .ebook-badge.image img { width:100%; height:100%; object-fit:cover; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
-        .best-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+        .best-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:2px; }
         .best-btn { padding:8px 12px; background:#fff; border:1px solid #ddd; color:#00796B; border-radius:6px; cursor:pointer; }
         .best-btn:hover { background:#E8F5E9; }
         .best-btn:disabled { opacity:0.5; cursor:not-allowed; }
@@ -397,7 +397,7 @@
     <div class="content">
         <div class="best-section">
             <div class="best-header">
-                <h3 class="best-title"><i class="fas fa-crown"></i> 베스트 도서 Top 30</h3>
+                <h3 class="best-title"><!--<i class="fas fa-crown"></i>--> 베스트자료 </h3>
             </div>
             <div class="best-slider">
                 <div class="best-viewport">
@@ -416,7 +416,7 @@
     <div class="content" th:if="${searchResults == null or #lists.isEmpty(searchResults)}">
         <div class="new-section">
             <div class="best-header">
-                <h3 class="best-title"><i class="fas fa-star"></i> 신착 도서</h3>
+                <h3 class="best-title"><!--<i class="fas fa-star"></i>--> 신착자료</h3>
                 <a href="#" class="best-btn" id="newMore">더보기 +</a>
             </div>
             <div class="best-slider">

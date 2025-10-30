@@ -258,8 +258,8 @@
         .best-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
         .best-title { font-size:18px; color: #000000FF; display:flex; align-items:center; }
         .best-title i { margin-right:8px; }
-        .best-slider { position:relative; }
-        .best-viewport { overflow:hidden; min-width: 0; padding: 0; }
+        .best-slider { position:relative; display:flex; align-items:center; }
+        .best-viewport { overflow:hidden; min-width: 0; padding: 0; flex:1; }
         .best-track { display:flex; gap:12px; transition:transform .35s ease; will-change:transform; }
         .best-item { width:120px; flex:0 0 120px; }
         .best-card { position:relative; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden; transition: transform 0.3s, box-shadow 0.3s; }
@@ -274,10 +274,11 @@
         /* 표지 이미지를 담는 변형 */
         .ebook-badge.image { position:absolute; top:6px; right:6px; width:120px; height:174px; padding:0; background:transparent; border:none; z-index:2; }
         .ebook-badge.image img { width:100%; height:100%; object-fit:cover; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
-        .best-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:2px; }
-        .best-btn { padding:8px 12px; background:#fff; border:1px solid #ddd; color:#00796B; border-radius:6px; cursor:pointer; }
-        .best-btn:hover { background:#E8F5E9; }
+        .best-footer { display:none; }
+        .best-btn { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#fff; border:1px solid #ddd; color:#00796B; border-radius:50%; cursor:pointer; font-size:16px; margin:0 8px; }
+        .best-btn:hover { background:#66BB6A; color:#fff; box-shadow:0 2px 6px rgba(0,0,0,.12); }
         .best-btn:disabled { opacity:0.5; cursor:not-allowed; }
+        .best-btn i { pointer-events:none; }
 
         /* 슬라이더 반응형 */
         @media (max-width: 1200px) {
@@ -291,11 +292,12 @@
         @media (max-width: 768px) {
             .best-item { width:130px; flex:0 0 130px; }
             .best-cover { height:170px; }
-            /*.nav-btn { width: 32px; height: 32px; }*/
+            .best-btn { width:32px; height:32px; font-size:14px; margin:0 4px; }
         }
         @media (max-width: 576px) {
             .best-item { width:120px; flex:0 0 120px; }
             .best-cover { height:160px; }
+            .best-btn { width:28px; height:28px; font-size:12px; margin:0 2px; }
         }
 
         main {
@@ -412,15 +414,13 @@
                 <h3 class="best-title"><!--<i class="fas fa-crown"></i>--> 베스트자료 </h3>
             </div>
             <div class="best-slider">
+                <button class="best-btn" id="bestPrevBottom" aria-label="이전"><i class="fas fa-chevron-left"></i></button>
                 <div class="best-viewport">
                     <div class="best-track" id="bestTrack">
                         <!-- JS로 30개 항목을 렌더링합니다 -->
                     </div>
                 </div>
-            </div>
-            <div class="best-footer">
-                <button class="best-btn" id="bestPrevBottom"><i class="fas fa-chevron-left"></i> 이전</button>
-                <button class="best-btn" id="bestNextBottom">다음 <i class="fas fa-chevron-right"></i></button>
+                <button class="best-btn" id="bestNextBottom" aria-label="다음"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
     </div>
@@ -432,13 +432,11 @@
                 <button class="more-btn" id="newMore">더보기 +</button>
             </div>
             <div class="best-slider">
+                <button class="best-btn" id="newPrev" aria-label="이전"><i class="fas fa-chevron-left"></i></button>
                 <div class="best-viewport">
                     <div class="best-track" id="newTrack"></div>
                 </div>
-            </div>
-            <div class="best-footer">
-                <button class="best-btn" id="newPrev"><i class="fas fa-chevron-left"></i> 이전</button>
-                <button class="best-btn" id="newNext">다음 <i class="fas fa-chevron-right"></i></button>
+                <button class="best-btn" id="newNext" aria-label="다음"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
     </div>

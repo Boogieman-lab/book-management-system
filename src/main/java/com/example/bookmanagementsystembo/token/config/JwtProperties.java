@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.auth.config;
+package com.example.bookmanagementsystembo.token.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

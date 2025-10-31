@@ -19,5 +19,16 @@ services:
       --collation-server=utf8mb4_general_ci
       --lower_case_table_names=0
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis-bms
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_bms_data:/data
+    restart: always
+
+
 volumes:
   mariadb_data:
+  redis_bms_data:

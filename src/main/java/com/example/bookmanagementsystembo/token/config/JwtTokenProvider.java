@@ -1,10 +1,7 @@
 package com.example.bookmanagementsystembo.token.config;
 
 import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -64,6 +61,22 @@ public class JwtTokenProvider {
 
     public String getUsername(String refreshToken) {
         return getClaims(refreshToken).getSubject();
+    }
+
+    public JwtPayloadInfo getPayloadInfo(String accessToken) {
+        try {
+            Claims claims = getClaims(accessToken);
+            String jti = claims.getId();
+            long nowSec = Instant.now().getEpochSecond();
+            long expSec = claims.getExpiration().toInstant().getEpochSecond();
+            long remain = expSec - nowSec;
+            return JwtPayloadInfo.of(jti, Math.max(0, remain));
+        } catch (ExpiredJwtException e) {
+            String jti = e.getClaims().getId();
+            return new JwtPayloadInfo(jti, 0);
+        } catch (JwtException | IllegalArgumentException e) {
+            return new JwtPayloadInfo(null, 0);
+        }
     }
 
     public String getJti(String token) {

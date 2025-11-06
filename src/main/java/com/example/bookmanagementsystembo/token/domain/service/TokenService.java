@@ -1,5 +1,6 @@
 package com.example.bookmanagementsystembo.token.domain.service;
 
+import com.example.bookmanagementsystembo.token.config.JwtPayloadInfo;
 import com.example.bookmanagementsystembo.token.config.JwtTokenProvider;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
@@ -29,6 +30,7 @@ public class TokenService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     public CreateTokenDto issue(String userEmail) {
         Users user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userEmail));
@@ -70,14 +72,11 @@ public class TokenService {
     public void logout(String userEmail, String accessToken) {
         tokenRepository.deleteById(userEmail);
 
-        long remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
-        if(remainingTime <= 0) {
-            return;
-        }
+        JwtPayloadInfo payloadInfo = jwtTokenProvider.getPayloadInfo(accessToken);
 
-        String jti = jwtTokenProvider.getJti(accessToken);
-
-        if(jti == null || jti.isBlank()) {
+        long remainingTime = payloadInfo.remainingTime();
+        String jti = payloadInfo.jti();
+        if(remainingTime <= 0 || jti == null || jti.isBlank()) {
             return;
         }
 

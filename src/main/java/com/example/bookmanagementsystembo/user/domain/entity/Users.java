@@ -3,11 +3,10 @@ package com.example.bookmanagementsystembo.user.domain.entity;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Comment;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -49,17 +48,9 @@ public class Users extends BaseEntity {
     @Comment("로그인 실패 횟수")
     private Integer loginFailCount = 0;
 
-    public static Users create(Long userId, String email, String password, String name, Long departmentId, String profileImage, Role role, Integer loginFailCount) {
-        Users user = new Users();
-        user.userId = userId;
-        user.email = email;
-        user.password = password;
-        user.name = name;
-        user.departmentId = departmentId;
-        user.profileImage = profileImage;
-        user.role = role;
-        user.loginFailCount = loginFailCount;
-        return user;
+
+    public static Users create(String email, String password, String name, Long departmentId, String profileImage, Role role) {
+        return new Users(null, email, password, name, departmentId, profileImage, role, 0);
     }
 
 }

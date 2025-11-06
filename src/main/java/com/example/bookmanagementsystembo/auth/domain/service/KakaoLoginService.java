@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.auth.domain.service;
 
-import com.example.bookmanagementsystembo.auth.KakaoClient;
+import com.example.bookmanagementsystembo.auth.KakaoOAuthClient;
 import com.example.bookmanagementsystembo.auth.presentation.dto.KakaoTokenResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.KakaoUserResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.LoginResult;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class KakaoLoginService {
 
-    private final KakaoClient kakaoClient;
+    private final KakaoOAuthClient kakaoOAuthClient;
 
     private final UserRepository userRepository;
 
@@ -25,19 +25,15 @@ public class KakaoLoginService {
 
     @Transactional
     public LoginResult login(String authorizationCode) {
-        KakaoTokenResponse kakaoTokenResponse = kakaoClient.getToken(authorizationCode);
-
-        KakaoUserResponse kakaoUserResponse = kakaoClient.getUserInfo(kakaoTokenResponse.getAccessToken());
+        KakaoTokenResponse kakaoTokenResponse = kakaoOAuthClient.getToken(authorizationCode);
+        KakaoUserResponse kakaoUserResponse = kakaoOAuthClient.getUserInfo(kakaoTokenResponse.getAccessToken());
 
         Long kakaoId = kakaoUserResponse.getId();
         String nickname = kakaoUserResponse.getKakaoAccount().getProfile().getNickname();
 
-        String email = "kakao" + kakaoId + "@";
+        String email = "kakao:" + kakaoId;
 
-        Users newUser = Users.create(
-                null, "kakao" + kakaoId + "@", null, nickname != null ? nickname : "카카오사용자",
-                null, null, Role.ROLE_USER, 0
-        );
+        Users newUser = Users.create(email, null, nickname != null ? nickname : "카카오사용자",null, null, Role.ROLE_USER);
 
         Users user = userRepository.findByEmail(email).orElseGet(() -> userRepository.save(newUser));
 

@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties({JwtProperties.class, KakaoOAuthProperties.class})
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -49,7 +49,7 @@ public class SecurityConfig {
                         // 인증 관련 엔드포인트 (로그인/회원가입 등)
                         .requestMatchers("/api/auth/**").permitAll()
                         // 화면 개발로 인해 임시 허용
-                        .requestMatchers("/user/book/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

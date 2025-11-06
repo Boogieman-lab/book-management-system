@@ -16,10 +16,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * 회원가입
-     * @param request
-     */
     @Transactional
     public void signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -27,14 +23,12 @@ public class AuthService {
         }
 
         Users user = Users.create(
-                null, // userId는 DB가 자동 생성
                 request.email(),
                 passwordEncoder.encode(request.password()),
-                request.username(), // name
-                null, // departmentId 없으면 null
-                "default-profile.png", // 기본 프로필 이미지
-                request.role(),
-                0 // loginFailCount 기본 0
+                request.username(),
+                null,
+                null,
+                request.role()
         );
 
         userRepository.save(user);

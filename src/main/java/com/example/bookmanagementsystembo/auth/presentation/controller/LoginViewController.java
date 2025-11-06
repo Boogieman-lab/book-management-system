@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
-@RequestMapping("/kakao/login")
+@RequestMapping("/user/auth")
 public class LoginViewController {
 
     @Value("${kakao.client-id}")
@@ -16,6 +16,11 @@ public class LoginViewController {
 
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
+
+    @GetMapping("/login")
+    public String login() {
+        return "user/auth/login";
+    }
 
     @GetMapping("/url")
     public ResponseEntity<String> getKakaoLoginUrl() {

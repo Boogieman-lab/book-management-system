@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/books")
@@ -45,4 +47,16 @@ public class BookController {
         bookService.deleteBook(bookId);
         return ResponseEntity.noContent().build();
     }
+
+    // 도서 제목 검색 (복수)
+    @GetMapping
+    public ResponseEntity<List<BookResponse>> getBooksByTitle(@RequestParam(required = false) String title) {
+        List<BookDto> books = bookService.getBooksByTitle(title);
+        List<BookResponse> response = books.stream()
+                .map(BookResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
 }

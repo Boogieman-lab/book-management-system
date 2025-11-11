@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -55,5 +57,12 @@ public class BookService {
 
         bookRepository.delete(book);
         bookHoldRepository.deleteByBookId(bookId);
+    }
+
+    public List<BookDto> getBooksByTitle(String title) {
+        return bookRepository.findByTitleContaining(title)
+                .stream()
+                .map(BookDto::from)
+                .toList();
     }
 }

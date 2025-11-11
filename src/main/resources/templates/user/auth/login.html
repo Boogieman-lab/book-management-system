@@ -224,10 +224,10 @@
             </svg>
             Google 계정으로 로그인
         </button>
-        <button class="kakao-btn" onclick="location.href='/oauth2/authorization/kakao'">
+        <a class="kakao-btn" th:href="${url}">
             <img th:src="@{/images/kakaotalk_app_logo.png}" alt="Kakao logo"> 카카오톡으로 로그인
-        </button>
-        
+        </a>
+
         <div class="signup-link">
             계정이 없으신가요? <a href="/signup">회원가입</a>
         </div>

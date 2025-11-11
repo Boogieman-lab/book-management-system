@@ -2,7 +2,7 @@
     <aside class="bm-sidebar" id="bmSidebar">
         <div class="fold-btn" onclick="foldSidebar()" id="foldBtn">≪</div>
 
-        <a href="/book/list" class="bm-menu-item" th:classappend="${activeMenu}=='books' ? ' active' : ''">
+        <a th:href="@{/user/book/bookList}" class="bm-menu-item" th:classappend="${activeMenu}=='books' ? ' active' : ''">
             <span class="bm-icon" aria-hidden="true">📖</span> <span>도서 목록</span>
         </a>
         <a href="/book/request" class="bm-menu-item" th:classappend="${activeMenu}=='request' ? ' active' : ''">

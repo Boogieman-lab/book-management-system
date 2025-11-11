@@ -2,9 +2,11 @@ package com.example.bookmanagementsystembo.token.config;
 
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.exception.ErrorResponse;
+import com.example.bookmanagementsystembo.user.domain.service.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -13,6 +15,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,13 +26,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final RedisTemplate<String, String> redisTemplate;
@@ -38,14 +43,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
-
+        String token = null;
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.hasText(header) || !header.startsWith("Bearer ")) {
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+            token = header.substring(7).trim();
+        } else {
+            // 2. Authorization 헤더가 없으면 쿠키에서 'accessToken'을 찾습니다.
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("accessToken".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!StringUtils.hasText(token)) {
             chain.doFilter(request, response);
             return;
         }
-
-        String token = header.substring(7).trim();
 
         if (tokenProvider.isInvalid(token)) {
             writeUnauthorized(response, ErrorType.TOKEN_INVALID);
@@ -63,10 +81,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         String username = tokenProvider.getUsername(token);
-        UserDetails user = userDetailsService.loadUserByUsername(username);
-        var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        String role = tokenProvider.getRole(token);
+
+        var auth = new UsernamePasswordAuthenticationToken(username, null, List.of(new SimpleGrantedAuthority(role)));
 
         SecurityContextHolder.getContext().setAuthentication(auth);
+        chain.doFilter(request, response);
     }
 
 

@@ -10,6 +10,7 @@ import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
 import com.example.bookmanagementsystembo.user.domain.entity.Users;
 import com.example.bookmanagementsystembo.user.infra.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,21 +24,22 @@ public class KakaoLoginService {
 
     private final TokenService tokenService;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
     public LoginResult login(String authorizationCode) {
         KakaoTokenResponse kakaoTokenResponse = kakaoOAuthClient.getToken(authorizationCode);
         KakaoUserResponse kakaoUserResponse = kakaoOAuthClient.getUserInfo(kakaoTokenResponse.getAccessToken());
-
         Long kakaoId = kakaoUserResponse.getId();
         String nickname = kakaoUserResponse.getKakaoAccount().getProfile().getNickname();
 
         String email = "kakao:" + kakaoId;
 
-        Users newUser = Users.create(email, null, nickname != null ? nickname : "카카오사용자",null, null, Role.ROLE_USER);
+        Users newUser = Users.create(email, passwordEncoder.encode("a1234"), nickname != null ? nickname : "카카오사용자",null, null, Role.ROLE_USER);
 
         Users user = userRepository.findByEmail(email).orElseGet(() -> userRepository.save(newUser));
 
-        CreateTokenDto tokens = tokenService.issue(user.getEmail());
+        CreateTokenDto tokens = tokenService.issue(user);
         return LoginResult.of(tokens.accessToken(), tokens.refreshToken(), user.getEmail(), user.getName());
     }
 }

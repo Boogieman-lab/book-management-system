@@ -31,11 +31,10 @@ public class TokenService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateTokenDto issue(String userEmail) {
-        Users user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userEmail));
+    public CreateTokenDto issue(Users user) {
+        String userEmail = user.getEmail();
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getRole());
+        String accessToken = jwtTokenProvider.createAccessToken(userEmail, user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(userEmail);
         long expirationSec = jwtTokenProvider.getRefreshSec();
 

@@ -13,12 +13,12 @@
 </head>
 <body>
 <!-- Header -->
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
 <!-- Sidebar + Main -->
 <div style="display:flex; flex:1; min-height: calc(100vh - 60px);">
     <!-- Sidebar 호출, activeMenu 전달 -->
-    <aside th:replace="fragments/sidebar :: sidebar(${activeMenu})"></aside>
+    <aside th:replace="~{fragments/sidebar :: sidebar(${activeMenu})}"></aside>
 
     <!-- Main Content -->
     <main layout:fragment="content" style="flex:1; padding:20px; background:#fff; margin-left: 20px; margin-right: 20px; border-radius:10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05);">
@@ -29,7 +29,7 @@
 </div>
 
 <!-- Footer -->
-<footer th:replace="fragments/footer :: footer"></footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/header.js}"></script>

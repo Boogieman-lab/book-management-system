@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/books")
@@ -45,4 +47,13 @@ public class BookController {
         bookService.deleteBook(bookId);
         return ResponseEntity.noContent().build();
     }
+
+    // 조회조건별 도서 검색 (복수)
+    @GetMapping
+    public List<BookResponse> searchBooks(
+            @RequestParam String field,
+            @RequestParam String query) {
+        return bookService.searchBooks(field, query);
+    }
+
 }

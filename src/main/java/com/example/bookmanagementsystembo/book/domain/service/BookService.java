@@ -7,11 +7,14 @@ import com.example.bookmanagementsystembo.book.domain.entity.Book;
 import com.example.bookmanagementsystembo.book.domain.entity.BookHold;
 import com.example.bookmanagementsystembo.book.infra.BookHoldRepository;
 import com.example.bookmanagementsystembo.book.infra.BookRepository;
+import com.example.bookmanagementsystembo.book.presentation.dto.BookResponse;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -55,5 +58,53 @@ public class BookService {
 
         bookRepository.delete(book);
         bookHoldRepository.deleteByBookId(bookId);
+    }
+
+    public List<BookDto> getBooksByTitle(String title) {
+        return bookRepository.findByTitleContaining(title)
+                .stream()
+                .map(BookDto::from)
+                .toList();
+    }
+    // Service
+    public List<BookResponse> searchBooks(String field, String query) {
+        List<BookDto> books;
+        switch (field.toLowerCase()) {
+            case "author":
+                books = getBooksByAuthor(query);
+                break;
+            case "publisher":
+                books = getBooksByPublisher(query);
+                break;
+            case "isbn":
+                books = getBooksByIsbn(query);
+                break;
+            case "title":
+            default:
+                books = getBooksByTitle(query);
+                break;
+        }
+        return BookResponse.from(books);
+    }
+
+    private List<BookDto> getBooksByIsbn(String query) {
+        return bookRepository.findByIsbn(query)
+                .stream()
+                .map(BookDto::from)
+                .toList();
+    }
+
+    private List<BookDto> getBooksByPublisher(String query) {
+        return bookRepository.findByPublisherContaining(query)
+                .stream()
+                .map(BookDto::from)
+                .toList();
+    }
+
+    private List<BookDto> getBooksByAuthor(String query) {
+        return bookRepository.findByAuthorsContaining(query)
+                .stream()
+                .map(BookDto::from)
+                .toList();
     }
 }

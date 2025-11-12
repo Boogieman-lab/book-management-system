@@ -48,15 +48,12 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
-    // 도서 제목 검색 (복수)
+    // 조회조건별 도서 검색 (복수)
     @GetMapping
-    public ResponseEntity<List<BookResponse>> getBooksByTitle(@RequestParam(required = false) String title) {
-        List<BookDto> books = bookService.getBooksByTitle(title);
-        List<BookResponse> response = books.stream()
-                .map(BookResponse::from)
-                .toList();
-
-        return ResponseEntity.ok(response);
+    public List<BookResponse> searchBooks(
+            @RequestParam String field,
+            @RequestParam String query) {
+        return bookService.searchBooks(field, query);
     }
 
 }

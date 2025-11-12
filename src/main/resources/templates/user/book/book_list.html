@@ -556,25 +556,31 @@
         }
 
         // 검색어 입력에 따른 Ajax 호출
+        const searchSelect = document.querySelector('.search-select'); // select box
         function applySearchFilter() {
-            const q = (searchInput?.value || '').trim();
+            const searchQuery = (searchInput?.value || '').trim();      // 검색어
+            const searchField = (searchSelect?.value || 'title');       // 검색 조건: title, author, publisher, isbn
 
-            if (!q) {
-                // 검색어 없을 때 초기 화면 처리
-                emptyStateEl.style.display = 'none';
-                bookGridEl.style.display = '';
-                searchCountEl.style.display = 'none';
+            if (!searchQuery) {
+                // 검색어가 없으면 기존 화면 표시
+                emptyStateEl.style.display = 'none';       // "검색 결과 없음" 메시지 숨김
+                bookGridEl.style.display = 'none';         // 검색 결과 그리드 숨김
+                searchCountEl.style.display = 'none';      // 검색 건수 숨김
+
+                // 베스트/신착 영역 표시
+                if (bestContentEl) bestContentEl.style.display = '';
+                if (newContentEl) newContentEl.style.display = '';
+
                 return;
             }
 
             $.ajax({
-                url: `/api/books?title=${encodeURIComponent(q)}`,
+                url: `/api/books?field=${encodeURIComponent(searchField)}&query=${encodeURIComponent(searchQuery)}`,
                 type: "GET",
                 contentType: "application/json; charset=utf-8",
                 success: function(data) {
                     renderBooks(data);
 
-                    // 베스트/신착 영역 숨김
                     if (bestContentEl) bestContentEl.style.display = 'none';
                     if (newContentEl) newContentEl.style.display = 'none';
                 },

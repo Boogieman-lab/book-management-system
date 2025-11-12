@@ -475,6 +475,10 @@
             <div class="filter-item">최신순</div>
             <div class="filter-item">가나다순</div>
         </div>
+        <!-- 검색 결과 건수 표시 -->
+        <div class="search-count" id="searchCount" style="margin: 8px 0; color: #333; display: none;">
+            검색 결과: 총 <span id="searchCountNumber">0</span>건
+        </div>
         <div id="bookList"></div>
     </div>
 
@@ -489,8 +493,10 @@
         const bookGridEl = document.querySelector('.book-grid');
         const bestContentEl = document.querySelector('.best-section')?.closest('.content');
         const newContentEl = document.querySelector('.new-section')?.closest('.content');
+        const searchCountEl = document.getElementById('searchCount');
+        const searchCountNumberEl = document.getElementById('searchCountNumber');
 
-        // 도서 목록 렌더링
+        // 도서 목록 렌더링 + 검색 건수 표시
         function renderBooks(books) {
             const $list = $("#bookList");
             $list.empty();
@@ -498,6 +504,11 @@
             if (!books || books.length === 0) {
                 emptyStateEl.style.display = 'flex';
                 bookGridEl.style.display = 'none';
+
+                if (searchCountEl && searchCountNumberEl) {
+                    searchCountEl.style.display = 'none';
+                    searchCountNumberEl.textContent = '0';
+                }
                 return;
             }
 
@@ -535,43 +546,50 @@
                 `;
                 $list.append(cardHtml);
             });
+
+            // Ajax 호출 후 바로 검색 건수 업데이트
+            if (searchCountEl && searchCountNumberEl) {
+                const visibleCount = books.length;
+                searchCountEl.style.display = 'block';
+                searchCountNumberEl.textContent = visibleCount;
+            }
         }
 
-        // 도서 검색 함수
-        function searchBooks() {
-            const title = (searchInput?.value || '').trim();
-            const inSearch = title.length > 0;
+        // 검색어 입력에 따른 Ajax 호출
+        function applySearchFilter() {
+            const q = (searchInput?.value || '').trim();
 
-            if (!inSearch) {
-                // 검색어 없을 때 초기 상태 복원
+            if (!q) {
+                // 검색어 없을 때 초기 화면 처리
                 emptyStateEl.style.display = 'none';
-                bookGridEl.style.display = 'none';
-                bestContentEl && (bestContentEl.style.display = '');
-                newContentEl && (newContentEl.style.display = '');
+                bookGridEl.style.display = '';
+                searchCountEl.style.display = 'none';
                 return;
             }
 
-            // 검색 중에는 베스트/신착 숨김
-            bestContentEl && (bestContentEl.style.display = 'none');
-            newContentEl && (newContentEl.style.display = 'none');
-
             $.ajax({
-                url: `/api/books?title=${encodeURIComponent(title)}`,
+                url: `/api/books?title=${encodeURIComponent(q)}`,
                 type: "GET",
                 contentType: "application/json; charset=utf-8",
-                success: (data) => renderBooks(data),
-                error: (xhr, status, error) => {
-                    console.error("도서 검색 오류:", error);
+                success: function(data) {
+                    renderBooks(data);
+
+                    // 베스트/신착 영역 숨김
+                    if (bestContentEl) bestContentEl.style.display = 'none';
+                    if (newContentEl) newContentEl.style.display = 'none';
+                },
+                error: function(xhr, status, error) {
+                    console.error("에러 발생:", error);
                     alert("도서 검색 중 오류가 발생했습니다.");
                 }
             });
         }
 
-        // 검색 이벤트 등록
-        searchBtn?.addEventListener('click', searchBooks);
+        searchBtn?.addEventListener('click', applySearchFilter);
         searchInput?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') searchBooks();
+            if (e.key === 'Enter') applySearchFilter();
         });
+
 
         // 필터 아이템 클릭 이벤트
         document.querySelectorAll('.filter-item').forEach(item => {

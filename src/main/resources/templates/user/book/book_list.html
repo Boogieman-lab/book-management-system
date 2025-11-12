@@ -41,12 +41,12 @@
         /*    margin-right: 10px;*/
         /*}*/
 
-        .search-filter-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
+        /*.search-filter-section {*/
+        /*    display: flex;*/
+        /*    flex-wrap: wrap;*/
+        /*    gap: 15px;*/
+        /*    margin-bottom: 30px;*/
+        /*}*/
 
         .search-bar button {
             padding: 12px 20px;
@@ -83,8 +83,9 @@
         .book-grid {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            margin-bottom: 30px;
+            /*gap: 16px;*/
+            /*margin-bottom: 30px;*/
+            /*margin-top: 30px;*/
         }
         /* 세로 리스트 레이아웃 */
         .book-grid .book-card {
@@ -335,9 +336,9 @@
         .fixed-searchbar .search-bar { max-width: 720px; width: 100%; }
 
         /* 검색 모드 토글 */
-        .no-search .search-filter-section, .no-search .book-grid { display: none; }
-        .search-mode .search-filter-section { display: block; }
-        .search-mode .book-grid { display: flex; }
+        /*.no-search .search-filter-section, .no-search .book-grid { display: none; }*/
+        /*.search-mode .search-filter-section { display: block; }*/
+        /*.search-mode .book-grid { display: flex; }*/
 
         .search-bar {
             display: flex;
@@ -466,8 +467,6 @@
         </div>
     </div>
 
-
-
     <div class="book-grid">
         <div class="filter-section">
             <div class="filter-item active">전체</div>
@@ -476,289 +475,117 @@
             <div class="filter-item">최신순</div>
             <div class="filter-item">가나다순</div>
         </div>
-        <!-- 도서 카드 1 -->
-        <div class="book-card" onclick="location.href='/book/detail/1'">
-            <div class="best-cover">
-                <img src="https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F927035%3Ftimestamp%3D20251017110311" alt="전자책 표지">
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">클린 코드</h3>
-                <div class="detail-line"><span class="author">로버트 C. 마틴</span> / <span class="publisher">한빛미디어</span> / <span class="pubdate">2023-02-01</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">“클린 코드”는 읽기 좋은 코드 작성을 위한 원칙과 사례를 다룬 베스트 셀러로, 실제 프로젝트에서 적용 가능한 실천 방안을 제시합니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <!-- 도서 카드 2 -->
-        <div class="book-card" onclick="location.href='/book/detail/2'">
-            <div class="best-cover">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">객체지향의 사실과 오해</h3>
-                <div class="detail-line"><span class="author">조영호</span> / <span class="publisher">위키북스</span> / <span class="pubdate">2015-01-15</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">객체지향의 핵심 개념과 설계 원칙을 쉽게 설명하며 올바른 모델링 감각을 기릅니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <!-- 도서 카드 3 -->
-        <div class="book-card" onclick="location.href='/book/detail/3'">
-            <div class="best-cover">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">리팩터링 2판</h3>
-                <div class="detail-line"><span class="author">마틴 파울러</span> / <span class="publisher">한빛미디어</span> / <span class="pubdate">2020-06-01</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">리팩터링 원칙과 기법을 최신 언어와 사례로 재구성한 개정판입니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <!-- 도서 카드 4 -->
-        <div class="book-card" onclick="location.href='/book/detail/4'">
-            <div class="best-cover">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">모던 자바스크립트 Deep Dive</h3>
-                <div class="detail-line"><span class="author">이웅모</span> / <span class="publisher">위키북스</span> / <span class="pubdate">2021-09-01</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">자바스크립트 핵심 개념을 깊이 있게 다루며 언어 내부를 이해하기 쉽게 설명합니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <!-- 도서 카드 5 -->
-        <div class="book-card" onclick="location.href='/book/detail/5'">
-            <div class="best-cover">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">함께 자라기</h3>
-                <div class="detail-line"><span class="author">김창준</span> / <span class="publisher">인사이트</span> / <span class="pubdate">2018-07-01</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">개발자 성장과 협업 문화를 다루며 조직과 개인의 성장을 돕는 실천을 제시합니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <!-- 도서 카드 6 -->
-        <div class="book-card" onclick="location.href='/book/detail/6'">
-            <div class="best-cover">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">토비의 스프링 3.1</h3>
-                <div class="detail-line"><span class="author">이일민</span> / <span class="publisher">에이콘</span> / <span class="pubdate">2012-09-01</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">스프링 프레임워크의 핵심을 깊이 있게 다룬 고전으로, 실무 적용에 뛰어납니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <!-- 도서 카드 7 -->
-        <div class="book-card" onclick="location.href='/book/detail/7'">
-            <div class="best-cover">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">클린 아키텍처</h3>
-                <div class="detail-line"><span class="author">로버트 C. 마틴</span> / <span class="publisher">인사이트</span> / <span class="pubdate">2017-10-01</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">소프트웨어 아키텍처 원칙과 경계를 설명하며 유지보수 가능한 시스템을 설계하는 방법을 제시합니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <!-- 도서 카드 8 -->
-        <div class="book-card" onclick="location.href='/book/detail/8'">
-            <div class="best-cover">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="book-info">
-
-                <h3 class="book-title-lg">도메인 주도 설계</h3>
-                <div class="detail-line"><span class="author">에릭 에반스</span> / <span class="publisher">에이콘</span> / <span class="pubdate">2004-08-30</span></div>
-                <div class="status-line">
-                    <span class="status-loan danger">대출 0/1</span>
-                    <span class="status-reserve">예약 0</span>
-                    <span class="status-total">누적대출 7</span>
-                    <span class="status-recommend">추천 0</span>
-                </div>
-                <p class="desc">DDD의 핵심 개념과 전략을 정리하여 복잡한 도메인을 모델링하는 방법을 제시합니다.</p>
-            </div>
-            <div class="book-actions">
-                <button class="action-btn loan-btn">대출</button>
-                <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-            </div>
-        </div>
-
-        <div class="pagination">
-            <div class="page-item">
-                <a href="#" class="page-link"><i class="fas fa-angle-left"></i></a>
-            </div>
-            <div class="page-item active">
-                <a href="#" class="page-link">1</a>
-            </div>
-            <div class="page-item">
-                <a href="#" class="page-link">2</a>
-            </div>
-            <div class="page-item">
-                <a href="#" class="page-link">3</a>
-            </div>
-            <div class="page-item">
-                <a href="#" class="page-link"><i class="fas fa-angle-right"></i></a>
-            </div>
-        </div>
+        <div id="bookList"></div>
     </div>
 
     <!-- 검색 결과 없음 상태 영역 -->
     <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
 
     <script>
-        // 검색 입력/버튼으로 그리드 필터링 및 빈 상태 표시
+        // DOM 요소 캐싱
         const searchInput = document.querySelector('.search-bar input');
         const searchBtn = document.querySelector('.search-bar button');
         const emptyStateEl = document.getElementById('emptyState');
         const bookGridEl = document.querySelector('.book-grid');
-        
-        /*
-         * 검색어 입력에 따라 메인 영역 표시 상태를 제어하고,
-         * 도서 그리드 카드들을 제목/저자 기준으로 필터링합니다.
-         * 검색 중에는 베스트/신착 섹션을 숨기고, 결과가 없으면 빈 상태를 노출합니다.
-         */
-        function applySearchFilter() {
-            const q = (searchInput?.value || '').trim().toLowerCase();
-            const mainEl = document.querySelector('main');
-            const searchFilterSectionEl = document.querySelector('.search-filter-section');
-            const bestContentEl = document.querySelector('.best-section')?.closest('.content');
-            const newContentEl = document.querySelector('.new-section')?.closest('.content');
+        const bestContentEl = document.querySelector('.best-section')?.closest('.content');
+        const newContentEl = document.querySelector('.new-section')?.closest('.content');
 
-            const inSearch = q.length > 0;
+        // 도서 목록 렌더링
+        function renderBooks(books) {
+            const $list = $("#bookList");
+            $list.empty();
 
-            // 간단한 제목/저자 필터링 (검색 모드일 때만 의미 있음)
-            const cards = document.querySelectorAll('.book-grid .book-card');
-            let visible = 0;
-            cards.forEach(card => {
-                const title = card.querySelector('.book-title-lg')?.textContent.toLowerCase() || '';
-                const author = card.querySelector('.book-author')?.textContent.toLowerCase() || '';
-                const show = !inSearch || title.includes(q) || author.includes(q);
-                card.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-
-            const hasResults = inSearch && visible > 0;
-
-            // 모드 토글: 검색 결과 유무에 따라 표시 제어
-            if (mainEl) {
-                mainEl.classList.toggle('search-mode', hasResults);
-                mainEl.classList.toggle('no-search', !hasResults);
+            if (!books || books.length === 0) {
+                emptyStateEl.style.display = 'flex';
+                bookGridEl.style.display = 'none';
+                return;
             }
-            if (searchFilterSectionEl) searchFilterSectionEl.style.display = hasResults ? '' : 'none';
-            if (bookGridEl) bookGridEl.style.display = hasResults ? '' : 'none';
 
-            // 베스트/신착 섹션은 "검색 중"이면 결과 여부와 관계없이 숨김
-            if (bestContentEl) bestContentEl.style.display = inSearch ? 'none' : '';
-            if (newContentEl) newContentEl.style.display = inSearch ? 'none' : '';
+            emptyStateEl.style.display = 'none';
+            bookGridEl.style.display = '';
 
-            // 빈 결과 상태 표시
-            if (emptyStateEl) emptyStateEl.style.display = inSearch && !hasResults ? 'flex' : 'none';
+            books.forEach(book => {
+                const authors = Array.isArray(book.authors) ? book.authors.join(", ") : book.authors || "저자 미상";
+                const pubDate = book.datetime ? new Date(book.datetime).toISOString().split("T")[0] : "-";
+                const thumbnailHtml = (book.thumbnail && book.thumbnail.trim() !== '')
+                    ? `<img src="${book.thumbnail.trim()}" alt="${book.title}">`
+                    : `<i class="fas fa-book"></i>`;
+
+                const cardHtml = `
+                    <div class="book-card" onclick="location.href='${book.url?.trim() || '#'}'">
+                        <div class="best-cover">${thumbnailHtml}</div>
+                        <div class="book-info">
+                            <h3 class="book-title-lg">${book.title || "제목 없음"}</h3>
+                            <div class="detail-line">
+                                <span class="author">${authors}</span> /
+                                <span class="publisher">${book.publisher || "출판사 미상"}</span> /
+                                <span class="pubdate">${pubDate}</span>
+                            </div>
+                            <div class="status-line">
+                                <!--<span class="status-loan danger">판매상태: </span>-->
+                                <span class="status-total">ISBN: ${book.isbn || "-"}</span>
+                            </div>
+                            <p class="desc">${book.contents || ""}</p>
+                        </div>
+                        <div class="book-actions">
+                            <button class="action-btn loan-btn">대출</button>
+                            <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
+                        </div>
+                    </div>
+                `;
+                $list.append(cardHtml);
+            });
         }
-        
-        searchBtn?.addEventListener('click', applySearchFilter);
+
+        // 도서 검색 함수
+        function searchBooks() {
+            const title = (searchInput?.value || '').trim();
+            const inSearch = title.length > 0;
+
+            if (!inSearch) {
+                // 검색어 없을 때 초기 상태 복원
+                emptyStateEl.style.display = 'none';
+                bookGridEl.style.display = 'none';
+                bestContentEl && (bestContentEl.style.display = '');
+                newContentEl && (newContentEl.style.display = '');
+                return;
+            }
+
+            // 검색 중에는 베스트/신착 숨김
+            bestContentEl && (bestContentEl.style.display = 'none');
+            newContentEl && (newContentEl.style.display = 'none');
+
+            $.ajax({
+                url: `/api/books?title=${encodeURIComponent(title)}`,
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                success: (data) => renderBooks(data),
+                error: (xhr, status, error) => {
+                    console.error("도서 검색 오류:", error);
+                    alert("도서 검색 중 오류가 발생했습니다.");
+                }
+            });
+        }
+
+        // 검색 이벤트 등록
+        searchBtn?.addEventListener('click', searchBooks);
         searchInput?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') applySearchFilter();
+            if (e.key === 'Enter') searchBooks();
         });
-        
-        // 초기 화면: 검색어 없음 -> 메인(인기/신착)만 노출
-        applySearchFilter();
-        
+
         // 필터 아이템 클릭 이벤트
         document.querySelectorAll('.filter-item').forEach(item => {
             item.addEventListener('click', function() {
-                // 모든 필터 아이템 비활성화
-                document.querySelectorAll('.filter-item').forEach(filter => {
-                    filter.classList.remove('active');
-                });
-
-                // 클릭한 필터 아이템 활성화
+                document.querySelectorAll('.filter-item').forEach(el => el.classList.remove('active'));
                 this.classList.add('active');
-
-                // 실제 구현에서는 여기에 필터링 로직 추가
-                const filterType = this.textContent;
-                console.log('필터 적용:', filterType);
-
-                // 예시: 필터에 따라 도서 목록 업데이트 (실제 구현 필요)
-                filterBooks(filterType);
+                console.log('필터 적용:', this.textContent);
+                // TODO: filterBooks(this.textContent);
             });
         });
+
+        // 초기 상태
+        bookGridEl.style.display = 'none';
+        emptyStateEl.style.display = 'none';
 
         // 도서 필터링 함수 (실제 구현 필요)
         /*

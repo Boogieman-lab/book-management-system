@@ -63,6 +63,12 @@ public class JwtTokenProvider {
         return getClaims(refreshToken).getSubject();
     }
 
+
+    public String getRole(String accessToken) {
+        Claims claims = getClaims(accessToken);
+        return claims.get("role", String.class);
+    }
+
     public JwtPayloadInfo getPayloadInfo(String accessToken) {
         try {
             Claims claims = getClaims(accessToken);

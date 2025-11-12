@@ -21,11 +21,11 @@ public class TokenController {
 
     private final TokenService tokenService;
 
-    @PostMapping("/issue")
-    public ResponseEntity<TokenRes> issueToken(@RequestBody TokenIssueReq req) {
-        CreateTokenDto createToken = tokenService.issue(req.userEmail());
-        return ResponseEntity.ok(TokenRes.from(createToken));
-    }
+//    @PostMapping("/issue")
+//    public ResponseEntity<TokenRes> issueToken(@RequestBody TokenIssueReq req) {
+//        CreateTokenDto createToken = tokenService.issue(req.userEmail());
+//        return ResponseEntity.ok(TokenRes.from(createToken));
+//    }
 
     @PostMapping("/reissue")
     public ResponseEntity<TokenRes> reissueToken(@RequestBody TokenReIssueReq req) {

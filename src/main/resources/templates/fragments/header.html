@@ -1,4 +1,4 @@
-<div th:fragment="header">
+<div th:fragment="header" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <header class="bm-header">
         <div class="logo-section">
             <a href="/" style="display:flex;align-items:center;text-decoration:none;">
@@ -10,12 +10,21 @@
 
         <!-- 햄버거 버튼 -->
         <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <div class="user-section" sec:authorize="isAuthenticated()">
+                <div class="user-profile" th:text="${#strings.substring(#authentication.name, 0, 1)}">U</div>
+                <span class="user-name" sec:authentication="name">사용자</span>
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="bm-btn">로그아웃</button>
+                </form>
+            </div>
 
-        <div class="user-section" id="userSection">
-            <div class="user-profile" th:text="${#strings.substring(session?.userName?:'G',0,1)}">U</div>
-            <span class="user-name" th:text="${session?.userName?:'게스트'}">게스트</span>
-            <a href="/logout" class="bm-btn" th:if="${session?.userName}">로그아웃</a>
-            <a href="../user/auth/login.html" class="bm-btn" th:unless="${session?.userName}">로그인</a>
-        </div>
+            <div class="user-section" sec:authorize="isAnonymous()">
+                <div class="user-profile">G</div>
+                <span class="user-name">게스트</span>
+                <a th:href="@{/user/auth/login}" class="bm-btn">로그인</a>
+            </div>
+
+
+
     </header>
 </div>

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,24 +56,7 @@
             display: flex;
             align-items: center;
         }
-        
-        .user-profile {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #66BB6A;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        
-        .user-name {
-            margin-right: 15px;
-        }
-        
+
         .main-content {
             display: flex;
             gap: 20px;
@@ -357,139 +342,103 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo-section">
-                <img src="../../../static/images/logo.png" alt="부기맨 로고" class="logo">
-                <h1>Boogieman</h1>
-            </div>
-            <div class="user-section">
-                <div class="user-profile">홍</div>
-                <span class="user-name">홍길동님</span>
-                <a href="/logout" class="btn btn-secondary">로그아웃</a>
-            </div>
-        </header>
-        
-        <div class="main-content">
-            <div class="sidebar">
-                <a href="/book/list" class="menu-item active">
-                    <i class="fas fa-book"></i> 도서 목록
-                </a>
-                <a href="/book/request" class="menu-item">
-                    <i class="fas fa-file-alt"></i> 희망도서 신청
-                </a>
-                <a href="/loan/mypage" class="menu-item">
-                    <i class="fas fa-user"></i> 마이페이지
-                </a>
-                <a href="/loan/reserve" class="menu-item">
-                    <i class="fas fa-bookmark"></i> 예약 현황
-                </a>
-                <a href="/notice/list" class="menu-item">
-                    <i class="fas fa-bullhorn"></i> 공지사항
-                </a>
-                <a href="/notice/notification" class="menu-item">
-                    <i class="fas fa-bell"></i> 알림
-                </a>
-                <a href="/about" class="menu-item">
-                    <i class="fas fa-info-circle"></i> 소개
-                </a>
-            </div>
-            
-            <div class="content">
-                <a href="/book/list" class="back-button">
-                    <i class="fas fa-arrow-left"></i> 도서 목록으로 돌아가기
-                </a>
-                
-                <h2 class="page-title">
-                    <i class="fas fa-book"></i> 도서 상세 정보
-                </h2>
-                
-                <div class="book-detail">
-                    <div class="book-cover">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    
-                    <div class="book-info">
-                        <h3 class="book-title">클린 코드</h3>
-                        
-                        <div class="book-meta">
-                            <div class="meta-item">
-                                <div class="meta-label">저자</div>
-                                <div class="meta-value">로버트 C. 마틴</div>
-                            </div>
-                            
-                            <div class="meta-item">
-                                <div class="meta-label">출판사</div>
-                                <div class="meta-value">인사이트</div>
-                            </div>
-                            
-                            <div class="meta-item">
-                                <div class="meta-label">출판일</div>
-                                <div class="meta-value">2013-12-24</div>
-                            </div>
-                            
-                            <div class="meta-item">
-                                <div class="meta-label">ISBN</div>
-                                <div class="meta-value">9788966260959</div>
-                            </div>
-                            
-                            <div class="meta-item">
-                                <div class="meta-label">분류</div>
-                                <div class="meta-value">프로그래밍</div>
-                            </div>
+
+<main layout:fragment="content" th:with="activeMenu='books'" class="no-search">
+    <div class="main-content">
+        <div class="content">
+            <a href="/user/book/bookList" class="back-button">
+                <i class="fas fa-arrow-left"></i> 도서 목록으로 돌아가기
+            </a>
+
+            <h2 class="page-title">
+                <i class="fas fa-book"></i> 도서 상세 정보
+            </h2>
+
+            <div class="book-detail">
+                <div class="book-cover">
+                    <i class="fas fa-book"></i>
+                </div>
+
+                <div class="book-info">
+                    <h3 class="book-title">클린 코드</h3>
+
+                    <div class="book-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">저자</div>
+                            <div class="meta-value">로버트 C. 마틴</div>
                         </div>
-                        
-                        <div class="book-status status-unavailable">대출 중 (반납 예정일: 2023-06-30)</div>
-                        
-                        <div class="action-buttons">
-                            <button id="loanBtn" class="btn btn-disabled" disabled>대출하기</button>
-                            <button id="reserveBtn" class="btn btn-primary">예약하기</button>
-                            <button id="extendBtn" class="btn btn-disabled" disabled>연장하기</button>
-                            <button id="returnBtn" class="btn btn-disabled" disabled>반납하기</button>
+
+                        <div class="meta-item">
+                            <div class="meta-label">출판사</div>
+                            <div class="meta-value">인사이트</div>
+                        </div>
+
+                        <div class="meta-item">
+                            <div class="meta-label">출판일</div>
+                            <div class="meta-value">2013-12-24</div>
+                        </div>
+
+                        <div class="meta-item">
+                            <div class="meta-label">ISBN</div>
+                            <div class="meta-value">9788966260959</div>
+                        </div>
+
+                        <div class="meta-item">
+                            <div class="meta-label">분류</div>
+                            <div class="meta-value">프로그래밍</div>
                         </div>
                     </div>
+
+                    <div class="book-status status-unavailable">대출 중 (반납 예정일: 2023-06-30)</div>
+
+                    <div class="action-buttons">
+                        <button id="loanBtn" class="btn btn-disabled" disabled>대출하기</button>
+                        <button id="reserveBtn" class="btn btn-primary">예약하기</button>
+                        <button id="extendBtn" class="btn btn-disabled" disabled>연장하기</button>
+                        <button id="returnBtn" class="btn btn-disabled" disabled>반납하기</button>
+                    </div>
                 </div>
-                
-                <div class="book-description">
-                    <h4 class="description-title">도서 소개</h4>
-                    <p>
-                        『클린 코드』는 오브젝트 멘토(Object Mentor)의 창립자이자 UML과 디자인 패턴, 익스트림 프로그래밍(XP), TDD에 대한 글을 발표해온 저자 로버트 마틴이 오랜 경험을 바탕으로 '개발하며 배우는 진정한 클린 코드의 작성법'에 대한 지침을 제시한다. 이 책은 많은 코드를 읽고 그에 대해 생각하는 시간을 가질 것을 요구한다. 여러분이 이 책을 읽고 연습문제를 풀고, 또 직접 코드를 작성하는 데 시간과 노력을 투자한다면, 열정적인 프로그래머로서 깨끗하고 수준 높은 코드를 만들어내는 능력을 갖추게 될 것이다.
-                    </p>
-                </div>
-                
-                <div class="loan-history">
-                    <h4 class="history-title">대출 이력</h4>
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th>대출일</th>
-                                <th>반납일</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2023-06-01</td>
-                                <td>-</td>
-                                <td>대출 중</td>
-                            </tr>
-                            <tr>
-                                <td>2023-05-01</td>
-                                <td>2023-05-15</td>
-                                <td>반납 완료</td>
-                            </tr>
-                            <tr>
-                                <td>2023-04-01</td>
-                                <td>2023-04-15</td>
-                                <td>반납 완료</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            </div>
+
+            <div class="book-description">
+                <h4 class="description-title">도서 소개</h4>
+                <p>
+                    『클린 코드』는 오브젝트 멘토(Object Mentor)의 창립자이자 UML과 디자인 패턴, 익스트림 프로그래밍(XP), TDD에 대한 글을 발표해온 저자 로버트 마틴이 오랜 경험을 바탕으로 '개발하며 배우는 진정한 클린 코드의 작성법'에 대한 지침을 제시한다. 이 책은 많은 코드를 읽고 그에 대해 생각하는 시간을 가질 것을 요구한다. 여러분이 이 책을 읽고 연습문제를 풀고, 또 직접 코드를 작성하는 데 시간과 노력을 투자한다면, 열정적인 프로그래머로서 깨끗하고 수준 높은 코드를 만들어내는 능력을 갖추게 될 것이다.
+                </p>
+            </div>
+
+            <div class="loan-history">
+                <h4 class="history-title">대출 이력</h4>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>대출일</th>
+                            <th>반납일</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2023-06-01</td>
+                            <td>-</td>
+                            <td>대출 중</td>
+                        </tr>
+                        <tr>
+                            <td>2023-05-01</td>
+                            <td>2023-05-15</td>
+                            <td>반납 완료</td>
+                        </tr>
+                        <tr>
+                            <td>2023-04-01</td>
+                            <td>2023-04-15</td>
+                            <td>반납 완료</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    
+
     <!-- 예약 확인 모달 -->
     <div id="reserveModal" class="modal">
         <div class="modal-content">
@@ -617,5 +566,6 @@
             updateButtonStatus(bookStatus, isCurrentUserBorrower);
         });
     </script>
+</main>
 </body>
 </html>

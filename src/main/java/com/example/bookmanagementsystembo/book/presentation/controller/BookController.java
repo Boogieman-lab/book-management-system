@@ -18,9 +18,9 @@ public class BookController {
 
     private final BookService bookService;
 
-    // 도서 조회 (단수)
+    // 도서 상세 조회 (단수)
     @GetMapping("/{bookId}")
-    public ResponseEntity<BookResponse> getBook(@PathVariable Long bookId) {
+    public ResponseEntity<BookResponse> getBookDetail(@PathVariable Long bookId) {
         BookDto book = bookService.getBookById(bookId);
         return ResponseEntity.ok(BookResponse.from(book));
     }

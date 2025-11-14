@@ -98,6 +98,7 @@
             border: 1px solid #eaeaea;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            cursor: pointer;
         }
         /*.book-grid .book-cover {*/
         /*    flex: 0 0 120px;*/
@@ -521,9 +522,8 @@
                 const thumbnailHtml = (book.thumbnail && book.thumbnail.trim() !== '')
                     ? `<img src="${book.thumbnail.trim()}" alt="${book.title}">`
                     : `<i class="fas fa-book"></i>`;
-
                 const cardHtml = `
-                    <div class="book-card" onclick="location.href='${book.url?.trim() || '#'}'">
+                    <div class="book-card" onclick="location.href='/user/book/bookDetail/${book.bookId}'">
                         <div class="best-cover">${thumbnailHtml}</div>
                         <div class="book-info">
                             <h3 class="book-title-lg">${book.title || "제목 없음"}</h3>

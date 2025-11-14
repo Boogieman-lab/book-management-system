@@ -10,124 +10,83 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
             font-family: 'Noto Sans KR', sans-serif;
         }
-        
+
         body {
             background-color: #E8F5E9;
             color: #333;
             line-height: 1.6;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .logo-section {
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo {
-            width: 50px;
-            margin-right: 15px;
-        }
-        
-        h1 {
-            color: #00796B;
-            font-size: 24px;
-        }
-        
-        .user-section {
-            display: flex;
-            align-items: center;
-        }
 
-        .main-content {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .sidebar {
-            width: 250px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-        
-        .menu-item:hover {
-            background-color: #E8F5E9;
-        }
-        
-        .menu-item.active {
-            background-color: #00796B;
-            color: white;
-        }
-        
-        .menu-item i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
+        /*header {*/
+        /*    display: flex;*/
+        /*    justify-content: space-between;*/
+        /*    align-items: center;*/
+        /*    margin-bottom: 30px;*/
+        /*    padding-bottom: 10px;*/
+        /*    border-bottom: 1px solid #ddd;*/
+        /*}*/
+
+        /*.logo-section {*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*}*/
+
+        /*.logo {*/
+        /*    width: 50px;*/
+        /*    margin-right: 15px;*/
+        /*}*/
+
+        /*h1 {*/
+        /*    color: #00796B;*/
+        /*    font-size: 24px;*/
+        /*}*/
+
+        /*.user-section {*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*}*/
+
+        /*.main-content {*/
+        /*    display: flex;*/
+        /*    gap: 20px;*/
+        /*}*/
+
         .content {
             flex: 1;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+            /*border-radius: 10px;*/
+            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+            padding: 10px;
+            /*margin-bottom: 20px;*/
         }
         
-        .page-title {
-            color: #00796B;
-            margin-bottom: 20px;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-        }
+        /*.page-title {*/
+        /*    color: #00796B;*/
+        /*    margin-bottom: 20px;*/
+        /*    font-size: 22px;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*}*/
         
-        .page-title i {
-            margin-right: 10px;
-        }
+        /*.page-title i {*/
+        /*    margin-right: 10px;*/
+        /*}*/
         
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            color: #00796B;
-            text-decoration: none;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
+        /*.back-button {*/
+        /*    display: inline-flex;*/
+        /*    align-items: center;*/
+        /*    color: #00796B;*/
+        /*    text-decoration: none;*/
+        /*    margin-bottom: 20px;*/
+        /*    font-weight: 500;*/
+        /*}*/
         
-        .back-button i {
-            margin-right: 5px;
-        }
+        /*.back-button i {*/
+        /*    margin-right: 5px;*/
+        /*}*/
         
         .book-detail {
             display: flex;
@@ -161,7 +120,7 @@
         
         .book-title {
             font-size: 24px;
-            color: #00796B;
+            color: #000000;
             margin-bottom: 10px;
         }
         
@@ -253,30 +212,30 @@
             margin-bottom: 15px;
         }
         
-        .loan-history {
+        .holding-info {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #eee;
         }
         
-        .history-title {
+        .info-title {
             font-size: 18px;
             color: #00796B;
             margin-bottom: 15px;
         }
         
-        .history-table {
+        .info-table {
             width: 100%;
             border-collapse: collapse;
         }
         
-        .history-table th, .history-table td {
+        .info-table th, .info-table td {
             padding: 10px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
         
-        .history-table th {
+        .info-table th {
             font-weight: 500;
             color: #555;
         }
@@ -319,12 +278,7 @@
             .main-content {
                 flex-direction: column;
             }
-            
-            .sidebar {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-            
+
             .content {
                 padding: 20px;
             }
@@ -346,13 +300,13 @@
 <main layout:fragment="content" th:with="activeMenu='books'" class="no-search">
     <div class="main-content">
         <div class="content">
-            <a href="/user/book/bookList" class="back-button">
-                <i class="fas fa-arrow-left"></i> 도서 목록으로 돌아가기
-            </a>
+<!--            <a href="/user/book/bookList" class="back-button">-->
+<!--                <i class="fas fa-arrow-left"></i> 도서 목록으로 돌아가기-->
+<!--            </a>-->
 
-            <h2 class="page-title">
-                <i class="fas fa-book"></i> 도서 상세 정보
-            </h2>
+<!--            <h2 class="page-title">-->
+<!--                <i class="fas fa-book"></i> 도서 상세 정보-->
+<!--            </h2>-->
 
             <div class="book-detail">
                 <div class="book-cover">
@@ -407,9 +361,9 @@
                 </p>
             </div>
 
-            <div class="loan-history">
-                <h4 class="history-title">대출 이력</h4>
-                <table class="history-table">
+            <div class="holding-info">
+                <h4 class="info-title">소장 정보</h4>
+                <table class="info-table">
                     <thead>
                         <tr>
                             <th>대출일</th>
@@ -469,7 +423,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         // 예약 버튼 클릭 이벤트
         document.getElementById('reserveBtn').addEventListener('click', function() {

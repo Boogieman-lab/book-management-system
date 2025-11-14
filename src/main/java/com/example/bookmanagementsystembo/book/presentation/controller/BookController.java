@@ -1,6 +1,7 @@
 package com.example.bookmanagementsystembo.book.presentation.controller;
 
 import com.example.bookmanagementsystembo.book.domain.dto.BookDto;
+import com.example.bookmanagementsystembo.book.enums.BookSearchField;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookCreateRequest;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookResponse;
 import com.example.bookmanagementsystembo.book.domain.service.BookService;
@@ -53,7 +54,8 @@ public class BookController {
     public List<BookResponse> searchBooks(
             @RequestParam String field,
             @RequestParam String query) {
-        return bookService.searchBooks(field, query);
+        BookSearchField enumField = BookSearchField.valueOf(field.toUpperCase());
+        return bookService.searchBooks(enumField, query);
     }
 
 }

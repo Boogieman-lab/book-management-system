@@ -5,6 +5,7 @@ import com.example.bookmanagementsystembo.book.domain.dto.BookDto;
 import com.example.bookmanagementsystembo.book.domain.dto.BookUpdateDto;
 import com.example.bookmanagementsystembo.book.domain.entity.Book;
 import com.example.bookmanagementsystembo.book.domain.entity.BookHold;
+import com.example.bookmanagementsystembo.book.enums.BookSearchField;
 import com.example.bookmanagementsystembo.book.infra.BookHoldRepository;
 import com.example.bookmanagementsystembo.book.infra.BookRepository;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookResponse;
@@ -66,24 +67,15 @@ public class BookService {
                 .map(BookDto::from)
                 .toList();
     }
+
     // Service
-    public List<BookResponse> searchBooks(String field, String query) {
-        List<BookDto> books;
-        switch (field.toLowerCase()) {
-            case "author":
-                books = getBooksByAuthor(query);
-                break;
-            case "publisher":
-                books = getBooksByPublisher(query);
-                break;
-            case "isbn":
-                books = getBooksByIsbn(query);
-                break;
-            case "title":
-            default:
-                books = getBooksByTitle(query);
-                break;
-        }
+    public List<BookResponse> searchBooks(BookSearchField field, String query) {
+        List<BookDto> books = switch (field) {
+            case AUTHOR -> getBooksByAuthor(query);
+            case PUBLISHER -> getBooksByPublisher(query);
+            case ISBN -> getBooksByIsbn(query);
+            case TITLE -> getBooksByTitle(query);
+        };
         return BookResponse.from(books);
     }
 

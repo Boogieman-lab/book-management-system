@@ -21,7 +21,6 @@
             --color-status-available-bg: #E8F5E9;
             --color-status-loan-bg: #FFF8E1;
             --color-status-overdue-bg: #FFEBEE;
-            --color-status-etc-bg: #F5F5F5;
             --color-text-dark: #212121;
             --color-text-muted: #757575;
             --color-gray-50: #F9FAFB;
@@ -38,7 +37,7 @@
 
         body {
             background-color: var(--color-primary-green-light);
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         /* 메인 콘텐츠 영역 (main layout:fragment="content") */
@@ -65,19 +64,41 @@
             }
         }
 
-        /* 도서 상세 정보 섹션 */
+        /* 상단 상세 정보 + 도서 소개를 담는 컨테이너 (수정/추가) */
+        .top-detail-container {
+            display: flex;
+            flex-direction: column; /* 모바일: 수직 정렬 */
+            gap: 2rem; /* gap-8 */
+            margin-bottom: 2rem; /* 하단 소장 정보와 분리 */
+        }
+        @media (min-width: 1024px) { /* 데스크톱: 좌우 정렬 */
+            .top-detail-container {
+                flex-direction: row;
+                gap: 2.5rem; /* md:gap-10 */
+                align-items: flex-start;
+            }
+        }
+
+
+        /* 도서 상세 정보 섹션 (좌측 칼럼) */
         .book-detail-section {
             display: flex;
             flex-direction: column;
             gap: 1.5rem; /* gap-6 */
-            margin-bottom: 2rem; /* mb-8 */
+            margin-bottom: 0; /* top-detail-container에서 마진 관리 */
         }
         @media (min-width: 768px) {
             .book-detail-section {
                 flex-direction: row;
                 gap: 2.5rem; /* md:gap-10 */
-                /* ***** 수직 중앙 정렬로 변경 ***** */
                 align-items: center;
+            }
+        }
+        @media (min-width: 1024px) {
+            .book-detail-section {
+                flex-basis: 45%; /* 전체 가로 너비의 45% 차지 */
+                max-width: 45%;
+                flex-shrink: 0;
             }
         }
 
@@ -98,9 +119,10 @@
         }
         @media (min-width: 768px) {
             .book-cover {
-                width: 10rem; /* md:w-40 */
+                width: 10rem; /* md:w-40 (160px) */
                 display: block;
                 margin-bottom: 0; /* md:mb-0 */
+                margin-top: 0;
             }
         }
 
@@ -109,52 +131,97 @@
             font-size: 1.875rem; /* text-3xl */
             font-weight: 700;
             color: var(--color-text-dark);
-            margin-top: 0; /* 수정: 제목 위쪽 여백 제거 */
+            margin-top: 0; /* 제목 위쪽 여백 제거 */
             margin-bottom: 1rem; /* mb-4 */
         }
 
         /* 도서 메타 정보 */
         .book-info {
             flex: 1; /* flex-1 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        @media (min-width: 768px) {
+            .book-info {
+                min-height: 240px;
+            }
+        }
+
+        .book-meta-top {
+            display: flex;
+            flex-direction: column;
         }
         .book-meta {
             display: flex;
             flex-direction: column;
             gap: 0.75rem; /* space-y-3 */
-            margin-bottom: 1.5rem; /* mb-6 */
+            margin-bottom: 0;
             font-size: 1rem; /* text-base */
         }
+
+        /* 캡처 이미지처럼 깔끔하게 정렬하기 위한 CSS 수정 */
         .meta-item {
             display: flex;
-            align-items: flex-start; /* items-start */
+            align-items: center;
+            font-size: 1.1rem;
         }
         .meta-label {
-            font-weight: 500; /* font-medium */
-            color: var(--color-text-muted);
-            width: 4rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+            width: 5rem; /* 고정 너비로 레이블 정렬 */
             flex-shrink: 0;
+            margin-right: 0.75rem; /* 레이블과 분리선 사이 간격 확대 */
         }
         .meta-separator {
-            color: var(--color-text-muted);
-            padding-right: 0.75rem; /* pr-3 */
+            color: var(--color-text-dark);
+            padding-right: 0.75rem; /* 분리선과 값 사이 간격 */
             flex-shrink: 0;
+            font-weight: 500;
         }
         .meta-value {
             color: var(--color-text-dark);
-            font-weight: 500; /* font-medium */
-            flex: 1; /* flex-1 */
+            font-weight: 400;
+            flex: 1;
+        }
+        /* /캡처 이미지 정렬 CSS 수정 끝 */
+
+
+        /* 도서 소개 섹션 (우측 칼럼) */
+        .book-description {
+            /* 기존 수직 레이아웃용 마진/패딩/구분선 제거 */
+            margin-top: 0; /* mt-8 제거 */
+            padding-top: 0; /* pt-6 제거 */
+            border-top: none; /* 상단 border 제거 */
+            flex: 1; /* 남은 공간 차지 (모바일) */
         }
 
-        /* 소장 정보 섹션 */
-        .holding-info {
-            /*padding-top: 1.5rem; !* pt-6 *!*/
-            border-top: 1px solid var(--color-gray-100);
+        @media (min-width: 1024px) {
+            .book-description {
+                flex-basis: 55%; /* 전체 가로 너비의 55% 차지 */
+                padding-left: 2.5rem; /* 좌우 내용물 간 간격 확보 */
+                border-left: 1px solid var(--color-gray-100); /* 좌측 구분선 추가 */
+                align-self: flex-start;
+            }
         }
+
+        .book-description p {
+            color: var(--color-text-dark);
+            line-height: 1.625; /* leading-relaxed */
+        }
+
         .section-title {
             font-size: 1.25rem; /* text-xl */
             font-weight: 600; /* font-semibold */
             color: var(--color-primary-green);
             margin-bottom: 1rem; /* mb-4 */
+        }
+
+        /* 소장 정보 섹션 (여전히 하단에 위치) */
+        .holding-info {
+            margin-top: 2rem;
+            padding-top: 1.5rem; /* pt-6 */
+            border-top: 1px solid var(--color-gray-100);
         }
 
         /* 테이블 스타일 */
@@ -248,17 +315,6 @@
             font-size: 0.875rem;
             color: var(--color-primary-green-dark);
             font-weight: 600;
-        }
-
-        /* 도서 소개 섹션 */
-        .book-description {
-            margin-top: 2rem; /* mt-8 */
-            /*padding-top: 1.5rem; !* pt-6 *!*/
-            border-top: 1px solid var(--color-gray-100);
-        }
-        .book-description p {
-            color: var(--color-text-dark);
-            line-height: 1.625; /* leading-relaxed */
         }
 
         /* 모달 스타일 */
@@ -357,61 +413,80 @@
         <!-- 메인 콘텐츠 카드 -->
         <div class="book-detail-card">
 
-            <!-- 도서 상세 정보 -->
-            <div class="book-detail-section">
+            <!-- 상단 도서 상세 정보 및 소개 컨테이너 (수정: 좌우 정렬을 위한 새로운 래퍼) -->
+            <div class="top-detail-container">
 
-                <!-- 도서 커버 -->
-                <div class="book-cover">
-                    <img
-                            src="https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F838090%3Ftimestamp%3D20250625113714"
-                            alt="도서 커버 이미지"
-                            onerror="this.onerror=null; this.src='https://placehold.co/160x240/f0f0f0/999?text=NO+IMAGE';"
-                            class=""
-                    />
-                </div>
+                <!-- 도서 상세 정보 (좌측 칼럼) -->
+                <div class="book-detail-section">
 
-                <!-- 도서 메타 정보 -->
-                <div class="book-info">
-                    <h3 class="book-title">자바 ORM 표준 JPA 프로그래밍</h3>
+                    <!-- 도서 커버 -->
+                    <div class="book-cover">
+                        <img
+                                src="https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F838090%3Ftimestamp%3D20250625113714"
+                                alt="도서 커버 이미지"
+                                onerror="this.onerror=null; this.src='https://placehold.co/160x240/f0f0f0/999?text=NO+IMAGE';"
+                                class=""
+                        />
+                    </div>
 
-                    <!-- 메타 정보 리스트 -->
-                    <div class="book-meta">
+                    <!-- 도서 메타 정보 -->
+                    <div class="book-info">
+                        <div class="book-meta-top">
+                            <h3 class="book-title">자바 ORM 표준 JPA 프로그래밍</h3>
 
-                        <div class="meta-item">
-                            <span class="meta-label">저자</span>
-                            <span class="meta-separator">|</span>
-                            <span class="meta-value">김영한</span>
-                        </div>
+                            <!-- 메타 정보 리스트 -->
+                            <div class="book-meta">
 
-                        <div class="meta-item">
-                            <span class="meta-label">출판사</span>
-                            <span class="meta-separator">|</span>
-                            <span class="meta-value">에이콘출판</span>
-                        </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">저자</span>
+                                    <span class="meta-separator">|</span>
+                                    <span class="meta-value">김영한</span>
+                                </div>
 
-                        <div class="meta-item">
-                            <span class="meta-label">출판일</span>
-                            <span class="meta-separator">|</span>
-                            <span class="meta-value">2013-12-24</span>
-                        </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">출판사</span>
+                                    <span class="meta-separator">|</span>
+                                    <span class="meta-value">에이콘출판</span>
+                                </div>
 
-                        <div class="meta-item">
-                            <span class="meta-label">ISBN</span>
-                            <span class="meta-separator">|</span>
-                            <span class="meta-value">9788960777330</span>
-                        </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">출판일</span>
+                                    <span class="meta-separator">|</span>
+                                    <span class="meta-value">2013-12-24</span>
+                                </div>
 
-                        <div class="meta-item">
-                            <span class="meta-label">분류</span>
-                            <span class="meta-separator">|</span>
-                            <span class="meta-value">프로그래밍</span>
+                                <div class="meta-item">
+                                    <span class="meta-label">ISBN</span>
+                                    <span class="meta-separator">|</span>
+                                    <span class="meta-value">9788960777330</span>
+                                </div>
+
+                                <div class="meta-item">
+                                    <span class="meta-label">분류</span>
+                                    <span class="meta-separator">|</span>
+                                    <span class="meta-value">프로그래밍</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- /도서 상세 정보 끝 -->
+
+
+                <!-- 도서 소개 (우측 칼럼) -->
+                <div class="book-description">
+                    <h4 class="section-title">도서 소개</h4>
+                    <p>
+                        JPA의 기초부터 성능 최적화, 스프링 데이터 JPA와 QueryDSL 활용법까지 실무 중심으로 다룹니다.
+                    </p>
+                </div>
+                <!-- /도서 소개 끝 -->
+
             </div>
+            <!-- /top-detail-container 끝 -->
 
 
-            <!-- 소장 정보 -->
+            <!-- 소장 정보 (하단 고정) -->
             <div class="holding-info">
                 <h4 class="section-title">소장 정보 (총: 7권)</h4>
                 <div class="table-container">
@@ -432,14 +507,8 @@
                     </table>
                 </div>
             </div>
+            <!-- /소장 정보 끝 -->
 
-            <!-- 도서 소개 -->
-            <div class="book-description">
-                <h4 class="section-title">도서 소개</h4>
-                <p>
-                    JPA의 기초부터 성능 최적화, 스프링 데이터 JPA와 QueryDSL 활용법까지 실무 중심으로 다룹니다.
-                </p>
-            </div>
         </div>
     </div>
 
@@ -561,7 +630,7 @@
 
                 const loanUserText = hasBorrower ?
                     `<div class="loan-user-name">${mask(h.loanUser.name)}</div><div class="loan-user-id">(${maskId(h.loanUser.id)})</div>` :
-                    '<span class="text-text-muted">-</span>';
+                    '<span style="color: var(--color-text-muted);">-</span>';
 
                 const returnDateText = hasBorrower && h.returnDate ? h.returnDate : '<span style="color: var(--color-text-muted);">-</span>';
 

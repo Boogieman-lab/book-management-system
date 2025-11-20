@@ -1,6 +1,6 @@
-package com.example.bookmanagementsystembo.book.domain.entity;
+package com.example.bookmanagementsystembo.bookBorrow.domain.entity;
 
-import com.example.bookmanagementsystembo.book.enums.BorrowStatus;
+import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -1,6 +1,6 @@
-package com.example.bookmanagementsystembo.book.infra;
+package com.example.bookmanagementsystembo.bookBorrow.infra;
 
-import com.example.bookmanagementsystembo.book.domain.entity.BookBorrow;
+import com.example.bookmanagementsystembo.bookBorrow.domain.entity.BookBorrow;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookBorrowRepository extends JpaRepository<BookBorrow, Long>, BookBorrowQueryRepository {

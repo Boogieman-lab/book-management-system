@@ -1,9 +1,9 @@
-package com.example.bookmanagementsystembo.book.infra;
+package com.example.bookmanagementsystembo.bookBorrow.infra;
 
-import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDto;
 import com.example.bookmanagementsystembo.book.domain.entity.QBook;
-import com.example.bookmanagementsystembo.book.domain.entity.QBookBorrow;
+import com.example.bookmanagementsystembo.bookBorrow.domain.entity.QBookBorrow;
 import com.example.bookmanagementsystembo.book.domain.entity.QBookHold;
 import com.example.bookmanagementsystembo.department.entity.QDepartment;
 import com.example.bookmanagementsystembo.user.domain.entity.QUsers;

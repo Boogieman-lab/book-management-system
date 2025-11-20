@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.book.domain.dto;
+package com.example.bookmanagementsystembo.bookBorrow.domain.dto;
 
 import java.time.LocalDateTime;
 

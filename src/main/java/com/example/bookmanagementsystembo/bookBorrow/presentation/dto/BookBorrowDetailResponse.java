@@ -1,6 +1,6 @@
-package com.example.bookmanagementsystembo.book.presentation.dto;
+package com.example.bookmanagementsystembo.bookBorrow.presentation.dto;
 
-import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDetailDto;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.book.enums;
+package com.example.bookmanagementsystembo.bookBorrow.enums;
 
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;

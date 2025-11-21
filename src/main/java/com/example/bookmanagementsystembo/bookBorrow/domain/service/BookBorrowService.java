@@ -1,10 +1,10 @@
-package com.example.bookmanagementsystembo.book.domain.service;
+package com.example.bookmanagementsystembo.bookBorrow.domain.service;
 
-import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDto;
-import com.example.bookmanagementsystembo.book.domain.entity.BookBorrow;
-import com.example.bookmanagementsystembo.book.enums.BorrowStatus;
-import com.example.bookmanagementsystembo.book.infra.BookBorrowRepository;
+import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.bookBorrow.domain.entity.BookBorrow;
+import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
+import com.example.bookmanagementsystembo.bookBorrow.infra.BookBorrowRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,7 @@ import com.example.bookmanagementsystembo.book.domain.dto.BookCreateDto;
 import com.example.bookmanagementsystembo.book.domain.dto.BookDto;
 import com.example.bookmanagementsystembo.book.domain.entity.Book;
 import com.example.bookmanagementsystembo.book.domain.service.BookService;
-import com.example.bookmanagementsystembo.book.infra.BookHoldRepository;
+import com.example.bookmanagementsystembo.bookHold.infra.BookHoldRepository;
 import com.example.bookmanagementsystembo.book.infra.BookRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

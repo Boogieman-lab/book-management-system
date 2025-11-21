@@ -1,11 +1,11 @@
-package com.example.bookmanagementsystembo.book.presentation.controller;
+package com.example.bookmanagementsystembo.bookBorrow.presentation.controller;
 
-import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.book.domain.dto.BookBorrowDto;
-import com.example.bookmanagementsystembo.book.presentation.dto.BookBorrowCreateRequest;
-import com.example.bookmanagementsystembo.book.presentation.dto.BookBorrowDetailResponse;
-import com.example.bookmanagementsystembo.book.presentation.dto.BookBorrowResponse;
-import com.example.bookmanagementsystembo.book.domain.service.BookBorrowService;
+import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.bookBorrow.presentation.dto.BookBorrowCreateRequest;
+import com.example.bookmanagementsystembo.bookBorrow.presentation.dto.BookBorrowDetailResponse;
+import com.example.bookmanagementsystembo.bookBorrow.presentation.dto.BookBorrowResponse;
+import com.example.bookmanagementsystembo.bookBorrow.domain.service.BookBorrowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

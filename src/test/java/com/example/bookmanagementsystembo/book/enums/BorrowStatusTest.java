@@ -1,5 +1,6 @@
 package com.example.bookmanagementsystembo.book.enums;
 
+import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import org.junit.jupiter.api.DisplayName;

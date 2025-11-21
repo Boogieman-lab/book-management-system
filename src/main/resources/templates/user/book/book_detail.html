@@ -262,18 +262,31 @@
             font-weight: 500; /* font-medium */
             border-radius: 9999px; /* rounded-full */
         }
+        /* 대출 가능 (AVAILABLE) */
         .status-available-badge {
             background-color: var(--color-status-available-bg);
             color: var(--color-primary-green-dark);
         }
+
+        /* 예약 중 (RESERVED) - 새로운 상태 */
+        .status-reserved-badge {
+            background-color: var(--color-status-reserved-bg, #DBEAFE);
+            color: var(--color-primary-blue-dark, #1D4ED8);
+        }
+
+        /* 대출 중 (BORROWED) */
         .status-loan-badge {
             background-color: var(--color-status-loan-bg);
             color: var(--color-secondary-yellow-dark);
         }
+
+        /* 연체 중 (OVERDUE) */
         .status-overdue-badge {
             background-color: var(--color-status-overdue-bg);
             color: #DC2626; /* red-600 */
         }
+
+        /* 분실, 폐기 (LOST, DISCARDED) 및 기타 상태 */
         .status-etc-badge {
             background-color: var(--color-status-etc-bg);
             color: var(--color-text-muted);
@@ -410,105 +423,82 @@
 
 <main layout:fragment="content" th:with="activeMenu='books'" class="main-content-area no-search">
     <div class="main-content">
-        <!-- 메인 콘텐츠 카드 -->
         <div class="book-detail-card">
 
-            <!-- 상단 도서 상세 정보 및 소개 컨테이너 (수정: 좌우 정렬을 위한 새로운 래퍼) -->
             <div class="top-detail-container">
-
-                <!-- 도서 상세 정보 (좌측 칼럼) -->
                 <div class="book-detail-section">
-
-                    <!-- 도서 커버 -->
                     <div class="book-cover">
-                        <img
-                                src="https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F838090%3Ftimestamp%3D20250625113714"
-                                alt="도서 커버 이미지"
-                                onerror="this.onerror=null; this.src='https://placehold.co/160x240/f0f0f0/999?text=NO+IMAGE';"
-                                class=""
+                        <img id="bookThumbnail"
+                             src=""
+                             alt="도서 커버 이미지"
+                             onerror="this.onerror=null; this.src=''"
                         />
                     </div>
 
-                    <!-- 도서 메타 정보 -->
                     <div class="book-info">
                         <div class="book-meta-top">
-                            <h3 class="book-title">자바 ORM 표준 JPA 프로그래밍</h3>
+                            <h3 id="bookTitle" class="book-title">-</h3>
 
-                            <!-- 메타 정보 리스트 -->
                             <div class="book-meta">
-
                                 <div class="meta-item">
                                     <span class="meta-label">저자</span>
                                     <span class="meta-separator">|</span>
-                                    <span class="meta-value">김영한</span>
+                                    <span id="bookAuthors" class="meta-value">-</span>
                                 </div>
 
                                 <div class="meta-item">
                                     <span class="meta-label">출판사</span>
                                     <span class="meta-separator">|</span>
-                                    <span class="meta-value">에이콘출판</span>
+                                    <span id="bookPublisher" class="meta-value">-</span>
                                 </div>
 
                                 <div class="meta-item">
                                     <span class="meta-label">출판일</span>
                                     <span class="meta-separator">|</span>
-                                    <span class="meta-value">2013-12-24</span>
+                                    <span id="bookDatetime" class="meta-value">-</span>
                                 </div>
 
                                 <div class="meta-item">
                                     <span class="meta-label">ISBN</span>
                                     <span class="meta-separator">|</span>
-                                    <span class="meta-value">9788960777330</span>
+                                    <span id="bookIsbn" class="meta-value">-</span>
                                 </div>
 
-                                <div class="meta-item">
+                                <!--<div class="meta-item">
                                     <span class="meta-label">분류</span>
                                     <span class="meta-separator">|</span>
-                                    <span class="meta-value">프로그래밍</span>
-                                </div>
+                                    <span id="bookStatus" class="meta-value">-</span>
+                                </div>-->
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- /도서 상세 정보 끝 -->
 
-
-                <!-- 도서 소개 (우측 칼럼) -->
                 <div class="book-description">
                     <h4 class="section-title">도서 소개</h4>
-                    <p>
-                        JPA의 기초부터 성능 최적화, 스프링 데이터 JPA와 QueryDSL 활용법까지 실무 중심으로 다룹니다.
-                    </p>
+                    <p id="bookContents">-</p>
                 </div>
-                <!-- /도서 소개 끝 -->
-
             </div>
-            <!-- /top-detail-container 끝 -->
 
-
-            <!-- 소장 정보 (하단 고정) -->
             <div class="holding-info">
-                <h4 class="section-title">소장 정보 (총: 7권)</h4>
+                <h4 class="section-title">소장 정보 (<span id="holdingsCount">총: 0권</span>)</h4>
                 <div class="table-container">
                     <table class="holdings-table">
                         <thead>
                         <tr>
                             <th>등록번호</th>
                             <th>도서 상태</th>
-                            <th>대출자</th>
+                            <th>대출자(id)</th>
                             <th>반납예정일</th>
                             <th>예약자 수</th>
                             <th>서비스</th>
                         </tr>
                         </thead>
-                        <tbody id="holdingsTbody">
-                        <!-- JS에 의해 데이터가 채워집니다. -->
-                        </tbody>
+                        <tbody id="holdingsTbody"></tbody>
                     </table>
                 </div>
             </div>
             <!-- /소장 정보 끝 -->
-
         </div>
     </div>
 
@@ -539,42 +529,21 @@
         </div>
     </div>
 
-    <script>
-        // 글로벌 상태를 저장할 변수
-        let currentModalAction = ''; // 'reserve' 또는 'cancel'
+    <input type="hidden" id="bookId" th:value="${bookId}"/>
 
-        // 상태 텍스트에 따라 스타일을 반환하는 헬퍼 함수
-        function getStatusBadge(status) {
-            let className = '';
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const bookId = /*[[${bookId}]]*/ 0;
 
-            switch (status) {
-                case '대출가능':
-                    className = 'status-available-badge';
-                    break;
-                case '대출중':
-                    className = 'status-loan-badge';
-                    break;
-                case '연체중':
-                    className = 'status-overdue-badge';
-                    break;
-                case '분실':
-                case '폐기':
-                case '수리':
-                    className = 'status-etc-badge';
-                    break;
-                default:
-                    className = 'status-etc-badge';
-            }
-            return `<span class="status-badge ${className}">${status}</span>`;
-        }
-
-        // 버튼 스타일 클래스 정의
-        const BUTTON_STYLE = {
-            reserve: "btn-action btn-reserve",
-            cancel: "btn-action btn-cancel",
-            disabled: "btn-disabled"
-        };
-
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch(`/api/books/detail/${bookId}`)
+                .then(res => res.json())
+                .then(data => {
+                    renderBookInfo(data);
+                    renderHoldingsRows(data.holds, /* 현재 사용자: 서버에서 주면 좋음 */ { id: 1, name: '김수현' });
+                })
+                .catch(err => console.error(err));
+        });
         // 모달 열기
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'flex';
@@ -587,7 +556,7 @@
 
         // 모달 액션 처리 (예약 또는 예약 취소)
         function handleModalAction() {
-            const regNo = document.getElementById('reserveModalText').dataset.regno;
+            const regNo = document.getElementById('reserveModalText').dataset.holdid;
             const action = currentModalAction;
 
             closeModal('reserveModal');
@@ -606,94 +575,150 @@
             // 실제 서비스에서는 여기에 서버 API 호출 로직이 들어갑니다.
         }
 
-        // 소장 정보 행 렌더링
+        function renderBookInfo(book) {
+            document.getElementById('bookTitle').textContent = book.title || '-';
+            document.getElementById('bookThumbnail').src = book.thumbnail || '/mnt/data/cf149bcc-1e0f-4a96-8146-f4663b3ab48e.png';
+            document.getElementById('bookAuthors').textContent = book.authors;
+            document.getElementById('bookPublisher').textContent = book.publisher || '-';
+            document.getElementById('bookDatetime').textContent = book.datetime ? book.datetime.substring(0,10) : '-';
+            document.getElementById('bookIsbn').textContent = book.isbn || '-';
+            // document.getElementById('bookStatus').textContent = book.status || '-';
+            document.getElementById('bookContents').textContent = book.contents || '-';
+            document.getElementById('holdingsCount').textContent = `총: ${book.holds.length || 0}권`;
+        }
+
+        // 상태 텍스트에 따라 스타일을 반환하는 헬퍼 함수
+        // BookHoldStatus Enum의 desc 값(한글 설명)을 기준으로 클래스를 매핑합니다.
+        function getStatusBadge(status) {
+            let className = '';
+
+            switch (status) {
+                case '대출가능':
+                    className = 'status-available-badge';
+                    break;
+                case '예약중': // RESERVED
+                    className = 'status-reserved-badge';
+                    break;
+                case '대출중': // BORROWED (기존 status-loan-badge 사용)
+                    className = 'status-loan-badge';
+                    break;
+                case '연체중': // OVERDUE
+                    className = 'status-overdue-badge';
+                    break;
+                case '분실':   // LOST
+                case '폐기':   // DISCARDED
+                case '수리': // Enum에 없음
+                    className = 'status-etc-badge';
+                    break;
+                default:
+                    // Enum에 없는 기타 상태 (예: '수리' 또는 알 수 없는 값)는 etc로 처리
+                    className = 'status-etc-badge';
+            }
+            return `<span class="status-badge ${className}">${status}</span>`;
+        }
+
         function renderHoldingsRows(list, currentUser) {
             const tbody = document.getElementById('holdingsTbody');
             if (!tbody) return;
 
-            // 사용자 정보를 마스킹하는 헬퍼 함수
-            const mask = (name) => {
-                if (!name) return '-';
-                if (name.length <= 1) return name + '*';
-                return name[0] + '***'; // 3자리 이상일 경우 첫 글자 + ***
-            };
-            const maskId = (id) => id ? id.slice(0, 2) + '***' : '-';
-
             const rowsHtml = list.map(h => {
                 const status = h.status || '-';
-                const statusBadgeHtml = getStatusBadge(status);
+                const statusBadgeHtml = getStatusBadge(h.statusDesc);
 
-                const hasBorrower = !!h.loanUser;
-                const isBorrower = hasBorrower && currentUser && h.loanUser.id === currentUser.id;
-                // 현재 사용자가 이 소장본을 예약했는지 확인
-                const isReservedByCurrentUser = Array.isArray(h.reservations) && h.reservations.some(r => currentUser && r.userId === currentUser.id);
+                const returnDateText = '<span style="color: var(--color-text-muted);">-</span>';
 
-                const loanUserText = hasBorrower ?
-                    `<div class="loan-user-name">${mask(h.loanUser.name)}</div><div class="loan-user-id">(${maskId(h.loanUser.id)})</div>` :
-                    '<span style="color: var(--color-text-muted);">-</span>';
+                const hasBorrower = !!h.loanUserId;
+                const isBorrower = hasBorrower && currentUser && h.loanUserId === currentUser.id;
 
-                const returnDateText = hasBorrower && h.returnDate ? h.returnDate : '<span style="color: var(--color-text-muted);">-</span>';
+                // 현재 사용자가 예약한 상태인지 체크
+                const isReservedByCurrentUser =
+                    Array.isArray(h.reservationUserIds) &&
+                    currentUser &&
+                    h.reservationUserIds.includes(currentUser.id);
 
-                const reserveCount = Array.isArray(h.reservations) ? h.reservations.length : 0;
-                const reserveCountDisplay = reserveCount > 0 ? `<span class="reservation-count-display">${reserveCount}명</span>` : '<span style="color: var(--color-text-muted);">-</span>';
+                const BUTTON_STYLE = {
+                    reserve: "btn-action btn-reserve",
+                    cancel: "btn-action btn-cancel",
+                    disabled: "btn-disabled"
+                };
 
-                let actionsHtml = `<span class="${BUTTON_STYLE.disabled}">-</span>`; // 기본값: 하이픈(-)
-                let actionType = null;
+                let actionsHtml = '';
+                // let actionType = '';
 
+                // 🔥 1. 현재 사용자가 이미 예약한 경우 → 예약취소 버튼 우선 표시
                 if (isReservedByCurrentUser) {
-                    // 1. 현재 사용자가 이미 예약한 경우: 예약취소
-                    actionsHtml = `<button class="${BUTTON_STYLE.cancel}" data-action="cancel" data-regno="${h.regNo}">예약취소</button>`;
-                    actionType = 'cancel';
-                } else if (status === '대출가능' || status === '대출중' || status === '연체중') {
-                    // 2. 대출 가능하거나, 대출 중/연체 중이어서 예약이 필요한 경우: 예약
-                    // 단, 본인의 대출은 제외 (본인 대출은 '나의 대출'로 표시되며, 여기서 예약 버튼을 제공할 필요는 없음)
-                    if (!isBorrower) {
-                        actionsHtml = `<button class="${BUTTON_STYLE.reserve}" data-action="reserve" data-regno="${h.regNo}">예약하기</button>`;
-                        actionType = 'reserve';
-                    } else {
+                    actionsHtml =
+                        `<button class="${BUTTON_STYLE.cancel}" data-action="cancel" data-holdid="${h.holdId}">예약취소</button>`;
+                    // actionType = 'cancel';
+
+                } else if (hasBorrower) {
+                    // 🔥 2. 대출자가 있는 경우
+                    if (isBorrower) {
+                        // 본인이 대출한 경우
                         actionsHtml = `<span class="my-loan-text">나의 대출</span>`;
+                    } else {
+                        // 다른 사람이 대출한 경우 → 예약 가능
+                        const canReserve = status === 'AVAILABLE' || status === 'BORROWED' || status === 'OVERDUE';
+                        actionsHtml = canReserve
+                            ? `<button class="${BUTTON_STYLE.reserve}" data-action="reserve" data-holdid="${h.holdId}">예약하기</button>`
+                            : `<span class="${BUTTON_STYLE.disabled}">-</span>`;
+                        // if (canReserve) actionType = 'reserve';
                     }
-                } else if (status === '분실' || status === '폐기' || status === '수리') {
-                    // 3. 예약/대출이 불가능한 상태: 하이픈(-)
-                    actionsHtml = `<span class="${BUTTON_STYLE.disabled}">-</span>`;
+
+                } else {
+                    // 🔥 3. 대출자가 없는 경우
+                    const canReserve = status === 'AVAILABLE';
+                    actionsHtml = canReserve
+                        ? `<button class="${BUTTON_STYLE.reserve}" data-action="reserve" data-holdid="${h.holdId}">예약하기</button>`
+                        : `<span class="${BUTTON_STYLE.disabled}">-</span>`;
+                    // if (canReserve) actionType = 'reserve';
                 }
 
                 return `
-                    <tr class="holdings-row">
-                        <td class="p-3" style="font-weight: 500;">${h.regNo || '-'}</td>
+                    <tr>
+                        <td class="p-3" style="font-weight: 500;">${h.holdId}</td>
                         <td class="p-3">${statusBadgeHtml}</td>
-                        <td class="p-3">${loanUserText}</td>
+                        <td class="p-3">${hasBorrower ? h.loanUserId : '-'}</td>
                         <td class="p-3" style="font-size: 0.875rem;">${returnDateText}</td>
-                        <td class="p-3">${reserveCountDisplay}</td>
+                        <td class="p-3">
+                            ${(h.reservationUserIds?.length || 0) > 0
+                                            ? h.reservationUserIds.length + ' 명'
+                                            : '-'}
+                        </td>
                         <td class="p-3 holdings-row-actions" style="white-space: nowrap;">${actionsHtml}</td>
                     </tr>
                 `;
-            }).join('');
+            }).join("");
 
             tbody.innerHTML = rowsHtml;
 
-            // 이벤트 위임 처리
-            tbody.querySelectorAll('button').forEach(btn => {
+            // 이벤트 바인딩 (예약 or 예약취소 버튼)
+            tbody.querySelectorAll('button[data-action]').forEach(btn => {
                 btn.addEventListener('click', e => {
-                    const regNo = e.target.dataset.regno;
-                    const action = e.target.dataset.action;
+                    const holdId = e.target.dataset.holdid;   // 🔥 holdId 읽기 (예약 + 예약취소 공통)
+                    const action = e.target.dataset.action;   // reserve or cancel
 
-                    currentModalAction = action; // 전역 상태 업데이트
+                    currentModalAction = action;
 
                     const modalTitle = document.getElementById('modalTitle');
                     const modalText = document.getElementById('reserveModalText');
                     const modalActionBtn = document.getElementById('modalActionBtn');
 
-                    modalText.dataset.regno = regNo;
+                    // holdId 전달
+                    modalText.dataset.holdid = holdId;
 
                     if (action === 'reserve') {
                         modalTitle.textContent = '도서 예약';
-                        modalText.innerHTML = `<span style="font-weight: 700; color: var(--color-primary-green-dark);">${regNo}</span> 도서를 예약하시겠습니까?<br><span style="font-size: 0.75rem; color: var(--color-text-muted);">도서가 반납되면 알림을 드립니다.</span>`;
+                        modalText.innerHTML =
+                            `<span style="font-weight: 700; color: var(--color-primary-green-dark);">${holdId}</span> 도서를 예약하시겠습니까?<br>
+                             <span style="font-size: 0.75rem; color: var(--color-text-muted);">도서가 반납되면 알림을 드립니다.</span>`;
                         modalActionBtn.textContent = '예약하기';
                         modalActionBtn.className = 'btn-confirm-reserve';
+
                     } else if (action === 'cancel') {
                         modalTitle.textContent = '예약 취소';
-                        modalText.innerHTML = `정말 <span style="font-weight: 700; color: var(--color-primary-green-dark);">${regNo}</span> 도서 예약을 취소하시겠습니까?`;
+                        modalText.innerHTML =
+                            `정말 <span style="font-weight: 700; color: var(--color-primary-green-dark);">${holdId}</span> 도서 예약을 취소하시겠습니까?`;
                         modalActionBtn.textContent = '취소하기';
                         modalActionBtn.className = 'btn-confirm-cancel';
                     }
@@ -701,6 +726,7 @@
                     openModal('reserveModal');
                 });
             });
+
             // 테이블 row 호버 효과를 위해 이벤트 리스너 추가 (CSS로 처리하기 어려운 동적 콘텐츠)
             tbody.querySelectorAll('.holdings-row').forEach(row => {
                 row.addEventListener('mouseover', () => row.style.backgroundColor = 'var(--color-gray-50)');
@@ -708,30 +734,7 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // 현재 사용자 정보 (테스트용)
-            const currentUser = { id: 'user2', name: '박지현' };
-
-            // 소장 정보 샘플 데이터 (테스트용)
-            const holdingsSampleList = [
-                // A001: 대출중, 내가 예약함 (-> 예약취소)
-                { regNo: 'A001', status: '대출중', loanUser: { id: 'user1', name: '김민수' }, returnDate: '2025-03-01', reservations: [{ userId: 'user2' }, { userId: 'user3' }] },
-                // A002: 대출가능, 예약 없음 (-> 예약하기)
-                { regNo: 'A002', status: '대출가능', reservations: [] },
-                // A003: 대출중, 예약 없음 (-> 예약하기)
-                { regNo: 'A003', status: '대출중', loanUser: { id: 'user20', name: '김연수' }, returnDate: '2025-03-15', reservations: [] },
-                // A004: 연체중, 내가 아닌 다른 사람이 예약함 (-> 예약하기)
-                { regNo: 'A004', status: '연체중', loanUser: { id: 'user6', name: '박철수' }, returnDate: '2025-02-01', reservations: [{ userId: 'user23' }] },
-                // A005: 대출가능, 다른 사람이 예약함 (-> 예약하기)
-                { regNo: 'A005', status: '대출가능', reservations: [{ userId: 'user10' }] },
-                // A006: 수리 상태 (-> -)
-                { regNo: 'A006', status: '수리', reservations: [] },
-                // A007: 나의 대출 (-> 나의 대출)
-                { regNo: 'A007', status: '대출중', loanUser: { id: 'user2', name: '박지현' }, returnDate: '2025-04-10', reservations: [] },
-            ];
-
-            renderHoldingsRows(holdingsSampleList, currentUser);
-        });
+        /*]]>*/
     </script>
 </main>
 </body>

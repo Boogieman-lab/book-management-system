@@ -1,10 +1,10 @@
 package com.example.bookmanagementsystembo.book.presentation.controller;
 
-import com.example.bookmanagementsystembo.book.domain.dto.BookDto;
+import com.example.bookmanagementsystembo.book.domain.service.BookService;
 import com.example.bookmanagementsystembo.book.enums.BookSearchField;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.presentation.dto.BookDetailResponse;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookResponse;
-import com.example.bookmanagementsystembo.book.domain.service.BookService;
 import com.example.bookmanagementsystembo.book.presentation.dto.BookUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +20,11 @@ public class BookController {
     private final BookService bookService;
 
     // 도서 상세 조회 (단수)
-    @GetMapping("/{bookId}")
-    public ResponseEntity<BookResponse> getBookDetail(@PathVariable Long bookId) {
-        BookDto book = bookService.getBookById(bookId);
-        return ResponseEntity.ok(BookResponse.from(book));
-    }
+//    @GetMapping("/{bookId}")
+//    public ResponseEntity<BookResponse> getBookDetail(@PathVariable Long bookId) {
+//        BookDto book = bookService.getBookById(bookId);
+//        return ResponseEntity.ok(BookResponse.from(book));
+//    }
 
 
     // 도서 등록
@@ -56,6 +56,14 @@ public class BookController {
             @RequestParam String query) {
         BookSearchField enumField = BookSearchField.valueOf(field.toUpperCase());
         return bookService.searchBooks(enumField, query);
+    }
+
+    // 도서 상세
+    @GetMapping("/detail/{bookId}")
+    @ResponseBody
+    public BookDetailResponse getBookDetail(@PathVariable Long bookId) {
+        BookDetailResponse bookDetail = bookService.getBookDetail(bookId);
+        return bookDetail;
     }
 
 }

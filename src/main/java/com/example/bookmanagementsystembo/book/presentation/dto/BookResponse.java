@@ -2,6 +2,9 @@ package com.example.bookmanagementsystembo.book.presentation.dto;
 
 import com.example.bookmanagementsystembo.book.domain.dto.BookDto;
 import com.example.bookmanagementsystembo.book.domain.dto.KakaoBookDocumentDto;
+import com.example.bookmanagementsystembo.bookBorrow.domain.entity.BookBorrow;
+import com.example.bookmanagementsystembo.bookHold.domain.entity.BookHold;
+import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,6 +67,24 @@ public record BookResponse(
 
     public static List<BookResponse> fromKakao(List<KakaoBookDocumentDto> dtos) {
         return dtos.stream().map(BookResponse::fromKakao).toList();
+    }
+
+    public record HoldInfo(
+            Long holdId,
+            String status,
+            String location,
+            String borrowStatus,
+            String reservationStatus
+    ) {
+        public static HoldInfo from(BookHold hold, BookBorrow borrow, Reservation reservation) {
+            return new HoldInfo(
+                    hold.getBookHoldId(),
+                    hold.getStatus().name(),
+                    hold.getLocation(),
+                    borrow != null ? borrow.getStatus().name() : null,
+                    reservation != null ? reservation.getStatus() : null
+            );
+        }
     }
 
 }

@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.token.config;
 
-import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
+import com.example.bookmanagementsystembo.user.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

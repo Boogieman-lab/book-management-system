@@ -1,8 +1,7 @@
-package com.example.bookmanagementsystembo.user.presentation;
+package com.example.bookmanagementsystembo.user.controller;
 
-import com.example.bookmanagementsystembo.user.domain.dto.UserInfo;
-import com.example.bookmanagementsystembo.user.domain.service.UserService;
-import com.example.bookmanagementsystembo.user.presentation.dto.UserInfoResponse;
+import com.example.bookmanagementsystembo.user.dto.UserRes;
+import com.example.bookmanagementsystembo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable Long userId) {
-        UserInfo userInfo = userService.findByUser(userId);
-        return ResponseEntity.ok(UserInfoResponse.from(userInfo));
+    public ResponseEntity<UserRes> read(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.read(userId));
     }
 }

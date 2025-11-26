@@ -40,7 +40,7 @@ jwt:
 kakao:
   api:
     key: KakaoAK 607c0971fc9d8c131d25efc5f3121ed1
-  client-id: test
+  client-id: fc076d29fac2e76415623d6d1fd7d0e1
   redirect-uri: http://localhost:8080/api/oauth/code/kakao/callback
-  token-uri: https://kauth.kakao.com/oauth/token
-  user-info-uri: https://kapi.kakao.com/v2/user/me
+  token-url: https://kauth.kakao.com/oauth/token
+  user-info-url: https://kapi.kakao.com/v2/user/me

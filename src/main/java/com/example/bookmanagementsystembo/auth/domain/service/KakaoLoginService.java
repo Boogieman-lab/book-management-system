@@ -4,11 +4,11 @@ import com.example.bookmanagementsystembo.auth.KakaoOAuthClient;
 import com.example.bookmanagementsystembo.auth.presentation.dto.KakaoTokenResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.KakaoUserResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.LoginResult;
-import com.example.bookmanagementsystembo.token.domain.dto.CreateTokenDto;
-import com.example.bookmanagementsystembo.token.domain.service.TokenService;
-import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
-import com.example.bookmanagementsystembo.user.domain.entity.Users;
-import com.example.bookmanagementsystembo.user.infra.UserRepository;
+import com.example.bookmanagementsystembo.token.service.TokenService;
+import com.example.bookmanagementsystembo.token.dto.TokenRes;
+import com.example.bookmanagementsystembo.user.enums.Role;
+import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public class KakaoLoginService {
 
         Users user = userRepository.findByEmail(email).orElseGet(() -> userRepository.save(newUser));
 
-        CreateTokenDto tokens = tokenService.issue(user);
+        TokenRes tokens = tokenService.issue(user);
         return LoginResult.of(tokens.accessToken(), tokens.refreshToken(), user.getEmail(), user.getName());
     }
 }

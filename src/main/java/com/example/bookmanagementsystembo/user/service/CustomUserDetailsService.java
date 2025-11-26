@@ -1,7 +1,7 @@
-package com.example.bookmanagementsystembo.user.domain.service;
+package com.example.bookmanagementsystembo.user.service;
 
-import com.example.bookmanagementsystembo.user.domain.entity.Users;
-import com.example.bookmanagementsystembo.user.infra.UserRepository;
+import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

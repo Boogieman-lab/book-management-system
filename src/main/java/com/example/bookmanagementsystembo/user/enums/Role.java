@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.user.domain.dto.enums;
+package com.example.bookmanagementsystembo.user.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,9 @@
 package com.example.bookmanagementsystembo.auth.domain.service;
 
 import com.example.bookmanagementsystembo.auth.presentation.dto.SignupRequest;
-import com.example.bookmanagementsystembo.user.domain.entity.Users;
+import com.example.bookmanagementsystembo.user.entity.entity.Users;
 import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
-import com.example.bookmanagementsystembo.user.infra.UserRepository;
+import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

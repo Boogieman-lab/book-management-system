@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.token.domain.dto;
+package com.example.bookmanagementsystembo.token.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

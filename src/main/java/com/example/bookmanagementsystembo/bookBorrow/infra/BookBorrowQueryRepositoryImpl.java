@@ -6,7 +6,7 @@ import com.example.bookmanagementsystembo.book.domain.entity.QBook;
 import com.example.bookmanagementsystembo.bookBorrow.domain.entity.QBookBorrow;
 import com.example.bookmanagementsystembo.bookHold.domain.entity.QBookHold;
 import com.example.bookmanagementsystembo.department.entity.QDepartment;
-import com.example.bookmanagementsystembo.user.domain.entity.QUsers;
+import com.example.bookmanagementsystembo.user.entity.QUsers;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

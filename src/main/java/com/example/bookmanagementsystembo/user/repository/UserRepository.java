@@ -1,6 +1,6 @@
-package com.example.bookmanagementsystembo.user.infra;
+package com.example.bookmanagementsystembo.user.repository;
 
-import com.example.bookmanagementsystembo.user.domain.entity.Users;
+import com.example.bookmanagementsystembo.user.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

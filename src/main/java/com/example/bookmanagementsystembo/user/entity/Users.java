@@ -1,9 +1,12 @@
-package com.example.bookmanagementsystembo.user.domain.entity;
+package com.example.bookmanagementsystembo.user.entity;
 
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
-import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
+import com.example.bookmanagementsystembo.user.enums.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 @AllArgsConstructor

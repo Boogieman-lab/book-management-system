@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.auth.presentation.dto;
 
-import com.example.bookmanagementsystembo.user.domain.dto.enums.Role;
+import com.example.bookmanagementsystembo.user.enums.Role;
 
 public record SignupRequest(
         String username,

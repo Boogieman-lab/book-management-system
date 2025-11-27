@@ -1,16 +1,16 @@
-package com.example.bookmanagementsystembo.token.domain.service;
+package com.example.bookmanagementsystembo.token.service;
 
-import com.example.bookmanagementsystembo.token.config.JwtPayloadInfo;
-import com.example.bookmanagementsystembo.token.config.JwtTokenProvider;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
-import com.example.bookmanagementsystembo.token.domain.dto.CreateTokenDto;
-import com.example.bookmanagementsystembo.token.domain.dto.Token;
+import com.example.bookmanagementsystembo.token.config.JwtPayloadInfo;
+import com.example.bookmanagementsystembo.token.config.JwtTokenProvider;
+import com.example.bookmanagementsystembo.token.dto.Token;
+import com.example.bookmanagementsystembo.token.dto.TokenRes;
 import com.example.bookmanagementsystembo.token.repository.TokenRepository;
-import com.example.bookmanagementsystembo.user.domain.entity.Users;
-import com.example.bookmanagementsystembo.user.infra.UserRepository;
+import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +24,14 @@ public class TokenService {
 
     private final TokenRepository tokenRepository;
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     private static final String BL_ACCESS_PREFIX = "bl:access:";
 
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateTokenDto issue(Users user) {
+    public TokenRes issue(Users user) {
         String userEmail = user.getEmail();
 
         String accessToken = jwtTokenProvider.createAccessToken(userEmail, user.getRole());
@@ -41,11 +41,11 @@ public class TokenService {
         Token token = Token.create(userEmail, refreshToken, expirationSec);
         tokenRepository.save(token);
 
-        return CreateTokenDto.of(accessToken, refreshToken);
+        return TokenRes.of(accessToken, refreshToken);
     }
 
     @Transactional
-    public CreateTokenDto reissue(String clientRefreshToken) {
+    public TokenRes reissue(String clientRefreshToken) {
         if (!jwtTokenProvider.isValid(clientRefreshToken)) {
             throw new CoreException(ErrorType.TOKEN_INVALID, clientRefreshToken);
         }
@@ -65,7 +65,7 @@ public class TokenService {
 
         token.updateToken(newRefreshToken, expirationSeconds);
         tokenRepository.save(token);
-        return CreateTokenDto.of(newAccessToken, newRefreshToken);
+        return TokenRes.of(newAccessToken, newRefreshToken);
     }
 
     public void logout(String userEmail, String accessToken) {

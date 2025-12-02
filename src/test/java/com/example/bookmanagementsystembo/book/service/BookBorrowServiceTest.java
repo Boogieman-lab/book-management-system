@@ -65,7 +65,7 @@ class BookBorrowServiceTest {
         // Given
         when(bookBorrowRepository.findBookBorrows()).thenReturn(List.of(bookBorrowDto));
         // When
-        List<BookBorrowDto> results = bookBorrowService.getBookBorrows();
+        List<BookBorrowDto> results = bookBorrowService.readAll();
 
         // Then
         assertThat(results).hasSize(1);
@@ -84,7 +84,7 @@ class BookBorrowServiceTest {
         Long bookBorrowId = 1L;
         when(bookBorrowRepository.findBookBorrow(bookBorrowId)).thenReturn(bookBorrowDetailDto);
         // When
-        BookBorrowDetailDto result = bookBorrowService.getBookBorrow(bookBorrowId);
+        BookBorrowDetailDto result = bookBorrowService.read(bookBorrowId);
 
         // Then
         assertThat(result).isNotNull();

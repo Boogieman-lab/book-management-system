@@ -19,7 +19,7 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", insertable = false)
+    @Column(name = "updated_at", nullable = false)
     @Comment("수정일시")
     private LocalDateTime updatedAt;
 }

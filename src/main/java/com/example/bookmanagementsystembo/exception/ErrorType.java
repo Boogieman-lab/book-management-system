@@ -26,6 +26,9 @@ public enum ErrorType {
 
     BOOK_HOLD_NOT_FOUND(ErrorCode.NOT_FOUND, "보유 도서를 찾을 수 없습니다.", LogLevel.WARN),
 
+    BOOK_REQUEST_FOUND(ErrorCode.NOT_FOUND, "희망 도서를 찾을 수 없습니다.", LogLevel.WARN),
+
+
     TOKEN_INVALID(ErrorCode.UNAUTHORIZED, "유효하지 않은 토큰입니다.", LogLevel.WARN),
     TOKEN_NOT_FOUND(ErrorCode.NOT_FOUND, "토큰을 찾을 수 없습니다.", LogLevel.WARN),
     TOKEN_MISMATCH(ErrorCode.BAD_REQUEST,"토큰 일치하지 않습니다.", LogLevel.WARN),

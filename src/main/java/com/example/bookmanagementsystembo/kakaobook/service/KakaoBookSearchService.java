@@ -23,7 +23,7 @@ public class KakaoBookSearchService {
     private String REST_API_KEY;
 
     public KakaoBookSearchRes getBooksByTitle(String title) {
-
+        System.out.println("안녕하세요");
         String API_URL = "https://dapi.kakao.com/v3/search/book";
         URI uri = UriComponentsBuilder.fromHttpUrl(API_URL)
                 .queryParam("target", "title")

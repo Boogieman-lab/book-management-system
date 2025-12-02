@@ -3,7 +3,7 @@ package com.example.bookmanagementsystembo.book.service;
 import com.example.bookmanagementsystembo.book.dto.BookCreateReq;
 import com.example.bookmanagementsystembo.book.dto.BookRes;
 import com.example.bookmanagementsystembo.book.entity.Book;
-import com.example.bookmanagementsystembo.bookHold.infra.BookHoldRepository;
+import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.book.repository.BookRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;

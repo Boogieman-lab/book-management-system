@@ -22,9 +22,4 @@ public class BookViewController {
         return "user/book/book_detail";
     }
 
-    @GetMapping("/requestBook")
-    public String requestBook() {
-        return "user/book/request_book";
-    }
-
 }

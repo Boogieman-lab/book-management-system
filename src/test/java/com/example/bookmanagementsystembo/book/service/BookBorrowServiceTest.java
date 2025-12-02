@@ -1,11 +1,11 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDto;
-import com.example.bookmanagementsystembo.bookBorrow.domain.entity.BookBorrow;
-import com.example.bookmanagementsystembo.bookBorrow.domain.service.BookBorrowService;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.bookBorrow.entity.BookBorrow;
+import com.example.bookmanagementsystembo.bookBorrow.service.BookBorrowService;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
-import com.example.bookmanagementsystembo.bookBorrow.infra.BookBorrowRepository;
+import com.example.bookmanagementsystembo.bookBorrow.repository.BookBorrowRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import org.junit.jupiter.api.BeforeEach;

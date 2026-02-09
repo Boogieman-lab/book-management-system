@@ -22,10 +22,11 @@ public class BookRequestService {
 
     private final BookRequestRepository bookRequestRepository;
 
-    public BookRequestRes create(BookRequestCreateReq request) {
+    public BookRequestRes create(Long userId, BookRequestCreateReq request) {
+
         BookRequest bookRequest = bookRequestRepository.save(
                 BookRequest.create(
-                        request.userId(), request.title(),request.authors(),
+                        userId, request.title(),request.authors(),
                         request.publisher(), request.isbn(), request.reason()
                 )
         );

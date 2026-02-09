@@ -12,8 +12,8 @@ public class BookRequestApiTest {
 
     @Test
     void create() {
+        Long userId = 1L;
         BookRequestCreateReq createReq1 = new BookRequestCreateReq(
-                1L,
                 "자바의 정석",
                 "남궁성",
                 "도우출판",
@@ -21,7 +21,6 @@ public class BookRequestApiTest {
                 "자바 공부용으로 신청합니다."
         );
         BookRequestCreateReq createReq2 = new BookRequestCreateReq(
-                2L,
                 "JPA",
                 "홍길동, 김영환",
                 "도우출판",
@@ -29,8 +28,8 @@ public class BookRequestApiTest {
                 "자바 공부용으로 신청합니다."
         );
 
-        BookRequestRes created1 = create(createReq1);
-        BookRequestRes created2 = create(createReq2);
+        BookRequestRes created1 = create(createReq1, userId);
+        BookRequestRes created2 = create(createReq2, userId);
         System.out.println("created1 = " + created1);
         System.out.println("created2 = " + created2);
 
@@ -55,7 +54,7 @@ public class BookRequestApiTest {
     }
 
 
-    BookRequestRes create(BookRequestCreateReq request) {
+    BookRequestRes create(BookRequestCreateReq request, Long userId) {
         return restClient.post()
                 .uri("/api/book-requests")
                 .body(request)

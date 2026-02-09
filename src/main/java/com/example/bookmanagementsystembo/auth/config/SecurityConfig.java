@@ -45,7 +45,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-ui/**"
                         ).permitAll()
-
+                        .requestMatchers("/api/book-requests/**").authenticated()
                         // 인증 관련 엔드포인트 (로그인/회원가입 등)
                         .requestMatchers("/api/**").permitAll()
                         // 화면 개발로 인해 임시 허용

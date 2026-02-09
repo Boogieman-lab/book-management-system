@@ -5,8 +5,10 @@ import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestCreateReq;
 import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestPageRes;
 import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestRes;
 import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestUpdateReq;
+import com.example.bookmanagementsystembo.user.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api")
@@ -30,9 +32,8 @@ public class BookRequestController {
     }
 
     @PostMapping("/book-requests")
-    public ResponseEntity<BookRequestRes> create(@RequestBody BookRequestCreateReq request) {
-        return ResponseEntity.ok(bookRequestService.create(request));
-
+    public ResponseEntity<BookRequestRes> create(@RequestBody BookRequestCreateReq request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(bookRequestService.create(userDetails.getUserId(), request));
     }
 
     @PutMapping("/book-requests/{bookRequestId}")

@@ -38,7 +38,7 @@ public class BookRequestApiTest {
         BookRequestRes read = read(bookRequestId);
         System.out.println("read = " + read);
 
-        BookRequestPageRes page = readAll(1L, 10L);
+        BookRequestPageRes page = readAll();
         System.out.println("page = " + page);
 
         BookRequestUpdateReq updateReq = new BookRequestUpdateReq(
@@ -69,12 +69,12 @@ public class BookRequestApiTest {
                 .body(BookRequestRes.class);
     }
 
-    BookRequestPageRes readAll(Long page, Long pageSize) {
+    BookRequestPageRes readAll() {
         return restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/book-requests")
-                        .queryParam("page", page)
-                        .queryParam("pageSize", pageSize)
+                        .queryParam("page", 1L)
+                        .queryParam("pageSize", 10L)
                         .build())
                 .retrieve()
                 .body(BookRequestPageRes.class);

@@ -1,11 +1,11 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDetailDto;
-import com.example.bookmanagementsystembo.bookBorrow.domain.dto.BookBorrowDto;
-import com.example.bookmanagementsystembo.bookBorrow.domain.entity.BookBorrow;
-import com.example.bookmanagementsystembo.bookBorrow.domain.service.BookBorrowService;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDetailDto;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDto;
+import com.example.bookmanagementsystembo.bookBorrow.entity.BookBorrow;
+import com.example.bookmanagementsystembo.bookBorrow.service.BookBorrowService;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
-import com.example.bookmanagementsystembo.bookBorrow.infra.BookBorrowRepository;
+import com.example.bookmanagementsystembo.bookBorrow.repository.BookBorrowRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +65,7 @@ class BookBorrowServiceTest {
         // Given
         when(bookBorrowRepository.findBookBorrows()).thenReturn(List.of(bookBorrowDto));
         // When
-        List<BookBorrowDto> results = bookBorrowService.getBookBorrows();
+        List<BookBorrowDto> results = bookBorrowService.readAll();
 
         // Then
         assertThat(results).hasSize(1);
@@ -84,7 +84,7 @@ class BookBorrowServiceTest {
         Long bookBorrowId = 1L;
         when(bookBorrowRepository.findBookBorrow(bookBorrowId)).thenReturn(bookBorrowDetailDto);
         // When
-        BookBorrowDetailDto result = bookBorrowService.getBookBorrow(bookBorrowId);
+        BookBorrowDetailDto result = bookBorrowService.read(bookBorrowId);
 
         // Then
         assertThat(result).isNotNull();

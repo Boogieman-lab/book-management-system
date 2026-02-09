@@ -3,13 +3,13 @@ package com.example.bookmanagementsystembo.bookHold.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 @RequiredArgsConstructor
+@Getter
 public enum BookHoldStatus {
-    AVAILABLE("보관 중, 대출 가능"),
-    BORROWED("대출 중"),
+    AVAILABLE("대출 가능"),
+    LOANED("대출 중"),
     LOST("분실"),
-    DISCARDED("폐기");
-
-    private final String desc;
+    DISCARDED("폐기됨"),
+    RESERVED("예약 중");
+    private final String description;
 }

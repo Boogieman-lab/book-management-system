@@ -67,7 +67,7 @@
 * 🛠 [기능 명세서](https://www.notion.so/dev-kimsh/25a84505755180adaa3cf02259f9270c?source=copy_link)
 * 🖥 \[페이지 기획서]
 * 📑 \[API 설계]
-* 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/ERD.md)
+* 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/erd-diagram)
 * 👀 [사용자 디자인 미리보기](https://boogieman-lab.github.io/book-management-system/src/main/resources/static/design/index.html)
 
 ---

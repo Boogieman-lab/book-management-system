@@ -559,7 +559,7 @@
         const searchSelect = document.querySelector('.search-select'); // select box
         function applySearchFilter() {
             const searchQuery = (searchInput?.value || '').trim();      // 검색어
-            const searchField = (searchSelect?.value || 'title');       // 검색 조건: title, author, publisher, isbn
+            const searchField = (searchSelect?.value || 'title').toUpperCase();       // 검색 조건: title, author, publisher, isbn
 
             if (!searchQuery) {
                 // 검색어가 없으면 기존 화면 표시
@@ -573,7 +573,7 @@
 
                 return;
             }
-
+            console.log(searchField);
             $.ajax({
                 url: `/api/books?field=${encodeURIComponent(searchField)}&query=${encodeURIComponent(searchQuery)}`,
                 type: "GET",

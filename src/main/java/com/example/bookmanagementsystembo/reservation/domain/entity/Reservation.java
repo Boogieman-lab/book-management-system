@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.reservation.domain.entity;
 
-import com.example.bookmanagementsystembo.bookHold.domain.entity.BookHold;
+import com.example.bookmanagementsystembo.bookHold.entity.BookHold;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

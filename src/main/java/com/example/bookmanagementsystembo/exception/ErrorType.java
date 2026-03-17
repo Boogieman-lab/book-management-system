@@ -10,6 +10,8 @@ public enum ErrorType {
     USER_NOT_FOUND(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다.", LogLevel.WARN),
     USER_ALREADY_EXISTS(ErrorCode.CONFLICT, "존재하는 사용자 아이디 입니다.", LogLevel.WARN),
     NEW_PASSWORD_MISMATCH(ErrorCode.BAD_REQUEST, "새 비밀번호가 일치하지 않습니다.", LogLevel.WARN),
+    INVALID_CREDENTIALS(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
+    ACCOUNT_LOCKED(ErrorCode.FORBIDDEN, "로그인 5회 실패로 계정이 잠겼습니다. 관리자에게 문의하세요.", LogLevel.WARN),
 
     FIELD_ERROR_DEFAULT(ErrorCode.BAD_REQUEST,"유효성 검사 오류입니다.", LogLevel.WARN),
     INTERNAL_SERVER_ERROR(ErrorCode.INTERNAL_SERVER_ERROR,"서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", LogLevel.ERROR),

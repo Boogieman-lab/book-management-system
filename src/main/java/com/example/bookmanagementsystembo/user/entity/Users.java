@@ -51,9 +51,26 @@ public class Users extends BaseEntity {
     @Comment("로그인 실패 횟수")
     private Integer loginFailCount = 0;
 
+    @Column(name = "is_locked", nullable = false)
+    @Comment("계정 잠금 여부")
+    private boolean isLocked = false;
+
+    private static final int MAX_LOGIN_FAIL_COUNT = 5;
 
     public static Users create(String email, String password, String name, Long departmentId, String profileImage, Role role) {
-        return new Users(null, email, password, name, departmentId, profileImage, role, 0);
+        return new Users(null, email, password, name, departmentId, profileImage, role, 0, false);
+    }
+
+    public void incrementLoginFailCount() {
+        this.loginFailCount++;
+        if (this.loginFailCount >= MAX_LOGIN_FAIL_COUNT) {
+            this.isLocked = true;
+        }
+    }
+
+    public void resetLoginFailCount() {
+        this.loginFailCount = 0;
+        this.isLocked = false;
     }
 
 }

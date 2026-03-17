@@ -14,6 +14,7 @@ public record BookCreateReq(
         String publisher,
         int price,
         int salePrice,
-        String thumbnail
+        String thumbnail,
+        String status
 ) {
 }

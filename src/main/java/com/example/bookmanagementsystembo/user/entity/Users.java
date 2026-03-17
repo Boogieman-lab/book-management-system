@@ -8,7 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+/**
+ * 사용자 엔티티.
+ * Soft Delete 적용: DELETE 대신 is_deleted = true 로 논리 삭제.
+ * 조회 시 is_deleted = false 인 레코드만 자동 포함.
+ */
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE user_id = ?")
+@Where(clause = "is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

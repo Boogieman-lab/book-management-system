@@ -9,7 +9,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+/**
+ * 도서 실물 보유본(재고) 엔티티.
+ * Book 1권당 여러 개의 BookHold(실물)를 가질 수 있습니다.
+ * 재고 상태는 BookHoldStatus enum으로 관리합니다.
+ * Soft Delete 적용.
+ */
+@SQLDelete(sql = "UPDATE book_hold SET is_deleted = true WHERE book_hold_id = ?")
+@Where(clause = "is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

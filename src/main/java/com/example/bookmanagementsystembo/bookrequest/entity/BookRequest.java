@@ -8,7 +8,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+/**
+ * 희망 도서 신청 엔티티.
+ * 사원이 사내에 없는 도서를 구매 요청할 때 사용합니다.
+ * 상태(BookRequestStatus): PENDING / APPROVED / REJECTED
+ * Soft Delete 적용.
+ */
+@SQLDelete(sql = "UPDATE book_request SET is_deleted = true WHERE book_request_id = ?")
+@Where(clause = "is_deleted = false")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter

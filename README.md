@@ -64,9 +64,10 @@
 ## 🤓 기획 및 설계
 
 * 📊 \[프로젝트 칸반보드]
-* 🛠 [기능 명세서](https://www.notion.so/dev-kimsh/25a84505755180adaa3cf02259f9270c?source=copy_link)
+* 🛠 [요구사항 정의서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/requirements.md)
+* 🛠 [기능 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/functional_spec.md)
 * 🖥 \[페이지 기획서]
-* 📑 \[API 설계]
+* 📑 [API 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/api_spec.md)
 * 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/erd-diagram)
 * 👀 [사용자 디자인 미리보기](https://boogieman-lab.github.io/book-management-system/src/main/resources/static/design/index.html)
 

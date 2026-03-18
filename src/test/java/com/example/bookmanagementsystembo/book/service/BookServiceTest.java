@@ -57,7 +57,8 @@ class BookServiceTest {
                 "인사이트",
                 10000,
                 8000,
-                "http://example.com/thumbnail"
+                "http://example.com/thumbnail",
+                "정상"
         );
 
         bookUpdateReq = new BookUpdateReq(

@@ -28,9 +28,14 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(String email, Role role) {
+    /**
+     * Access Token 생성.
+     * claims: role(권한), userId(사용자 PK) — 필터에서 DB 조회 없이 principal을 구성하는 데 사용됩니다.
+     */
+    public String createAccessToken(String email, Role role, Long userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role.name());
+        claims.put("userId", userId);   // IDOR 방어용: SecurityContext에 userId 포함
 
         Instant now = Instant.now();
         Instant expirationInstant = now.plusSeconds(jwtProperties.accessSec());
@@ -43,6 +48,11 @@ public class JwtTokenProvider {
                 .setExpiration(Date.from(expirationInstant))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
+    }
+
+    /** Access Token claims에서 userId를 추출합니다. */
+    public Long getUserId(String token) {
+        return getClaims(token).get("userId", Long.class);
     }
 
     public String createRefreshToken(String email) {

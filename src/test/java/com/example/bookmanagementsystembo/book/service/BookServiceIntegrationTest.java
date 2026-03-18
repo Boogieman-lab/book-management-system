@@ -135,7 +135,8 @@ public class BookServiceIntegrationTest {
                 "출판사예시",                               // publisher
                 30000,                                   // price
                 27000,                                   // salePrice
-                "https://example.com/thumb.jpg"          // thumbnail
+                "https://example.com/thumb.jpg",         // thumbnail
+                "정상"                                    // status
         );
     }
 }

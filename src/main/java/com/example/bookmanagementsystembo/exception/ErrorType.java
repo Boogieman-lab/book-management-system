@@ -27,6 +27,7 @@ public enum ErrorType {
     BORROWSTATUS_NOT_FOUND(ErrorCode.NOT_FOUND, "대출 상태 값을 찾을 수 없습니다.", LogLevel.WARN),
 
     BOOK_HOLD_NOT_FOUND(ErrorCode.NOT_FOUND, "보유 도서를 찾을 수 없습니다.", LogLevel.WARN),
+    BOOK_HOLD_CANNOT_CHANGE_BORROWED(ErrorCode.BAD_REQUEST, "대출 중인 도서는 직접 분실/폐기 처리할 수 없습니다. 반납 처리 후 상태를 변경해주세요.", LogLevel.WARN),
 
     BOOK_REQUEST_FOUND(ErrorCode.NOT_FOUND, "희망 도서를 찾을 수 없습니다.", LogLevel.WARN),
 

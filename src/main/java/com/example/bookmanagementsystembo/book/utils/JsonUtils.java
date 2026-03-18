@@ -20,6 +20,7 @@ public class JsonUtils {
         }
     }
     public static List<String> toList(String json) {
+        if (json == null || json.isBlank()) return List.of();
         try {
             return objectMapper.readValue(json, new TypeReference<>() {});
         } catch (JsonProcessingException e) {

@@ -24,8 +24,8 @@
 ### 📚 도서 검색 서비스 (Books/Book_Holds)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
 |---|---|---|---|---|
-| GET | `/books` | 전체 서비스 도서 조회 (페이지네이션/가나다 정렬/도서명 필터 텍스트 파라미터 적용) | User | ⬜ |
-| GET | `/books/{bookId}` | 식별된 책의 전체 ISBN, 저술가, 이미지 주소 등 포함 자원 | User | ⬜ |
+| GET | `/books` | 전체 서비스 도서 조회 (페이지네이션/가나다 정렬/도서명 필터 텍스트 파라미터 적용) | User | ✅ |
+| GET | `/books/{bookId}` | 식별된 책의 전체 ISBN, 저술가, 이미지 주소 등 포함 자원 | User | ✅ |
 | POST | `/admin/books` | [관리자용] 회사 구매 신간의 식별 메타 인덱스 신규 업로드 | Admin | ⬜ |
 | PUT | `/admin/books/{bookId}` | [관리자용] 기등록된 도서 오류(저술가, 표지, 내용누락) 등 강제 갱신 | Admin | ⬜ |
 | POST | `/admin/books/{bookId}/holds`| [관리자용] 하나의 도서에 대하여 `신규 실물(추가 구매)`이 도착했을 때 재고 +1 증가 분 추가 | Admin | ⬜ |

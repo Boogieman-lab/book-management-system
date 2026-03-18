@@ -17,7 +17,7 @@ public class BookHoldService {
     private final BookHoldRepository bookHoldRepository;
 
     public List<BookHoldRes> readAll(Long bookId) {
-        return bookHoldRepository.findAll(bookId).stream().map(BookHoldRes::from).toList();
+        return bookHoldRepository.findByBookId(bookId).stream().map(BookHoldRes::from).toList();
     }
 
     public BookHoldRes read(Long bookId, Long holdId) {

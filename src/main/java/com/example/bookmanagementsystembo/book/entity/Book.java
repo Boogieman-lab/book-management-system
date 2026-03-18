@@ -7,9 +7,19 @@ import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
+/**
+ * 도서 메타 정보 엔티티.
+ * 카카오 도서 API에서 가져온 도서 정보를 저장하며,
+ * 실물 재고는 BookHold 엔티티에서 별도 관리합니다.
+ * Soft Delete 적용.
+ */
+@SQLDelete(sql = "UPDATE book SET is_deleted = true WHERE book_id = ?")
+@Where(clause = "is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -67,6 +77,11 @@ public class Book extends BaseEntity {
     @Comment("표지 이미지 URL")
     private String thumbnail;
 
+    /** 카카오 API 기준 판매 상태 (예: 정상판매, 판매중지, 품절 등) */
+    @Column(name = "status", length = 50)
+    @Comment("판매 상태")
+    private String status;
+
     public static Book create(BookCreateReq dto) {
         return new Book(
                 null,
@@ -80,7 +95,8 @@ public class Book extends BaseEntity {
                 dto.publisher(),
                 dto.price(),
                 dto.salePrice(),
-                dto.thumbnail()
+                dto.thumbnail(),
+                dto.status()
         );
     }
 

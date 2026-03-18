@@ -2,8 +2,8 @@
 
 | 기능 구분 | 주요 기능명 | 기능 및 정책 상세 내용 (예외 상황 처리 및 보안/DB 규칙) | 우선순위 및 DB 힌트 | 구현 여부 |
 | --- | --- | --- | --- | --- |
-| **인증(유저)** | 회원가입/로그인 | • 구글 OAuth 및 일반 이메일 인증 절차<br>• [예외] 로그인 5회 실패 시 방어: `login_fail_count` 누적 후 계정 일시 잠금<br>• **[보안]** JWT 기반 인증 도입 (Access/Refresh Token) | **R1 (MVP 필수)**<br>HTTP 200 / 401 | ⬜ 미구현 |
-| | 인가(Authorization) 및 권한 | • **[NEW]** 권한 분리(RBAC): `/api/v1/admin/**` 경로는 JWT 내 `ROLE_ADMIN` 필수 검증<br>• 모든 API(조회 포함)는 JWT 유효성 검증 | **R1 (MVP 필수)**<br>HTTP 403 `FORBIDDEN` | ⬜ 미구현 |
+| **인증(유저)** | 회원가입/로그인 | • ~~구글 OAuth 및~~ 일반 이메일 인증 절차 ✅<br>• 카카오 OAuth 로그인 ✅ (기존 구현)<br>• 구글 OAuth ⬜ (R2 이후 검토)<br>• [예외] 로그인 5회 실패 시 방어: `login_fail_count` 누적 후 계정 잠금 (`is_locked=true`) ✅<br>• [예외] 잠긴 계정 로그인 시도 시 HTTP 403 `ACCOUNT_LOCKED` 반환 ✅<br>• [예외] 이메일/비밀번호 불일치 시 HTTP 401 `INVALID_CREDENTIALS` 반환 (이메일 존재 여부 비노출) ✅<br>• **[보안]** JWT 기반 인증 도입 (Access/Refresh Token) ✅<br>• **[보안]** 로그아웃 시 Access Token Redis 블랙리스트(`bl:access:{jti}`) 등록 ✅<br>• **구현 경로**: `POST /api/auth/signup`, `POST /api/auth/login`, `POST /api/auth/logout`, `POST /api/auth/refresh`<br>• **V1.8 마이그레이션**: `users.is_locked BOOLEAN` 컬럼 추가 | **R1 (MVP 필수)**<br>HTTP 201 / 200 / 401 / 403 | ✅ 구현완료<br>(구글 OAuth 제외) |
+| | 인가(Authorization) 및 권한 | • **[NEW]** 권한 분리(RBAC): `/api/v1/admin/**` 경로는 JWT 내 `ROLE_ADMIN` 필수 검증<br>• 모든 API(조회 포함)는 JWT 유효성 검증<br>• `JwtAuthenticationFilter`: 토큰 서명 검증, JTI 존재 확인, 블랙리스트 대조 ✅<br>• `ErrorCode.FORBIDDEN(403)` 추가 ✅<br>• ⚠️ 현재 UI 개발 임시 정책으로 `/api/**` 전체 `permitAll()` 적용 중 — UI 개발 완료 후 Admin 경로 보호 복원 필요 | **R1 (MVP 필수)**<br>HTTP 403 `FORBIDDEN` | 🔶 부분 구현<br>(Admin 경로 보호 미복원) |
 | | 마이페이지 | • 정보 수정 및 대출/예약 이력 반환<br>• **[보안-IDOR]** 토큰에 담긴 `userId`와 요청 정보 매핑 철저 검증 (타인 이력 조회 불가) | **R1 (MVP 필수)**<br>HTTP 200 | ⬜ 미구현 |
 | **도서/검색** | 복합 검색/상세보기 | • 텍스트(제목, 저자, ISBN)를 활용한 플랫폼 도서 단위 식별 정보 획득<br>• 도서 상세 탭에서 현재 실재고(Hold) 권수 확인 제공 | **R1 (MVP 필수)**<br>| ⬜ 미구현 |
 | **희망 도서** | 신규 도서 신청 | • 사내 미보유 도서명/ISBN 건의<br>• [예외] 요청한 ISBN이 보유 목록에 실존하거나 중복 대기 중이면 반려 처리 | **R1 (MVP 필수)**<br>`STATUS: PENDING` | ⬜ 미구현 |

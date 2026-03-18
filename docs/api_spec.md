@@ -5,8 +5,11 @@
 >
 > **구현 상태 범례**: ✅ 구현완료 | 🔶 부분구현 | ⬜ 미구현
 >
-> ⚠️ **경로 참고**: 현재 구현된 실제 Base URL은 `/api` (버전 prefix 미적용) 입니다.
-> 예시: `/auth/signup` → 실제 경로 `POST /api/auth/signup`
+> ⚠️ **경로 혼용 주의**: 현재 구현된 경로가 두 가지 prefix로 혼재합니다.
+> - **`/api/` prefix** (v1 미적용): Auth(`/api/auth/**`), Users(`/api/users/**`), Token(`/api/token/**`)
+> - **`/api/v1/` prefix** (v1 적용): Books(`/api/v1/books/**`), Admin(`/api/v1/admin/**`), External(`/api/v1/external/**`)
+>
+> 향후 신규 엔드포인트는 `/api/v1/` 체계로 통일하며, 기존 `/api/` 경로는 점진적으로 마이그레이션 예정입니다.
 
 ### 👤 신원 제어(Auth) 및 사용자 계정 관리(Users)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
@@ -14,7 +17,7 @@
 | POST | `/auth/signup` | 신규 회원 자격 가입 허가 (이메일·이름·비밀번호 Bean Validation 적용, HTTP 201) | - | ✅ |
 | POST | `/auth/login` | 이메일 패스워드 검증 및 Access/Refresh Token 신규 발행 (5회 실패 시 계정 잠금, HTTP 401/403) | - | ✅ |
 | POST | `/auth/logout` | 현재 로그인 Access Token Redis 블랙리스트 등록 (강제 만료, HTTP 204) | User | ✅ |
-| POST | `/auth/refresh` | Refresh Token 교환하여 새 Access Token 재발급 (HTTP 200) | User | ✅ |
+| POST | `/auth/refresh` | Refresh Token 교환하여 새 Access Token + Refresh Token 동시 재발급 (Rotation, HTTP 200) | User | ✅ |
 | GET | `/users/me` | 로그인된 주체의 개인 프로필 자원 열람 | User | ⬜ |
 | PUT | `/users/me` | 프로필 갱신 업데이트 (아바타/이름 변경) | User | ⬜ |
 | GET | `/users/me/borrows` | 본인 계정의 과거 및 현재 소장 대출 이력의 일괄 발송 | User | ⬜ |
@@ -44,7 +47,7 @@
 |---|---|---|---|---|
 | POST | `/borrows` | 보유 재고를 대상으로 신규 '대출 이력' 생성 실행 (1인 제한 방어 필요) | User | ⬜ |
 | POST | `/borrows/{borrowId}/return` | 도서물 점유를 포기/반납 실행 통지 (본인 IDOR 검증 진행 통과) | User | ⬜ |
-| POST | `/borrows/{borrowId}/extend` | 대출 14일 연장 권한 청구 (단 1회, 후순위자 없을 시 인정됨) | User | ⬜ |
+| POST | `/borrows/{borrowId}/extend` | 대출 7일 연장 권한 청구 (단 1회, 해당 도서 예약자 없을 시 관리자 승인 후 인정됨) | User | ⬜ |
 | GET | `/admin/borrows` | [관리자용] 현재 시스템 대출자 확인 및 미납 명단 조회 | Admin | ⬜ |
 | POST | `/admin/borrows/{borrowId}/notify-overdue`| [관리자용] 연체 사용자 대상 알림 수동 발송 (R2) | Admin | ⬜ |
 | PATCH | `/admin/borrows/{borrowId}/extend/approve`| [관리자용] 사용자 연장 건에 대한 심의 평가/승인 관리 (R2) | Admin | ⬜ |

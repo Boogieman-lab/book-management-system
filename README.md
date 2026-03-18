@@ -50,13 +50,15 @@
 
 ### Frontend
 
-* HTML / CSS / JavaScript / React
-* KAKAO API / Google OAuth
+* HTML / CSS / JavaScript
+* Thymeleaf (서버사이드 렌더링)
+* KAKAO API (도서 검색 연동)
 
 ### Backend
 
 * Java / Spring Boot / JPA
-* MSSQL
+* MariaDB 11.3
+* Redis 7
 * AWS (EC2, S3, RDS)
 
 ---

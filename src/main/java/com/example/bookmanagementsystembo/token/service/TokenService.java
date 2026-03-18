@@ -34,7 +34,7 @@ public class TokenService {
     public TokenRes issue(Users user) {
         String userEmail = user.getEmail();
 
-        String accessToken = jwtTokenProvider.createAccessToken(userEmail, user.getRole());
+        String accessToken = jwtTokenProvider.createAccessToken(userEmail, user.getRole(), user.getUserId());
         String refreshToken = jwtTokenProvider.createRefreshToken(userEmail);
         long expirationSec = jwtTokenProvider.getRefreshSec();
 
@@ -59,7 +59,7 @@ public class TokenService {
         }
 
         Users user = userRepository.findByEmail(email).orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, email));
-        String newAccessToken = jwtTokenProvider.createAccessToken(email, user.getRole());
+        String newAccessToken = jwtTokenProvider.createAccessToken(email, user.getRole(), user.getUserId());
         String newRefreshToken = jwtTokenProvider.createRefreshToken(email);
         long expirationSeconds = jwtTokenProvider.getRefreshSec();
 

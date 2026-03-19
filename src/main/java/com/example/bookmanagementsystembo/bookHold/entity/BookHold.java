@@ -48,4 +48,12 @@ public class BookHold extends BaseEntity {
     public static BookHold create(Long bookId) {
         return new BookHold(null, bookId, BookHoldStatus.AVAILABLE, null);
     }
+
+    public static BookHold createWithLocation(Long bookId, String location) {
+        return new BookHold(null, bookId, BookHoldStatus.AVAILABLE, location);
+    }
+
+    public void updateStatus(BookHoldStatus newStatus) {
+        this.status = newStatus;
+    }
 }

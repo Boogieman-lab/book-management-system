@@ -4,6 +4,7 @@ import com.example.bookmanagementsystembo.bookBorrow.dto.AdminBorrowRes;
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDetailDto;
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDto;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
+import com.example.bookmanagementsystembo.user.dto.UserBorrowRes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,5 +16,7 @@ public interface BookBorrowQueryRepository {
     BookBorrowDetailDto findBookBorrow(Long bookBorrowId);
 
     Page<AdminBorrowRes> findAllForAdmin(BorrowStatus status, Pageable pageable);
+
+    Page<UserBorrowRes> findByUserId(Long userId, BorrowStatus status, Pageable pageable);
 }
 

@@ -4,6 +4,7 @@ import com.example.bookmanagementsystembo.bookBorrow.dto.AdminBorrowRes;
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDetailDto;
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDto;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
+import com.example.bookmanagementsystembo.user.dto.UserBorrowRes;
 import com.example.bookmanagementsystembo.book.entity.QBook;
 import com.example.bookmanagementsystembo.bookBorrow.entity.QBookBorrow;
 import com.example.bookmanagementsystembo.bookHold.entity.QBookHold;
@@ -98,6 +99,40 @@ public class BookBorrowQueryRepositoryImpl implements BookBorrowQueryRepository 
                 .select(bookBorrow.count())
                 .from(bookBorrow)
                 .where(statusEq(status));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<UserBorrowRes> findByUserId(Long userId, BorrowStatus status, Pageable pageable) {
+        List<UserBorrowRes> content = qf
+                .select(Projections.constructor(UserBorrowRes.class,
+                        book.title,
+                        bookBorrow.bookHoldId,
+                        bookBorrow.borrowDate,
+                        bookBorrow.dueDate,
+                        bookBorrow.returnDate,
+                        bookBorrow.status.stringValue()
+                ))
+                .from(bookBorrow)
+                .leftJoin(bookHold).on(bookBorrow.bookHoldId.eq(bookHold.bookHoldId))
+                .leftJoin(book).on(bookHold.bookId.eq(book.bookId))
+                .where(
+                        bookBorrow.userId.eq(userId),
+                        statusEq(status)
+                )
+                .orderBy(bookBorrow.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = qf
+                .select(bookBorrow.count())
+                .from(bookBorrow)
+                .where(
+                        bookBorrow.userId.eq(userId),
+                        statusEq(status)
+                );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }

@@ -82,4 +82,13 @@ public class Users extends BaseEntity {
         this.isLocked = false;
     }
 
+    public void updateProfile(String name, String profileImage) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (profileImage != null) {
+            this.profileImage = profileImage;
+        }
+    }
+
 }

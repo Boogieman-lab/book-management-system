@@ -19,4 +19,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     /** 특정 bookHold 목록과 사용자, 상태로 예약 존재 여부를 확인합니다. */
     boolean existsByBookHold_BookHoldIdInAndUserIdAndStatus(List<Long> bookHoldIds, Long userId, ReservationStatus status);
+
+    /** 특정 사용자의 주어진 상태 예약 목록을 조회합니다. */
+    List<Reservation> findByUserIdAndStatus(Long userId, ReservationStatus status);
 }

@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.bookHold.controller;
 
-import com.example.bookmanagementsystembo.bookHold.dto.BookHoldRes;
+import com.example.bookmanagementsystembo.bookHold.dto.BookHoldResponse;
 import com.example.bookmanagementsystembo.bookHold.service.BookHoldService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +19,18 @@ public class BookHoldController {
     private final BookHoldService bookHoldService;
 
     @GetMapping("/books/{bookId}/holds")
-    public ResponseEntity<List<BookHoldRes>> readAll(@PathVariable Long bookId){
+    public ResponseEntity<List<BookHoldResponse>> readAll(@PathVariable Long bookId){
         return ResponseEntity.ok(bookHoldService.readAll(bookId));
     }
 
 
     @GetMapping("/books/{bookId}/holds/{holdId}")
-    public ResponseEntity<BookHoldRes> read(@PathVariable Long bookId, @PathVariable Long holdId){
+    public ResponseEntity<BookHoldResponse> read(@PathVariable Long bookId, @PathVariable Long holdId){
         return ResponseEntity.ok(bookHoldService.read(bookId, holdId));
     }
 
 //    @GetMapping("/books/{bookId}/holds/{holdId}")
-//    public ResponseEntity<BookHoldRes> update(@PathVariable Long bookId, @PathVariable Long holdId){
+//    public ResponseEntity<BookHoldResponse> update(@PathVariable Long bookId, @PathVariable Long holdId){
 //        return ResponseEntity.ok(bookHoldService.update(bookId, holdId));
 //    }
 

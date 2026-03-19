@@ -1,7 +1,7 @@
 package com.example.bookmanagementsystembo.bookBorrow.controller;
 
-import com.example.bookmanagementsystembo.bookBorrow.dto.AdminBorrowRes;
-import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowPageRes;
+import com.example.bookmanagementsystembo.bookBorrow.dto.AdminBorrowSummaryResponse;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowPageResponse;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.bookBorrow.service.BookBorrowService;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,13 @@ public class AdminBorrowController {
 
     /** 관리자 대출 현황 조회 */
     @GetMapping
-    public ResponseEntity<BorrowPageRes> getAdminBorrows(
+    public ResponseEntity<BorrowPageResponse> getAdminBorrows(
             @RequestParam(required = false) BorrowStatus status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<AdminBorrowRes> result = bookBorrowService.findAllForAdmin(status, PageRequest.of(page - 1, size));
-        BorrowPageRes res = new BorrowPageRes(
+        Page<AdminBorrowSummaryResponse> result = bookBorrowService.findAllForAdmin(status, PageRequest.of(page - 1, size));
+        BorrowPageResponse res = new BorrowPageResponse(
                 result.getContent(),
                 page,
                 size,

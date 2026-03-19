@@ -2,8 +2,8 @@ package com.example.bookmanagementsystembo.reservation.presentation.controller;
 
 import com.example.bookmanagementsystembo.common.SecurityUtils;
 import com.example.bookmanagementsystembo.reservation.domain.service.ReservationService;
-import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationCreateReq;
-import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationRes;
+import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationCreateRequest;
+import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,9 @@ public class ReservationController {
 
     /** 예약 등록 */
     @PostMapping
-    public ResponseEntity<ReservationRes> createReservation(@RequestBody ReservationCreateReq req) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationCreateRequest req) {
         Long userId = SecurityUtils.getCurrentUserId();
-        ReservationRes res = reservationService.createReservation(req.bookId(), userId);
+        ReservationResponse res = reservationService.createReservation(req.bookId(), userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 

@@ -1,4 +1,4 @@
-package com.example.bookmanagementsystembo.bookrequest.dto;
+package com.example.bookmanagementsystembo.bookRequest.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

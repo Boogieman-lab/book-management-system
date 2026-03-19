@@ -1,7 +1,7 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.book.dto.BookCreateReq;
-import com.example.bookmanagementsystembo.book.dto.BookRes;
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookResponse;
 import com.example.bookmanagementsystembo.book.entity.Book;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.book.repository.BookRepository;
@@ -36,15 +36,15 @@ public class BookServiceIntegrationTest {
     @DisplayName("create: 신규 도서이면 Book 1건 저장되고 BookHold 1건 생성된다")
     void create_newBook_savesBookAndBookHold() {
         // given
-        BookCreateReq req = sampleCreateReq("자바의 정석", "9791188612678");
+        BookCreateRequest req = sampleCreateReq("자바의 정석", "9791188612678");
         long beforeBooks = bookRepository.count();
         long beforeHolds = bookHoldRepository.count();
 
         // when
-        BookRes result = bookService.create(req);
+        BookResponse result = bookService.create(req);
 
         // then
-        assertNotNull(result, "create 결과(BookRes)는 null이 아니어야 한다.");
+        assertNotNull(result, "create 결과(BookResponse)는 null이 아니어야 한다.");
         assertEquals(req.title(), result.title(), "응답의 title은 요청과 동일해야 한다.");
         assertEquals(req.isbn(), result.isbn(), "응답의 isbn은 요청과 동일해야 한다.");
 
@@ -63,8 +63,8 @@ public class BookServiceIntegrationTest {
     void create_existingIsbn_reusesBook_andCreatesAnotherBookHold() {
         // given
         String isbn = "9788960773431";
-        BookCreateReq req1 = sampleCreateReq("토비의 스프링 1", isbn);
-        BookCreateReq req2 = sampleCreateReq("토비의 스프링 2(제목은 달라도 ISBN 같음)", isbn);
+        BookCreateRequest req1 = sampleCreateReq("토비의 스프링 1", isbn);
+        BookCreateRequest req2 = sampleCreateReq("토비의 스프링 2(제목은 달라도 ISBN 같음)", isbn);
 
         // 최초 1번 생성
         bookService.create(req1);
@@ -72,7 +72,7 @@ public class BookServiceIntegrationTest {
         long beforeHolds = bookHoldRepository.count();
 
         // when: 같은 ISBN으로 다시 create 호출
-        BookRes result = bookService.create(req2);
+        BookResponse result = bookService.create(req2);
 
         // then
         assertNotNull(result);
@@ -85,11 +85,11 @@ public class BookServiceIntegrationTest {
 
 
     @Test
-    @DisplayName("read: 존재하는 bookId면 Book을 BookRes로 매핑해 반환한다")
-    void read_existingBook_returnsBookRes() {
+    @DisplayName("read: 존재하는 bookId면 Book을 BookResponse로 매핑해 반환한다")
+    void read_existingBook_returnsBookResponse() {
         // given: 먼저 create로 한 권 저장
-        BookCreateReq req = sampleCreateReq("토비의 스프링", "9788960773431");
-        BookRes created = bookService.create(req);
+        BookCreateRequest req = sampleCreateReq("토비의 스프링", "9788960773431");
+        BookResponse created = bookService.create(req);
         assertNotNull(created);
 
         Long bookId = bookRepository.findByIsbn(req.isbn())
@@ -97,7 +97,7 @@ public class BookServiceIntegrationTest {
                 .getBookId();
 
         // when
-        BookRes dto = bookService.read(bookId);
+        BookResponse dto = bookService.read(bookId);
 
         // then
         assertNotNull(dto, "read 결과는 null이 아니어야 한다.");
@@ -123,8 +123,8 @@ public class BookServiceIntegrationTest {
                 "예외의 ErrorType은 BOOK_NOT_FOUND여야 한다.");
     }
 
-    private BookCreateReq sampleCreateReq(String title, String isbn) {
-        return new BookCreateReq(
+    private BookCreateRequest sampleCreateReq(String title, String isbn) {
+        return new BookCreateRequest(
                 title,                                   // title
                 "내용 예시",                               // contents
                 "https://example.com/detail",            // url

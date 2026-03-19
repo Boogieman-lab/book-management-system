@@ -9,7 +9,7 @@ import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.domain.service.ReservationService;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
-import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationRes;
+import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +57,7 @@ class ReservationServiceTest {
         when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        ReservationRes res = reservationService.createReservation(bookId, userId);
+        ReservationResponse res = reservationService.createReservation(bookId, userId);
 
         // Then
         assertThat(res).isNotNull();

@@ -53,7 +53,7 @@ public class BookBorrowService {
     }
 
     @Transactional
-    public BorrowRes borrow(Long bookHoldId, Long userId, String reason) {
+    public BorrowResponse borrow(Long bookHoldId, Long userId, String reason) {
         // 비관적 락으로 BookHold 조회
         BookHold bookHold = bookHoldRepository.findByIdForUpdate(bookHoldId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
@@ -76,7 +76,7 @@ public class BookBorrowService {
         // BookHold 상태 변경
         bookHold.updateStatus(BookHoldStatus.BORROWED);
 
-        return new BorrowRes(bookBorrow.getBookBorrowId(), bookBorrow.getDueDate());
+        return new BorrowResponse(bookBorrow.getBookBorrowId(), bookBorrow.getDueDate());
     }
 
     @Transactional
@@ -116,7 +116,7 @@ public class BookBorrowService {
         }
     }
 
-    public Page<AdminBorrowRes> findAllForAdmin(BorrowStatus status, Pageable pageable) {
+    public Page<AdminBorrowSummaryResponse> findAllForAdmin(BorrowStatus status, Pageable pageable) {
         return bookBorrowRepository.findAllForAdmin(status, pageable);
     }
 }

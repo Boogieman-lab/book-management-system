@@ -2,7 +2,7 @@ package com.example.bookmanagementsystembo.book.service;
 
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDetailDto;
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDto;
-import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowRes;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowResponse;
 import com.example.bookmanagementsystembo.bookBorrow.entity.BookBorrow;
 import com.example.bookmanagementsystembo.bookBorrow.service.BookBorrowService;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
@@ -155,7 +155,7 @@ class BookBorrowServiceTest {
         when(bookBorrowRepository.save(any(BookBorrow.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        BorrowRes res = bookBorrowService.borrow(bookHoldId, userId, "학습용");
+        BorrowResponse res = bookBorrowService.borrow(bookHoldId, userId, "학습용");
 
         // Then
         assertThat(res).isNotNull();

@@ -1,9 +1,9 @@
-package com.example.bookmanagementsystembo.bookrequest.api;
+package com.example.bookmanagementsystembo.bookRequest.api;
 
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestCreateReq;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestPageRes;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestRes;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestUpdateReq;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestCreateRequest;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryPageResponse;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryResponse;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 
@@ -13,14 +13,14 @@ public class BookRequestApiTest {
     @Test
     void create() {
         Long userId = 1L;
-        BookRequestCreateReq createReq1 = new BookRequestCreateReq(
+        BookRequestCreateRequest createReq1 = new BookRequestCreateRequest(
                 "자바의 정석",
                 "남궁성",
                 "도우출판",
                 "979118665",
                 "자바 공부용으로 신청합니다."
         );
-        BookRequestCreateReq createReq2 = new BookRequestCreateReq(
+        BookRequestCreateRequest createReq2 = new BookRequestCreateRequest(
                 "JPA",
                 "홍길동, 김영환",
                 "도우출판",
@@ -28,20 +28,20 @@ public class BookRequestApiTest {
                 "자바 공부용으로 신청합니다."
         );
 
-        BookRequestRes created1 = create(createReq1, userId);
-        BookRequestRes created2 = create(createReq2, userId);
+        BookRequestSummaryResponse created1 = create(createReq1, userId);
+        BookRequestSummaryResponse created2 = create(createReq2, userId);
         System.out.println("created1 = " + created1);
         System.out.println("created2 = " + created2);
 
         Long bookRequestId = created1.bookRequestId();
 
-        BookRequestRes read = read(bookRequestId);
+        BookRequestSummaryResponse read = read(bookRequestId);
         System.out.println("read = " + read);
 
-        BookRequestPageRes page = readAll();
+        BookRequestSummaryPageResponse page = readAll();
         System.out.println("page = " + page);
 
-        BookRequestUpdateReq updateReq = new BookRequestUpdateReq(
+        BookRequestUpdateRequest updateReq = new BookRequestUpdateRequest(
                 "자바의 정석 수정",
                 "남궁성",
                 "도우출판",
@@ -49,27 +49,27 @@ public class BookRequestApiTest {
                 "자바 공부용으로 신청 수정합니다."
         );
 
-        BookRequestRes updated = update(1L, updateReq);
+        BookRequestSummaryResponse updated = update(1L, updateReq);
         System.out.println("updated = " + updated);
     }
 
 
-    BookRequestRes create(BookRequestCreateReq request, Long userId) {
+    BookRequestSummaryResponse create(BookRequestCreateRequest request, Long userId) {
         return restClient.post()
                 .uri("/api/book-requests")
                 .body(request)
                 .retrieve()
-                .body(BookRequestRes.class);
+                .body(BookRequestSummaryResponse.class);
     }
 
-    BookRequestRes read(Long bookRequestId) {
+    BookRequestSummaryResponse read(Long bookRequestId) {
         return restClient.get()
                 .uri("/api/book-requests/{bookRequestId}", bookRequestId)
                 .retrieve()
-                .body(BookRequestRes.class);
+                .body(BookRequestSummaryResponse.class);
     }
 
-    BookRequestPageRes readAll() {
+    BookRequestSummaryPageResponse readAll() {
         return restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/book-requests")
@@ -77,15 +77,15 @@ public class BookRequestApiTest {
                         .queryParam("pageSize", 10L)
                         .build())
                 .retrieve()
-                .body(BookRequestPageRes.class);
+                .body(BookRequestSummaryPageResponse.class);
     }
 
-    BookRequestRes update(Long bookRequestId, BookRequestUpdateReq request) {
+    BookRequestSummaryResponse update(Long bookRequestId, BookRequestUpdateRequest request) {
         return restClient.put()
                 .uri("/api/book-requests/{bookRequestId}", bookRequestId)
                 .body(request)
                 .retrieve()
-                .body(BookRequestRes.class);
+                .body(BookRequestSummaryResponse.class);
     }
 
 }

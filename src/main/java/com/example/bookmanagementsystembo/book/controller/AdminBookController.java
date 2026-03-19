@@ -1,12 +1,12 @@
 package com.example.bookmanagementsystembo.book.controller;
 
-import com.example.bookmanagementsystembo.book.dto.BookCreateReq;
-import com.example.bookmanagementsystembo.book.dto.BookHoldAddReq;
-import com.example.bookmanagementsystembo.book.dto.BookRes;
-import com.example.bookmanagementsystembo.book.dto.BookUpdateReq;
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookHoldCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookResponse;
+import com.example.bookmanagementsystembo.book.dto.BookUpdateRequest;
 import com.example.bookmanagementsystembo.book.service.BookService;
-import com.example.bookmanagementsystembo.bookHold.dto.BookHoldRes;
-import com.example.bookmanagementsystembo.bookHold.dto.BookHoldStatusUpdateReq;
+import com.example.bookmanagementsystembo.bookHold.dto.BookHoldResponse;
+import com.example.bookmanagementsystembo.bookHold.dto.BookHoldStatusUpdateRequest;
 import com.example.bookmanagementsystembo.bookHold.service.BookHoldService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,15 +32,15 @@ public class AdminBookController {
 
     /** [관리자] 신규 도서 메타 등록 + BookHold 1건 자동 생성 */
     @PostMapping("/books")
-    public ResponseEntity<BookRes> registerBook(@RequestBody @Valid BookCreateReq req) {
+    public ResponseEntity<BookResponse> registerBook(@RequestBody @Valid BookCreateRequest req) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.create(req));
     }
 
     /** [관리자] 기존 도서 메타 수정 (저자, 표지, 내용 등) */
     @PutMapping("/books/{bookId}")
-    public ResponseEntity<BookRes> updateBook(
+    public ResponseEntity<BookResponse> updateBook(
             @PathVariable Long bookId,
-            @RequestBody @Valid BookUpdateReq req) {
+            @RequestBody @Valid BookUpdateRequest req) {
         return ResponseEntity.ok(bookService.update(bookId, req));
     }
 
@@ -49,9 +49,9 @@ public class AdminBookController {
      * 동일 bookId에 새 BookHold(AVAILABLE)를 추가합니다.
      */
     @PostMapping("/books/{bookId}/holds")
-    public ResponseEntity<BookHoldRes> addHold(
+    public ResponseEntity<BookHoldResponse> addHold(
             @PathVariable Long bookId,
-            @RequestBody BookHoldAddReq req) {
+            @RequestBody BookHoldCreateRequest req) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookHoldService.addHold(bookId, req));
     }
 
@@ -60,9 +60,9 @@ public class AdminBookController {
      * LOST(분실) 처리 시 대출 중(BORROWED) 상태이면 400 예외를 반환합니다.
      */
     @PatchMapping("/book-holds/{bookHoldId}/status")
-    public ResponseEntity<BookHoldRes> updateHoldStatus(
+    public ResponseEntity<BookHoldResponse> updateHoldStatus(
             @PathVariable Long bookHoldId,
-            @RequestBody @Valid BookHoldStatusUpdateReq req) {
+            @RequestBody @Valid BookHoldStatusUpdateRequest req) {
         return ResponseEntity.ok(bookHoldService.updateHoldStatus(bookHoldId, req));
     }
 }

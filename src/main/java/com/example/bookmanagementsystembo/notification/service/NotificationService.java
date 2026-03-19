@@ -2,8 +2,8 @@ package com.example.bookmanagementsystembo.notification.service;
 
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
-import com.example.bookmanagementsystembo.notification.dto.NotificationPageRes;
-import com.example.bookmanagementsystembo.notification.dto.NotificationRes;
+import com.example.bookmanagementsystembo.notification.dto.NotificationPageResponse;
+import com.example.bookmanagementsystembo.notification.dto.NotificationResponse;
 import com.example.bookmanagementsystembo.notification.entity.Notification;
 import com.example.bookmanagementsystembo.notification.repository.NotificationQueryRepository;
 import com.example.bookmanagementsystembo.notification.repository.NotificationRepository;
@@ -21,17 +21,17 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationQueryRepository notificationQueryRepository;
 
-    public NotificationPageRes getMyNotifications(Long userId, int page, int size, boolean unreadOnly) {
+    public NotificationPageResponse getMyNotifications(Long userId, int page, int size, boolean unreadOnly) {
         long offset = (long) (page - 1) * size;
 
         List<Notification> notifications = notificationQueryRepository.findByUserId(userId, unreadOnly, offset, size);
         long totalElements = notificationQueryRepository.countByUserId(userId, unreadOnly);
 
-        List<NotificationRes> items = notifications.stream()
-                .map(NotificationRes::from)
+        List<NotificationResponse> items = notifications.stream()
+                .map(NotificationResponse::from)
                 .toList();
 
-        return NotificationPageRes.of(items, totalElements, page, size);
+        return NotificationPageResponse.of(items, totalElements, page, size);
     }
 
     @Transactional

@@ -1,8 +1,8 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.book.dto.BookCreateReq;
-import com.example.bookmanagementsystembo.book.dto.BookRes;
-import com.example.bookmanagementsystembo.book.dto.BookUpdateReq;
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookResponse;
+import com.example.bookmanagementsystembo.book.dto.BookUpdateRequest;
 import com.example.bookmanagementsystembo.book.entity.Book;
 import com.example.bookmanagementsystembo.bookHold.entity.BookHold;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
@@ -38,15 +38,15 @@ class BookServiceTest {
     private BookHoldRepository bookHoldRepository;
 
 
-    private BookCreateReq bookCreateReq;
-    private BookUpdateReq bookUpdateReq;
+    private BookCreateRequest bookCreateReq;
+    private BookUpdateRequest bookUpdateReq;
 
     private Book book;
     private BookHold bookHold;
 
     @BeforeEach
     void setUp() {
-        bookCreateReq = new BookCreateReq(
+        bookCreateReq = new BookCreateRequest(
                 "이펙티브 자바",
                 "소프트웨어",
                 "http//example.com/url",
@@ -61,7 +61,7 @@ class BookServiceTest {
                 "정상"
         );
 
-        bookUpdateReq = new BookUpdateReq(
+        bookUpdateReq = new BookUpdateRequest(
                 "이펙티브 자바 3판",
                 "소프트웨어 엔지니어링",
                 "http//example.com/url/new",
@@ -85,7 +85,7 @@ class BookServiceTest {
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
 
         // When
-        BookRes result = bookService.read(bookId);
+        BookResponse result = bookService.read(bookId);
 
         // Then
         assertThat(result).isNotNull();
@@ -116,7 +116,7 @@ class BookServiceTest {
         when(bookHoldRepository.save(any(BookHold.class))).thenReturn(bookHold);
 
         // When
-        BookRes result = bookService.create(bookCreateReq);
+        BookResponse result = bookService.create(bookCreateReq);
 
         // Then
         verify(bookRepository, times(1)).findByIsbn(bookCreateReq.isbn());
@@ -132,7 +132,7 @@ class BookServiceTest {
         when(bookHoldRepository.save(any(BookHold.class))).thenReturn(bookHold);
 
         // When
-        BookRes result = bookService.create(bookCreateReq);
+        BookResponse result = bookService.create(bookCreateReq);
 
         // Then
         verify(bookRepository, times(1)).findByIsbn(bookCreateReq.isbn());

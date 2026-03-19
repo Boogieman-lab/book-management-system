@@ -4,8 +4,8 @@ import com.example.bookmanagementsystembo.auth.domain.service.AuthService;
 import com.example.bookmanagementsystembo.auth.presentation.dto.LoginRequest;
 import com.example.bookmanagementsystembo.auth.presentation.dto.LoginResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.SignupRequest;
-import com.example.bookmanagementsystembo.token.dto.TokenRes;
-import com.example.bookmanagementsystembo.token.dto.TokenReissueReq;
+import com.example.bookmanagementsystembo.token.dto.TokenResponse;
+import com.example.bookmanagementsystembo.token.dto.TokenReissueRequest;
 import com.example.bookmanagementsystembo.token.service.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenRes> refresh(@RequestBody @Valid TokenReissueReq request) {
+    public ResponseEntity<TokenResponse> refresh(@RequestBody @Valid TokenReissueRequest request) {
         return ResponseEntity.ok(tokenService.reissue(request.refreshToken()));
     }
 }

@@ -4,8 +4,8 @@ import com.example.bookmanagementsystembo.book.entity.QBook;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.bookBorrow.repository.BookBorrowRepository;
 import com.example.bookmanagementsystembo.bookHold.entity.QBookHold;
-import com.example.bookmanagementsystembo.bookrequest.entity.BookRequest;
-import com.example.bookmanagementsystembo.bookrequest.repository.BookRequestRepository;
+import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
 import com.example.bookmanagementsystembo.department.repository.DepartmentRepository;
 import com.example.bookmanagementsystembo.department.service.DepartmentService;
 import com.example.bookmanagementsystembo.department.dto.DepartmentDto;
@@ -39,26 +39,26 @@ public class UserService {
     private final BookRequestRepository bookRequestRepository;
     private final JPAQueryFactory queryFactory;
 
-    public UserRes read(Long userId) {
+    public UserResponse read(Long userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
 
         DepartmentDto department = departmentService.getDepartmentById(user.getDepartmentId());
 
-        return UserRes.of(user.getName(), user.getEmail(), department.departmentName());
+        return UserResponse.of(user.getName(), user.getEmail(), department.departmentName());
     }
 
-    public UserProfileRes getMyProfile(Long userId) {
+    public UserProfileResponse getMyProfile(Long userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
 
         String departmentName = resolveDepartmentName(user.getDepartmentId());
 
-        return UserProfileRes.of(user, departmentName);
+        return UserProfileResponse.of(user, departmentName);
     }
 
     @Transactional
-    public UserProfileRes updateMyProfile(Long userId, UserUpdateReq request) {
+    public UserProfileResponse updateMyProfile(Long userId, UserUpdateRequest request) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
 
@@ -66,14 +66,14 @@ public class UserService {
 
         String departmentName = resolveDepartmentName(user.getDepartmentId());
 
-        return UserProfileRes.of(user, departmentName);
+        return UserProfileResponse.of(user, departmentName);
     }
 
-    public UserBorrowPageRes getMyBorrows(Long userId, int page, int size, BorrowStatus status) {
+    public UserBorrowPageResponse getMyBorrows(Long userId, int page, int size, BorrowStatus status) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<UserBorrowRes> result = bookBorrowRepository.findByUserId(userId, status, pageable);
+        Page<UserBorrowResponse> result = bookBorrowRepository.findByUserId(userId, status, pageable);
 
-        return new UserBorrowPageRes(
+        return new UserBorrowPageResponse(
                 result.getContent(),
                 page,
                 size,
@@ -87,13 +87,13 @@ public class UserService {
         return bookRequestRepository.findAllByCondition(userId, null, pageable);
     }
 
-    public List<UserReservationRes> getMyReservations(Long userId) {
+    public List<UserReservationResponse> getMyReservations(Long userId) {
         QReservation reservation = QReservation.reservation;
         QBookHold bookHold = QBookHold.bookHold;
         QBook book = QBook.book;
 
         return queryFactory
-                .select(Projections.constructor(UserReservationRes.class,
+                .select(Projections.constructor(UserReservationResponse.class,
                         reservation.reservationId,
                         book.title,
                         reservation.status,

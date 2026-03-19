@@ -2,9 +2,9 @@ package com.example.bookmanagementsystembo.token.controller;
 
 
 import com.example.bookmanagementsystembo.token.service.TokenService;
-import com.example.bookmanagementsystembo.token.dto.TokenLogoutReq;
-import com.example.bookmanagementsystembo.token.dto.TokenReissueReq;
-import com.example.bookmanagementsystembo.token.dto.TokenRes;
+import com.example.bookmanagementsystembo.token.dto.TokenLogoutRequest;
+import com.example.bookmanagementsystembo.token.dto.TokenReissueRequest;
+import com.example.bookmanagementsystembo.token.dto.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +21,12 @@ public class TokenController {
 
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenRes> reissueToken(@RequestBody TokenReissueReq req) {
+    public ResponseEntity<TokenResponse> reissueToken(@RequestBody TokenReissueRequest req) {
         return ResponseEntity.ok(tokenService.reissue(req.refreshToken()));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logoutToken(@RequestBody TokenLogoutReq req) {
+    public ResponseEntity<Void> logoutToken(@RequestBody TokenLogoutRequest req) {
         tokenService.logout(req.userEmail(), req.accessToken());
         return ResponseEntity.noContent().build();
     }

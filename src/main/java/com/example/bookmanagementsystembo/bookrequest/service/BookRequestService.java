@@ -1,9 +1,9 @@
-package com.example.bookmanagementsystembo.bookrequest.service;
+package com.example.bookmanagementsystembo.bookRequest.service;
 
 import com.example.bookmanagementsystembo.book.repository.BookRepository;
-import com.example.bookmanagementsystembo.bookrequest.dto.*;
-import com.example.bookmanagementsystembo.bookrequest.entity.BookRequest;
-import com.example.bookmanagementsystembo.bookrequest.repository.BookRequestRepository;
+import com.example.bookmanagementsystembo.bookRequest.dto.*;
+import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
 import com.example.bookmanagementsystembo.common.PageLimitCalculator;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
@@ -25,7 +25,7 @@ public class BookRequestService {
     private final BookRequestRepository bookRequestRepository;
     private final BookRepository bookRepository;
 
-    public BookRequestRes create(Long userId, BookRequestCreateReq request) {
+    public BookRequestSummaryResponse create(Long userId, BookRequestCreateRequest request) {
 
         BookRequest bookRequest = bookRequestRepository.save(
                 BookRequest.create(
@@ -33,34 +33,34 @@ public class BookRequestService {
                         request.publisher(), request.isbn(), request.reason()
                 )
         );
-        return BookRequestRes.from(bookRequest);
+        return BookRequestSummaryResponse.from(bookRequest);
     }
 
-    public BookRequestPageRes readAll(Long page, Long pageSize) {
+    public BookRequestSummaryPageResponse readAll(Long page, Long pageSize) {
         List<BookRequest> bookRequests = bookRequestRepository.findAll((page - 1) * pageSize, pageSize);
         Long bookRequestCount = bookRequestRepository.count(
                 PageLimitCalculator.calculatePageLimit(page, pageSize, 10L)
         );
-        return BookRequestPageRes.of(bookRequests.stream().map(BookRequestRes::from).toList(), bookRequestCount);
+        return BookRequestSummaryPageResponse.of(bookRequests.stream().map(BookRequestSummaryResponse::from).toList(), bookRequestCount);
     }
 
-    public BookRequestRes read(Long bookRequestId) {
+    public BookRequestSummaryResponse read(Long bookRequestId) {
         BookRequest bookRequest = bookRequestRepository.findById(bookRequestId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_REQUEST_FOUND, bookRequestId));
 
-        return BookRequestRes.from(bookRequest);
+        return BookRequestSummaryResponse.from(bookRequest);
     }
 
     @Transactional
-    public BookRequestRes update(Long bookRequestId, BookRequestUpdateReq request) {
+    public BookRequestSummaryResponse update(Long bookRequestId, BookRequestUpdateRequest request) {
         BookRequest bookRequest = bookRequestRepository.findById(bookRequestId)
                 .orElseThrow(()->new CoreException(ErrorType.BOOK_REQUEST_FOUND, bookRequestId));
         bookRequest.update(request.title(), request.authors(), request.publisher(), request.isbn(), request.reason());
-        return BookRequestRes.from(bookRequest);
+        return BookRequestSummaryResponse.from(bookRequest);
     }
 
     @Transactional
-    public BookRequestV1Res createV1(Long userId, BookRequestCreateReq request) {
+    public BookRequestResponse createV1(Long userId, BookRequestCreateRequest request) {
         if (StringUtils.hasText(request.isbn())) {
             if (bookRepository.existsByIsbn(request.isbn())) {
                 throw new CoreException(ErrorType.BOOK_REQUEST_ALREADY_EXISTS, request.isbn());
@@ -76,24 +76,24 @@ public class BookRequestService {
                         request.publisher(), request.isbn(), request.reason()
                 )
         );
-        return BookRequestV1Res.from(bookRequest);
+        return BookRequestResponse.from(bookRequest);
     }
 
-    public BookRequestPageV1Res readAllV1(int page, int size, BookRequestStatus status, Long userId, boolean isAdmin) {
+    public BookRequestPageResponse readAllV1(int page, int size, BookRequestStatus status, Long userId, boolean isAdmin) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Long filterUserId = isAdmin ? null : userId;
 
         Page<BookRequest> result = bookRequestRepository.findAllByCondition(filterUserId, status, pageable);
 
-        List<BookRequestV1Res> items = result.getContent().stream()
-                .map(BookRequestV1Res::from)
+        List<BookRequestResponse> items = result.getContent().stream()
+                .map(BookRequestResponse::from)
                 .toList();
 
-        return BookRequestPageV1Res.of(items, result.getTotalElements(), result.getTotalPages(), page, size);
+        return BookRequestPageResponse.of(items, result.getTotalElements(), result.getTotalPages(), page, size);
     }
 
     @Transactional
-    public BookRequestV1Res updateStatus(Long requestId, BookRequestStatus status, String rejectReason) {
+    public BookRequestResponse updateStatus(Long requestId, BookRequestStatus status, String rejectReason) {
         BookRequest bookRequest = bookRequestRepository.findById(requestId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_REQUEST_FOUND, requestId));
 
@@ -102,7 +102,7 @@ public class BookRequestService {
         }
 
         bookRequest.updateStatus(status, rejectReason);
-        return BookRequestV1Res.from(bookRequest);
+        return BookRequestResponse.from(bookRequest);
     }
 
 }

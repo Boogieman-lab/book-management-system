@@ -1,7 +1,7 @@
 package com.example.bookmanagementsystembo.kakaobook.controller;
 
 import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchParams;
-import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchRes;
+import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchResponse;
 import com.example.bookmanagementsystembo.kakaobook.service.KakaoBookSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class KakaoBookSearchController {
      * @param target 검색 필드 제한: title | isbn | publisher | person
      */
     @GetMapping("/api/v1/external/kakao/books")
-    public ResponseEntity<KakaoBookSearchRes> searchKakaoBooks(
+    public ResponseEntity<KakaoBookSearchResponse> searchKakaoBooks(
             @RequestParam String query,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) Integer page,
@@ -37,7 +37,7 @@ public class KakaoBookSearchController {
 
     /** 기존 엔드포인트 (하위 호환 유지) */
     @GetMapping("/api/search/books")
-    public ResponseEntity<KakaoBookSearchRes> getBooksByTitle(@RequestParam String title) {
+    public ResponseEntity<KakaoBookSearchResponse> getBooksByTitle(@RequestParam String title) {
         return ResponseEntity.ok(kakaoBookSearchService.getBooksByTitle(title));
     }
 }

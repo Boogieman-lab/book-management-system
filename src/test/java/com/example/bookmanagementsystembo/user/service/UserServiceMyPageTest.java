@@ -2,9 +2,9 @@ package com.example.bookmanagementsystembo.user.service;
 
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.bookBorrow.repository.BookBorrowRepository;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestStatus;
-import com.example.bookmanagementsystembo.bookrequest.entity.BookRequest;
-import com.example.bookmanagementsystembo.bookrequest.repository.BookRequestRepository;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestStatus;
+import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
 import com.example.bookmanagementsystembo.department.entity.Department;
 import com.example.bookmanagementsystembo.department.repository.DepartmentRepository;
 import com.example.bookmanagementsystembo.department.service.DepartmentService;
@@ -78,7 +78,7 @@ class UserServiceMyPageTest {
         when(departmentRepository.findById(1L)).thenReturn(Optional.of(testDepartment));
 
         // When
-        UserProfileRes result = userService.getMyProfile(userId);
+        UserProfileResponse result = userService.getMyProfile(userId);
 
         // Then
         assertThat(result).isNotNull();
@@ -106,12 +106,12 @@ class UserServiceMyPageTest {
     void updateMyProfile_success() {
         // Given
         Long userId = 1L;
-        UserUpdateReq request = new UserUpdateReq("김철수", "new-profile.jpg");
+        UserUpdateRequest request = new UserUpdateRequest("김철수", "new-profile.jpg");
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         when(departmentRepository.findById(1L)).thenReturn(Optional.of(testDepartment));
 
         // When
-        UserProfileRes result = userService.updateMyProfile(userId, request);
+        UserProfileResponse result = userService.updateMyProfile(userId, request);
 
         // Then
         assertThat(result).isNotNull();
@@ -127,12 +127,12 @@ class UserServiceMyPageTest {
         // Given
         Long userId = 1L;
         LocalDateTime now = LocalDateTime.now();
-        UserBorrowRes borrowRes = new UserBorrowRes("자바의 정석", 10L, now, now.plusDays(14), null, "BORROWED");
-        Page<UserBorrowRes> page = new PageImpl<>(List.of(borrowRes), PageRequest.of(0, 10), 1);
+        UserBorrowResponse borrowRes = new UserBorrowResponse("자바의 정석", 10L, now, now.plusDays(14), null, "BORROWED");
+        Page<UserBorrowResponse> page = new PageImpl<>(List.of(borrowRes), PageRequest.of(0, 10), 1);
         when(bookBorrowRepository.findByUserId(eq(userId), any(), any())).thenReturn(page);
 
         // When
-        UserBorrowPageRes result = userService.getMyBorrows(userId, 1, 10, null);
+        UserBorrowPageResponse result = userService.getMyBorrows(userId, 1, 10, null);
 
         // Then
         assertThat(result).isNotNull();
@@ -170,7 +170,7 @@ class UserServiceMyPageTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(userNoDept));
 
         // When
-        UserProfileRes result = userService.getMyProfile(userId);
+        UserProfileResponse result = userService.getMyProfile(userId);
 
         // Then
         assertThat(result).isNotNull();

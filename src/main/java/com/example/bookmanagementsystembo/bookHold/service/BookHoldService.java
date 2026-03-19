@@ -1,8 +1,8 @@
 package com.example.bookmanagementsystembo.bookHold.service;
 
-import com.example.bookmanagementsystembo.book.dto.BookHoldAddReq;
-import com.example.bookmanagementsystembo.bookHold.dto.BookHoldRes;
-import com.example.bookmanagementsystembo.bookHold.dto.BookHoldStatusUpdateReq;
+import com.example.bookmanagementsystembo.book.dto.BookHoldCreateRequest;
+import com.example.bookmanagementsystembo.bookHold.dto.BookHoldResponse;
+import com.example.bookmanagementsystembo.bookHold.dto.BookHoldStatusUpdateRequest;
 import com.example.bookmanagementsystembo.bookHold.entity.BookHold;
 import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
@@ -20,24 +20,24 @@ public class BookHoldService {
 
     private final BookHoldRepository bookHoldRepository;
 
-    public List<BookHoldRes> readAll(Long bookId) {
-        return bookHoldRepository.findByBookId(bookId).stream().map(BookHoldRes::from).toList();
+    public List<BookHoldResponse> readAll(Long bookId) {
+        return bookHoldRepository.findByBookId(bookId).stream().map(BookHoldResponse::from).toList();
     }
 
-    public BookHoldRes read(Long bookId, Long holdId) {
+    public BookHoldResponse read(Long bookId, Long holdId) {
         BookHold hold = bookHoldRepository.findByBookHoldIdAndBookId(holdId, bookId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, holdId));
-        return BookHoldRes.from(hold);
+        return BookHoldResponse.from(hold);
     }
 
     @Transactional
-    public BookHoldRes addHold(Long bookId, BookHoldAddReq req) {
+    public BookHoldResponse addHold(Long bookId, BookHoldCreateRequest req) {
         BookHold hold = BookHold.createWithLocation(bookId, req.location());
-        return BookHoldRes.from(bookHoldRepository.save(hold));
+        return BookHoldResponse.from(bookHoldRepository.save(hold));
     }
 
     @Transactional
-    public BookHoldRes updateHoldStatus(Long bookHoldId, BookHoldStatusUpdateReq req) {
+    public BookHoldResponse updateHoldStatus(Long bookHoldId, BookHoldStatusUpdateRequest req) {
         BookHold hold = bookHoldRepository.findById(bookHoldId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
 
@@ -48,6 +48,6 @@ public class BookHoldService {
         }
 
         hold.updateStatus(req.status());
-        return BookHoldRes.from(hold);
+        return BookHoldResponse.from(hold);
     }
 }

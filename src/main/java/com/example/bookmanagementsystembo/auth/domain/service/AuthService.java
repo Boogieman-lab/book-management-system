@@ -5,9 +5,10 @@ import com.example.bookmanagementsystembo.auth.presentation.dto.LoginResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.SignupRequest;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
-import com.example.bookmanagementsystembo.token.dto.TokenRes;
+import com.example.bookmanagementsystembo.token.dto.TokenResponse;
 import com.example.bookmanagementsystembo.token.service.TokenService;
 import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.enums.Role;
 import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class AuthService {
                 request.username(),
                 null,
                 null,
-                request.role()
+                Role.ROLE_USER
         );
 
         userRepository.save(user);
@@ -57,7 +58,7 @@ public class AuthService {
         user.resetLoginFailCount();
         userRepository.save(user);
 
-        TokenRes tokenRes = tokenService.issue(user);
+        TokenResponse tokenRes = tokenService.issue(user);
         return new LoginResponse(tokenRes.accessToken(), tokenRes.refreshToken(), user.getEmail(), user.getName());
     }
 }

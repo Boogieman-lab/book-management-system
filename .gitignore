@@ -35,3 +35,17 @@ out/
 
 ### VS Code ###
 .vscode/
+/.omc/state/hud-state.json
+/.omc/state/hud-stdin-cache.json
+/.omc/state/idle-notif-cooldown.json
+/.omc/state/last-tool-error.json
+/.omc/state/mission-state.json
+/.omc/project-memory.json
+/.claude/settings.local.json
+/.omc/state/setup-state.json
+/.omc/state/subagent-tracking.json
+/.omc/sessions/581e9552-dc61-46ba-85ee-4c12a709693c.json
+/.omc/state/agent-replay-8c9a1053-d2c7-463b-b0ff-f2040b72beae.jsonl
+/CLAUDE.md
+/docs/fe_prompts.md
+/docs/ai_prompts.md

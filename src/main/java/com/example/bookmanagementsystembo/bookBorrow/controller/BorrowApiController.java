@@ -1,7 +1,7 @@
 package com.example.bookmanagementsystembo.bookBorrow.controller;
 
-import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowCreateReq;
-import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowRes;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowCreateRequest;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowResponse;
 import com.example.bookmanagementsystembo.bookBorrow.service.BookBorrowService;
 import com.example.bookmanagementsystembo.common.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,9 @@ public class BorrowApiController {
 
     /** 도서 대출 */
     @PostMapping
-    public ResponseEntity<BorrowRes> borrow(@RequestBody BorrowCreateReq req) {
+    public ResponseEntity<BorrowResponse> borrow(@RequestBody BorrowCreateRequest req) {
         Long userId = SecurityUtils.getCurrentUserId();
-        BorrowRes res = bookBorrowService.borrow(req.bookHoldId(), userId, req.reason());
+        BorrowResponse res = bookBorrowService.borrow(req.bookHoldId(), userId, req.reason());
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 

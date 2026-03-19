@@ -5,7 +5,7 @@ import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.token.config.JwtPayloadInfo;
 import com.example.bookmanagementsystembo.token.config.JwtTokenProvider;
 import com.example.bookmanagementsystembo.token.dto.Token;
-import com.example.bookmanagementsystembo.token.dto.TokenRes;
+import com.example.bookmanagementsystembo.token.dto.TokenResponse;
 import com.example.bookmanagementsystembo.token.repository.TokenRepository;
 import com.example.bookmanagementsystembo.user.entity.Users;
 import com.example.bookmanagementsystembo.user.repository.UserRepository;
@@ -31,7 +31,7 @@ public class TokenService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TokenRes issue(Users user) {
+    public TokenResponse issue(Users user) {
         String userEmail = user.getEmail();
 
         String accessToken = jwtTokenProvider.createAccessToken(userEmail, user.getRole(), user.getUserId());
@@ -41,11 +41,11 @@ public class TokenService {
         Token token = Token.create(userEmail, refreshToken, expirationSec);
         tokenRepository.save(token);
 
-        return TokenRes.of(accessToken, refreshToken);
+        return TokenResponse.of(accessToken, refreshToken);
     }
 
     @Transactional
-    public TokenRes reissue(String clientRefreshToken) {
+    public TokenResponse reissue(String clientRefreshToken) {
         if (!jwtTokenProvider.isValid(clientRefreshToken)) {
             throw new CoreException(ErrorType.TOKEN_INVALID, clientRefreshToken);
         }
@@ -65,7 +65,7 @@ public class TokenService {
 
         token.updateToken(newRefreshToken, expirationSeconds);
         tokenRepository.save(token);
-        return TokenRes.of(newAccessToken, newRefreshToken);
+        return TokenResponse.of(newAccessToken, newRefreshToken);
     }
 
     public void logout(String userEmail, String accessToken) {

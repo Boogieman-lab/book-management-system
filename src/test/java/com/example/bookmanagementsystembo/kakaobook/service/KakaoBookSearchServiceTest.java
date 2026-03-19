@@ -5,7 +5,7 @@ import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookDocumentDto;
 import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookMetaDto;
 import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchParams;
-import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchRes;
+import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -57,7 +57,7 @@ class KakaoBookSearchServiceTest {
         @DisplayName("query만 있어도 정상 검색 결과를 반환한다")
         void queryOnly_returnsResult() {
             KakaoBookSearchParams params = new KakaoBookSearchParams("자바", null, null, null, null);
-            KakaoBookSearchRes expected = sampleRes();
+            KakaoBookSearchResponse expected = sampleRes();
 
             when(restClient.get()).thenReturn(requestHeadersUriSpec);
             when(requestHeadersUriSpec.uri(any(java.net.URI.class))).thenReturn(requestHeadersSpec);
@@ -65,9 +65,9 @@ class KakaoBookSearchServiceTest {
             when(requestHeadersSpec.accept(any())).thenReturn(requestHeadersSpec);
             when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
             when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
-            when(responseSpec.body(KakaoBookSearchRes.class)).thenReturn(expected);
+            when(responseSpec.body(KakaoBookSearchResponse.class)).thenReturn(expected);
 
-            KakaoBookSearchRes result = service.search(params);
+            KakaoBookSearchResponse result = service.search(params);
 
             assertThat(result.documents()).hasSize(1);
             assertThat(result.documents().get(0).title()).isEqualTo("이펙티브 자바");
@@ -100,13 +100,13 @@ class KakaoBookSearchServiceTest {
         }
     }
 
-    private KakaoBookSearchRes sampleRes() {
+    private KakaoBookSearchResponse sampleRes() {
         KakaoBookDocumentDto doc = new KakaoBookDocumentDto(
                 "이펙티브 자바", List.of("조슈아 블로크"), List.of(),
                 "설명", null, "9788966262281", 36000, "인사이트", 32400,
                 "정상판매", "http://thumb.com", "http://url.com"
         );
         KakaoBookMetaDto meta = new KakaoBookMetaDto(false, 1, 1);
-        return new KakaoBookSearchRes(List.of(doc), meta);
+        return new KakaoBookSearchResponse(List.of(doc), meta);
     }
 }

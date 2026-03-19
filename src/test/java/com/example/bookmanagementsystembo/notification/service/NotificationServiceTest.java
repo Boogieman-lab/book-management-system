@@ -2,7 +2,7 @@ package com.example.bookmanagementsystembo.notification.service;
 
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
-import com.example.bookmanagementsystembo.notification.dto.NotificationPageRes;
+import com.example.bookmanagementsystembo.notification.dto.NotificationPageResponse;
 import com.example.bookmanagementsystembo.notification.entity.Notification;
 import com.example.bookmanagementsystembo.notification.enums.NotificationType;
 import com.example.bookmanagementsystembo.notification.repository.NotificationQueryRepository;
@@ -46,7 +46,7 @@ class NotificationServiceTest {
         when(notificationQueryRepository.countByUserId(userId, false)).thenReturn(2L);
 
         // When
-        NotificationPageRes result = notificationService.getMyNotifications(userId, 1, 10, false);
+        NotificationPageResponse result = notificationService.getMyNotifications(userId, 1, 10, false);
 
         // Then
         assertThat(result.items()).hasSize(2);
@@ -68,7 +68,7 @@ class NotificationServiceTest {
         when(notificationQueryRepository.countByUserId(userId, true)).thenReturn(1L);
 
         // When
-        NotificationPageRes result = notificationService.getMyNotifications(userId, 1, 10, true);
+        NotificationPageResponse result = notificationService.getMyNotifications(userId, 1, 10, true);
 
         // Then
         assertThat(result.items()).hasSize(1);

@@ -1,9 +1,9 @@
-package com.example.bookmanagementsystembo.bookrequest.service;
+package com.example.bookmanagementsystembo.bookRequest.service;
 
 import com.example.bookmanagementsystembo.book.repository.BookRepository;
-import com.example.bookmanagementsystembo.bookrequest.dto.*;
-import com.example.bookmanagementsystembo.bookrequest.entity.BookRequest;
-import com.example.bookmanagementsystembo.bookrequest.repository.BookRequestRepository;
+import com.example.bookmanagementsystembo.bookRequest.dto.*;
+import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ class BookRequestServiceV1Test {
     void createV1_success() {
         // Given
         Long userId = 1L;
-        BookRequestCreateReq request = new BookRequestCreateReq("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
+        BookRequestCreateRequest request = new BookRequestCreateRequest("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
         BookRequest saved = BookRequest.create(userId, request.title(), request.authors(), request.publisher(), request.isbn(), request.reason());
 
         when(bookRepository.existsByIsbn(request.isbn())).thenReturn(false);
@@ -50,7 +50,7 @@ class BookRequestServiceV1Test {
         when(bookRequestRepository.save(any(BookRequest.class))).thenReturn(saved);
 
         // When
-        BookRequestV1Res result = bookRequestService.createV1(userId, request);
+        BookRequestResponse result = bookRequestService.createV1(userId, request);
 
         // Then
         assertThat(result).isNotNull();
@@ -66,7 +66,7 @@ class BookRequestServiceV1Test {
     void createV1_fail_bookAlreadyExists() {
         // Given
         Long userId = 1L;
-        BookRequestCreateReq request = new BookRequestCreateReq("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
+        BookRequestCreateRequest request = new BookRequestCreateRequest("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
 
         when(bookRepository.existsByIsbn(request.isbn())).thenReturn(true);
 
@@ -81,7 +81,7 @@ class BookRequestServiceV1Test {
     void createV1_fail_duplicatePending() {
         // Given
         Long userId = 1L;
-        BookRequestCreateReq request = new BookRequestCreateReq("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
+        BookRequestCreateRequest request = new BookRequestCreateRequest("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
 
         when(bookRepository.existsByIsbn(request.isbn())).thenReturn(false);
         when(bookRequestRepository.existsByIsbnAndStatus(request.isbn(), BookRequestStatus.PENDING)).thenReturn(true);
@@ -97,13 +97,13 @@ class BookRequestServiceV1Test {
     void createV1_success_nullIsbn() {
         // Given
         Long userId = 1L;
-        BookRequestCreateReq request = new BookRequestCreateReq("새 도서", "저자", "출판사", null, "사유");
+        BookRequestCreateRequest request = new BookRequestCreateRequest("새 도서", "저자", "출판사", null, "사유");
         BookRequest saved = BookRequest.create(userId, request.title(), request.authors(), request.publisher(), request.isbn(), request.reason());
 
         when(bookRequestRepository.save(any(BookRequest.class))).thenReturn(saved);
 
         // When
-        BookRequestV1Res result = bookRequestService.createV1(userId, request);
+        BookRequestResponse result = bookRequestService.createV1(userId, request);
 
         // Then
         assertThat(result).isNotNull();
@@ -121,7 +121,7 @@ class BookRequestServiceV1Test {
         when(bookRequestRepository.findAllByCondition(null, null, PageRequest.of(0, 10))).thenReturn(page);
 
         // When
-        BookRequestPageV1Res result = bookRequestService.readAllV1(1, 10, null, 1L, true);
+        BookRequestPageResponse result = bookRequestService.readAllV1(1, 10, null, 1L, true);
 
         // Then
         assertThat(result.items()).hasSize(1);
@@ -140,7 +140,7 @@ class BookRequestServiceV1Test {
         when(bookRequestRepository.findAllByCondition(userId, null, PageRequest.of(0, 10))).thenReturn(page);
 
         // When
-        BookRequestPageV1Res result = bookRequestService.readAllV1(1, 10, null, userId, false);
+        BookRequestPageResponse result = bookRequestService.readAllV1(1, 10, null, userId, false);
 
         // Then
         assertThat(result.items()).hasSize(1);
@@ -158,7 +158,7 @@ class BookRequestServiceV1Test {
         when(bookRequestRepository.findById(requestId)).thenReturn(Optional.of(br));
 
         // When
-        BookRequestV1Res result = bookRequestService.updateStatus(requestId, BookRequestStatus.APPROVED, null);
+        BookRequestResponse result = bookRequestService.updateStatus(requestId, BookRequestStatus.APPROVED, null);
 
         // Then
         assertThat(result.status()).isEqualTo(BookRequestStatus.APPROVED);
@@ -175,7 +175,7 @@ class BookRequestServiceV1Test {
         when(bookRequestRepository.findById(requestId)).thenReturn(Optional.of(br));
 
         // When
-        BookRequestV1Res result = bookRequestService.updateStatus(requestId, BookRequestStatus.REJECTED, "예산 부족");
+        BookRequestResponse result = bookRequestService.updateStatus(requestId, BookRequestStatus.REJECTED, "예산 부족");
 
         // Then
         assertThat(result.status()).isEqualTo(BookRequestStatus.REJECTED);

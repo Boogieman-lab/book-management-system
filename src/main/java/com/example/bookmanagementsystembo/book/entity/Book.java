@@ -1,7 +1,7 @@
 package com.example.bookmanagementsystembo.book.entity;
 
-import com.example.bookmanagementsystembo.book.dto.BookCreateReq;
-import com.example.bookmanagementsystembo.book.dto.BookUpdateReq;
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookUpdateRequest;
 import com.example.bookmanagementsystembo.book.utils.JsonUtils;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -82,7 +82,7 @@ public class Book extends BaseEntity {
     @Comment("판매 상태")
     private String status;
 
-    public static Book create(BookCreateReq dto) {
+    public static Book create(BookCreateRequest dto) {
         return new Book(
                 null,
                 dto.title() ,
@@ -100,7 +100,7 @@ public class Book extends BaseEntity {
         );
     }
 
-    public void update(BookUpdateReq dto) {
+    public void update(BookUpdateRequest dto) {
         this.title = dto.title();
         this.contents = dto.contents();
         this.url = dto.url();

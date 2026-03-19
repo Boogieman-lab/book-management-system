@@ -1,6 +1,6 @@
-package com.example.bookmanagementsystembo.bookrequest.entity;
+package com.example.bookmanagementsystembo.bookRequest.entity;
 
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestStatus;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestStatus;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

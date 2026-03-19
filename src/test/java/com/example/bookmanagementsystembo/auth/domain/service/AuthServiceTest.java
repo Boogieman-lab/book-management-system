@@ -5,7 +5,7 @@ import com.example.bookmanagementsystembo.auth.presentation.dto.LoginResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.SignupRequest;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
-import com.example.bookmanagementsystembo.token.dto.TokenRes;
+import com.example.bookmanagementsystembo.token.dto.TokenResponse;
 import com.example.bookmanagementsystembo.token.service.TokenService;
 import com.example.bookmanagementsystembo.user.entity.Users;
 import com.example.bookmanagementsystembo.user.enums.Role;
@@ -56,7 +56,7 @@ class AuthServiceTest {
         @Test
         @DisplayName("정상 케이스: 중복 이메일 없으면 사용자 저장")
         void signup_shouldSaveUser_whenEmailNotExists() {
-            SignupRequest request = new SignupRequest("testuser", "password123", "test@example.com", Role.ROLE_USER);
+            SignupRequest request = new SignupRequest("testuser", "password123", "test@example.com");
 
             when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
             when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
@@ -78,7 +78,7 @@ class AuthServiceTest {
         @Test
         @DisplayName("예외 케이스: 중복 이메일이면 CONFLICT 예외 발생")
         void signup_shouldThrow_whenEmailAlreadyExists() {
-            SignupRequest request = new SignupRequest("testuser", "password123", "dup@example.com", Role.ROLE_USER);
+            SignupRequest request = new SignupRequest("testuser", "password123", "dup@example.com");
 
             when(userRepository.existsByEmail("dup@example.com")).thenReturn(true);
 
@@ -114,7 +114,7 @@ class AuthServiceTest {
 
             when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(activeUser));
             when(passwordEncoder.matches("plainPass", "encodedPass")).thenReturn(true);
-            when(tokenService.issue(activeUser)).thenReturn(new TokenRes("access-token", "refresh-token"));
+            when(tokenService.issue(activeUser)).thenReturn(new TokenResponse("access-token", "refresh-token"));
 
             LoginResponse response = authService.login(request);
 
@@ -222,7 +222,7 @@ class AuthServiceTest {
 
             when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(activeUser));
             when(passwordEncoder.matches("plainPass", "encodedPass")).thenReturn(true);
-            when(tokenService.issue(activeUser)).thenReturn(new TokenRes("at", "rt"));
+            when(tokenService.issue(activeUser)).thenReturn(new TokenResponse("at", "rt"));
 
             authService.login(request);
 

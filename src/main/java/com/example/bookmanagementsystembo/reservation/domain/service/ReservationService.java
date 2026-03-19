@@ -8,7 +8,7 @@ import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
-import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationRes;
+import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class ReservationService {
     private final BookHoldRepository bookHoldRepository;
 
     @Transactional
-    public ReservationRes createReservation(Long bookId, Long userId) {
+    public ReservationResponse createReservation(Long bookId, Long userId) {
         List<BookHold> bookHolds = bookHoldRepository.findByBookId(bookId);
 
         // 1. AVAILABLE 상태의 BookHold가 있으면 예약 불가 (바로 대출 가능)
@@ -64,7 +64,7 @@ public class ReservationService {
         Reservation reservation = Reservation.create(targetHold, userId, null);
         reservationRepository.save(reservation);
 
-        return new ReservationRes(reservation.getReservationId(), reservation.getStatus());
+        return new ReservationResponse(reservation.getReservationId(), reservation.getStatus());
     }
 
     @Transactional

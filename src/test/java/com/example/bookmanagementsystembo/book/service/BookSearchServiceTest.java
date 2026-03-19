@@ -1,8 +1,8 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.book.dto.BookDetailRes;
+import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
 import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
-import com.example.bookmanagementsystembo.book.dto.BookSummaryRes;
+import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.book.entity.Book;
 import com.example.bookmanagementsystembo.book.enums.BookSearchField;
 import com.example.bookmanagementsystembo.book.repository.BookQueryRepository;
@@ -75,10 +75,10 @@ class BookSearchServiceTest {
             when(bookHoldRepository.countByBookId(1L)).thenReturn(3);
             when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(2);
 
-            Page<BookSummaryRes> result = bookService.searchBooksV1(cond, pageable);
+            Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
             assertThat(result.getTotalElements()).isEqualTo(1);
-            BookSummaryRes summary = result.getContent().get(0);
+            BookSummaryResponse summary = result.getContent().get(0);
             assertThat(summary.bookId()).isEqualTo(1L);
             assertThat(summary.title()).isEqualTo("이펙티브 자바");
             assertThat(summary.totalStock()).isEqualTo(3);
@@ -96,7 +96,7 @@ class BookSearchServiceTest {
             when(bookHoldRepository.countByBookId(1L)).thenReturn(2);
             when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(1);
 
-            Page<BookSummaryRes> result = bookService.searchBooksV1(cond, pageable);
+            Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
             assertThat(result.getContent()).hasSize(1);
             assertThat(result.getContent().get(0).title()).contains("자바");
@@ -113,7 +113,7 @@ class BookSearchServiceTest {
             when(bookHoldRepository.countByBookId(1L)).thenReturn(1);
             when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(1);
 
-            Page<BookSummaryRes> result = bookService.searchBooksV1(cond, pageable);
+            Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
             assertThat(result.getContent()).hasSize(1);
             assertThat(result.getContent().get(0).isbn()).isEqualTo("9788966262281");
@@ -128,7 +128,7 @@ class BookSearchServiceTest {
 
             when(bookQueryRepository.searchBooks(cond, pageable)).thenReturn(emptyPage);
 
-            Page<BookSummaryRes> result = bookService.searchBooksV1(cond, pageable);
+            Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
             assertThat(result.getContent()).isEmpty();
             assertThat(result.getTotalElements()).isZero();
@@ -149,7 +149,7 @@ class BookSearchServiceTest {
             when(bookHoldRepository.countByBookId(2L)).thenReturn(5);
             when(bookHoldRepository.countByBookIdAndStatus(2L, BookHoldStatus.AVAILABLE)).thenReturn(4);
 
-            Page<BookSummaryRes> result = bookService.searchBooksV1(cond, pageable);
+            Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
             assertThat(result.getContent()).hasSize(2);
             assertThat(result.getContent().get(0).totalStock()).isEqualTo(3);
@@ -171,7 +171,7 @@ class BookSearchServiceTest {
             when(bookHoldRepository.countByBookId(1L)).thenReturn(5);
             when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(3);
 
-            BookDetailRes result = bookService.getBookDetail(1L);
+            BookDetailResponse result = bookService.getBookDetail(1L);
 
             assertThat(result.bookId()).isEqualTo(1L);
             assertThat(result.title()).isEqualTo("이펙티브 자바");
@@ -187,7 +187,7 @@ class BookSearchServiceTest {
             when(bookHoldRepository.countByBookId(1L)).thenReturn(2);
             when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(0);
 
-            BookDetailRes result = bookService.getBookDetail(1L);
+            BookDetailResponse result = bookService.getBookDetail(1L);
 
             assertThat(result.totalStock()).isEqualTo(2);
             assertThat(result.availableStock()).isEqualTo(0);

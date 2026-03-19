@@ -1,10 +1,10 @@
-package com.example.bookmanagementsystembo.bookrequest.controller;
+package com.example.bookmanagementsystembo.bookRequest.controller;
 
-import com.example.bookmanagementsystembo.bookrequest.service.BookRequestService;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestCreateReq;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestPageRes;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestRes;
-import com.example.bookmanagementsystembo.bookrequest.dto.BookRequestUpdateReq;
+import com.example.bookmanagementsystembo.bookRequest.service.BookRequestService;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestCreateRequest;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryPageResponse;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryResponse;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestUpdateRequest;
 import com.example.bookmanagementsystembo.user.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class BookRequestController {
     private final BookRequestService bookRequestService;
 
     @GetMapping("/book-requests")
-    public ResponseEntity<BookRequestPageRes> readAll(
+    public ResponseEntity<BookRequestSummaryPageResponse> readAll(
             @RequestParam("page") Long page,
             @RequestParam("pageSize") Long pageSize
     ) {
@@ -27,19 +27,19 @@ public class BookRequestController {
     }
 
     @GetMapping("/book-requests/{bookRequestId}")
-    public ResponseEntity<BookRequestRes> read(@PathVariable("bookRequestId") Long bookRequestId) {
+    public ResponseEntity<BookRequestSummaryResponse> read(@PathVariable("bookRequestId") Long bookRequestId) {
         return ResponseEntity.ok(bookRequestService.read(bookRequestId));
     }
 
     @PostMapping("/book-requests")
-    public ResponseEntity<BookRequestRes> create(@RequestBody BookRequestCreateReq request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<BookRequestSummaryResponse> create(@RequestBody BookRequestCreateRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(bookRequestService.create(userDetails.getUserId(), request));
     }
 
     @PutMapping("/book-requests/{bookRequestId}")
-    public ResponseEntity<BookRequestRes> update(
+    public ResponseEntity<BookRequestSummaryResponse> update(
             @PathVariable Long bookRequestId,
-            @RequestBody BookRequestUpdateReq request
+            @RequestBody BookRequestUpdateRequest request
     ) {
         return ResponseEntity.ok(bookRequestService.update(bookRequestId, request));
     }

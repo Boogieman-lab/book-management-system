@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.user.controller;
 
-import com.example.bookmanagementsystembo.user.dto.UserRes;
+import com.example.bookmanagementsystembo.user.dto.UserResponse;
 import com.example.bookmanagementsystembo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserRes> read(@PathVariable Long userId) {
+    public ResponseEntity<UserResponse> read(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.read(userId));
     }
 }

@@ -1,8 +1,8 @@
 package com.example.bookmanagementsystembo.book.controller;
 
-import com.example.bookmanagementsystembo.book.dto.BookDetailRes;
+import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
 import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
-import com.example.bookmanagementsystembo.book.dto.BookSummaryRes;
+import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.book.enums.BookSearchField;
 import com.example.bookmanagementsystembo.book.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class BookApiController {
      * @param size    페이지 크기 (기본 10)
      */
     @GetMapping
-    public ResponseEntity<Page<BookSummaryRes>> searchBooks(
+    public ResponseEntity<Page<BookSummaryResponse>> searchBooks(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) BookSearchField field,
             @RequestParam(defaultValue = "0") int page,
@@ -51,7 +51,7 @@ public class BookApiController {
      * @param bookId 도서 ID
      */
     @GetMapping("/{bookId}")
-    public ResponseEntity<BookDetailRes> getBookDetail(@PathVariable Long bookId) {
+    public ResponseEntity<BookDetailResponse> getBookDetail(@PathVariable Long bookId) {
         return ResponseEntity.ok(bookService.getBookDetail(bookId));
     }
 }

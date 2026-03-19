@@ -1,6 +1,6 @@
-package com.example.bookmanagementsystembo.bookrequest.repository;
+package com.example.bookmanagementsystembo.bookRequest.repository;
 
-import com.example.bookmanagementsystembo.bookrequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

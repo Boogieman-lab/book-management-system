@@ -3,7 +3,7 @@ package com.example.bookmanagementsystembo.kakaobook.service;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchParams;
-import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchRes;
+import com.example.bookmanagementsystembo.kakaobook.dto.KakaoBookSearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +34,7 @@ public class KakaoBookSearchService {
      * 카카오 도서 검색 API 프록시.
      * query 필수, 나머지 파라미터는 null이면 카카오 API 기본값 적용.
      */
-    public KakaoBookSearchRes search(KakaoBookSearchParams params) {
+    public KakaoBookSearchResponse search(KakaoBookSearchParams params) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(KAKAO_BOOK_API_URL)
                 .queryParam("query", params.query());
 
@@ -49,7 +49,7 @@ public class KakaoBookSearchService {
     }
 
     /** 기존 제목 전용 검색 (하위 호환) */
-    public KakaoBookSearchRes getBooksByTitle(String title) {
+    public KakaoBookSearchResponse getBooksByTitle(String title) {
         URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_BOOK_API_URL)
                 .queryParam("target", "title")
                 .queryParam("query", title)
@@ -59,7 +59,7 @@ public class KakaoBookSearchService {
         return callKakaoApi(uri, title);
     }
 
-    private KakaoBookSearchRes callKakaoApi(URI uri, String queryForLog) {
+    private KakaoBookSearchResponse callKakaoApi(URI uri, String queryForLog) {
         return restClient.get()
                 .uri(uri)
                 .header(HttpHeaders.AUTHORIZATION, REST_API_KEY)
@@ -69,6 +69,6 @@ public class KakaoBookSearchService {
                     log.error("[KakaoBookSearch] 외부 API 오류 query={} status={}", queryForLog, res.getStatusCode());
                     throw new CoreException(ErrorType.BOOK_EXTERNAL_SERVICE_ERROR, queryForLog);
                 })
-                .body(KakaoBookSearchRes.class);
+                .body(KakaoBookSearchResponse.class);
     }
 }

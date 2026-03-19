@@ -1,10 +1,10 @@
 package com.example.bookmanagementsystembo.bookBorrow.repository;
 
-import com.example.bookmanagementsystembo.bookBorrow.dto.AdminBorrowRes;
+import com.example.bookmanagementsystembo.bookBorrow.dto.AdminBorrowSummaryResponse;
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDetailDto;
 import com.example.bookmanagementsystembo.bookBorrow.dto.BookBorrowDto;
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
-import com.example.bookmanagementsystembo.user.dto.UserBorrowRes;
+import com.example.bookmanagementsystembo.user.dto.UserBorrowResponse;
 import com.example.bookmanagementsystembo.book.entity.QBook;
 import com.example.bookmanagementsystembo.bookBorrow.entity.QBookBorrow;
 import com.example.bookmanagementsystembo.bookHold.entity.QBookHold;
@@ -74,9 +74,9 @@ public class BookBorrowQueryRepositoryImpl implements BookBorrowQueryRepository 
     }
 
     @Override
-    public Page<AdminBorrowRes> findAllForAdmin(BorrowStatus status, Pageable pageable) {
-        List<AdminBorrowRes> content = qf
-                .select(Projections.constructor(AdminBorrowRes.class,
+    public Page<AdminBorrowSummaryResponse> findAllForAdmin(BorrowStatus status, Pageable pageable) {
+        List<AdminBorrowSummaryResponse> content = qf
+                .select(Projections.constructor(AdminBorrowSummaryResponse.class,
                         bookBorrow.bookBorrowId,
                         book.title,
                         users.name,
@@ -104,9 +104,9 @@ public class BookBorrowQueryRepositoryImpl implements BookBorrowQueryRepository 
     }
 
     @Override
-    public Page<UserBorrowRes> findByUserId(Long userId, BorrowStatus status, Pageable pageable) {
-        List<UserBorrowRes> content = qf
-                .select(Projections.constructor(UserBorrowRes.class,
+    public Page<UserBorrowResponse> findByUserId(Long userId, BorrowStatus status, Pageable pageable) {
+        List<UserBorrowResponse> content = qf
+                .select(Projections.constructor(UserBorrowResponse.class,
                         book.title,
                         bookBorrow.bookHoldId,
                         bookBorrow.borrowDate,

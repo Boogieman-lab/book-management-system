@@ -5,7 +5,7 @@ import com.example.bookmanagementsystembo.auth.presentation.dto.KakaoTokenRespon
 import com.example.bookmanagementsystembo.auth.presentation.dto.KakaoUserResponse;
 import com.example.bookmanagementsystembo.auth.presentation.dto.LoginResult;
 import com.example.bookmanagementsystembo.token.service.TokenService;
-import com.example.bookmanagementsystembo.token.dto.TokenRes;
+import com.example.bookmanagementsystembo.token.dto.TokenResponse;
 import com.example.bookmanagementsystembo.user.enums.Role;
 import com.example.bookmanagementsystembo.user.entity.Users;
 import com.example.bookmanagementsystembo.user.repository.UserRepository;
@@ -39,7 +39,7 @@ public class KakaoLoginService {
 
         Users user = userRepository.findByEmail(email).orElseGet(() -> userRepository.save(newUser));
 
-        TokenRes tokens = tokenService.issue(user);
+        TokenResponse tokens = tokenService.issue(user);
         return LoginResult.of(tokens.accessToken(), tokens.refreshToken(), user.getEmail(), user.getName());
     }
 }

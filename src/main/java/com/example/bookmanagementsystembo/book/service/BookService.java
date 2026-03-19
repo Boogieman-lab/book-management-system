@@ -1,10 +1,10 @@
 package com.example.bookmanagementsystembo.book.service;
 
-import com.example.bookmanagementsystembo.book.dto.BookCreateReq;
-import com.example.bookmanagementsystembo.book.dto.BookDetailRes;
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
 import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
-import com.example.bookmanagementsystembo.book.dto.BookSummaryRes;
-import com.example.bookmanagementsystembo.book.dto.BookUpdateReq;
+import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
+import com.example.bookmanagementsystembo.book.dto.BookUpdateRequest;
 import com.example.bookmanagementsystembo.book.entity.Book;
 import com.example.bookmanagementsystembo.bookHold.entity.BookHold;
 import com.example.bookmanagementsystembo.book.enums.BookSearchField;
@@ -12,7 +12,7 @@ import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.book.repository.BookQueryRepository;
 import com.example.bookmanagementsystembo.book.repository.BookRepository;
-import com.example.bookmanagementsystembo.book.dto.BookRes;
+import com.example.bookmanagementsystembo.book.dto.BookResponse;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -40,55 +40,55 @@ public class BookService {
      * 도서 목록 조회 — QueryDSL 동적 검색 + 페이지네이션 + 가나다 정렬.
      * 각 도서의 전체 재고 수량과 대출 가능 수량을 함께 반환합니다.
      */
-    public Page<BookSummaryRes> searchBooksV1(BookSearchCond cond, Pageable pageable) {
+    public Page<BookSummaryResponse> searchBooksV1(BookSearchCond cond, Pageable pageable) {
         return bookQueryRepository.searchBooks(cond, pageable)
                 .map(book -> {
                     int total     = bookHoldRepository.countByBookId(book.getBookId());
                     int available = bookHoldRepository.countByBookIdAndStatus(
                             book.getBookId(), BookHoldStatus.AVAILABLE);
-                    return BookSummaryRes.of(book, available, total);
+                    return BookSummaryResponse.of(book, available, total);
                 });
     }
 
     /**
      * 도서 상세 조회 — 전체 메타 정보 + 실재고 수량 반환.
      */
-    public BookDetailRes getBookDetail(Long bookId) {
+    public BookDetailResponse getBookDetail(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, bookId));
         int total     = bookHoldRepository.countByBookId(bookId);
         int available = bookHoldRepository.countByBookIdAndStatus(bookId, BookHoldStatus.AVAILABLE);
-        return BookDetailRes.of(book, available, total);
+        return BookDetailResponse.of(book, available, total);
     }
 
     // ──────────────────────────────────────────────────────────────
     // 기존 API (GET /api/books)
     // ──────────────────────────────────────────────────────────────
 
-    public BookRes read(Long bookId) {
+    public BookResponse read(Long bookId) {
         Book book =  bookRepository.findById(bookId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, bookId));
-        return BookRes.from(book);
+        return BookResponse.from(book);
     }
 
     @Transactional
-    public BookRes create(BookCreateReq request) {
+    public BookResponse create(BookCreateRequest request) {
 
         Book book = bookRepository.findByIsbn(request.isbn())
                 .orElseGet(() -> bookRepository.save(Book.create(request)));
 
         bookHoldRepository.save(BookHold.create(book.getBookId()));
 
-        return BookRes.from(book);
+        return BookResponse.from(book);
     }
 
     @Transactional
-    public BookRes update(Long bookId, BookUpdateReq request) {
+    public BookResponse update(Long bookId, BookUpdateRequest request) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, bookId));
 
         book.update(request);
-        return BookRes.from(book);
+        return BookResponse.from(book);
     }
 
     @Transactional
@@ -100,7 +100,7 @@ public class BookService {
         bookHoldRepository.deleteByBookId(bookId);
     }
 
-    public List<BookRes> searchBooks(BookSearchField field, String query) {
+    public List<BookResponse> searchBooks(BookSearchField field, String query) {
         return switch (field) {
             case AUTHOR -> getBooksByAuthor(query);
             case PUBLISHER -> getBooksByPublisher(query);
@@ -109,32 +109,32 @@ public class BookService {
         };
     }
 
-    private List<BookRes> getBooksByTitle(String title) {
+    private List<BookResponse> getBooksByTitle(String title) {
         return bookRepository.findByTitleContaining(title)
                 .stream()
-                .map(BookRes::from)
+                .map(BookResponse::from)
                 .toList();
     }
 
 
-    private List<BookRes> getBooksByIsbn(String query) {
+    private List<BookResponse> getBooksByIsbn(String query) {
         return bookRepository.findByIsbn(query)
                 .stream()
-                .map(BookRes::from)
+                .map(BookResponse::from)
                 .toList();
     }
 
-    private List<BookRes> getBooksByPublisher(String query) {
+    private List<BookResponse> getBooksByPublisher(String query) {
         return bookRepository.findByPublisherContaining(query)
                 .stream()
-                .map(BookRes::from)
+                .map(BookResponse::from)
                 .toList();
     }
 
-    private List<BookRes> getBooksByAuthor(String query) {
+    private List<BookResponse> getBooksByAuthor(String query) {
         return bookRepository.findByAuthorsContaining(query)
                 .stream()
-                .map(BookRes::from)
+                .map(BookResponse::from)
                 .toList();
     }
 }

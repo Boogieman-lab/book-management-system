@@ -29,4 +29,9 @@ public class LoginViewController {
 
         return "user/auth/login";
     }
+
+    @GetMapping("/signup")
+    public String signup() {
+        return "user/auth/signup";
+    }
 }

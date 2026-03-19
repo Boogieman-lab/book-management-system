@@ -1,9 +1,7 @@
 package com.example.bookmanagementsystembo.auth.presentation.dto;
 
-import com.example.bookmanagementsystembo.user.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record SignupRequest(
@@ -17,8 +15,5 @@ public record SignupRequest(
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Email(message = "유효한 이메일 형식이어야 합니다.")
-        String email,
-
-        @NotNull(message = "역할은 필수입니다.")
-        Role role
+        String email
 ) {}

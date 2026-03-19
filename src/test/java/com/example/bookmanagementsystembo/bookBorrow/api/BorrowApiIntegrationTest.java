@@ -1,8 +1,8 @@
 package com.example.bookmanagementsystembo.bookBorrow.api;
 
-import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowCreateReq;
-import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowPageRes;
-import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowRes;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowCreateRequest;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowPageResponse;
+import com.example.bookmanagementsystembo.bookBorrow.dto.BorrowResponse;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
@@ -26,12 +26,12 @@ public class BorrowApiIntegrationTest {
     @Test
     void borrowAndReturn() {
         // 1. 대출
-        BorrowCreateReq borrowReq = new BorrowCreateReq(1L, "학습용 대출");
-        BorrowRes borrowRes = restClient.post()
+        BorrowCreateRequest borrowReq = new BorrowCreateRequest(1L, "학습용 대출");
+        BorrowResponse borrowRes = restClient.post()
                 .uri("/api/v1/borrows")
                 .body(borrowReq)
                 .retrieve()
-                .body(BorrowRes.class);
+                .body(BorrowResponse.class);
         System.out.println("borrowRes = " + borrowRes);
 
         // 2. 반납
@@ -46,21 +46,21 @@ public class BorrowApiIntegrationTest {
     @Test
     void adminBorrowList() {
         // 관리자 대출 현황 조회
-        BorrowPageRes pageRes = restClient.get()
+        BorrowPageResponse pageRes = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/admin/borrows")
                         .queryParam("page", 1)
                         .queryParam("size", 10)
                         .build())
                 .retrieve()
-                .body(BorrowPageRes.class);
+                .body(BorrowPageResponse.class);
         System.out.println("pageRes = " + pageRes);
     }
 
     @Test
     void adminBorrowListWithStatus() {
         // 관리자 대출 현황 조회 (상태 필터)
-        BorrowPageRes pageRes = restClient.get()
+        BorrowPageResponse pageRes = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/admin/borrows")
                         .queryParam("status", "BORROWED")
@@ -68,7 +68,7 @@ public class BorrowApiIntegrationTest {
                         .queryParam("size", 10)
                         .build())
                 .retrieve()
-                .body(BorrowPageRes.class);
+                .body(BorrowPageResponse.class);
         System.out.println("pageRes (BORROWED) = " + pageRes);
     }
 }

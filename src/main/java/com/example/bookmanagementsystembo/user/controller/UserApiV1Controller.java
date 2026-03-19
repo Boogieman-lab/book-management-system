@@ -1,7 +1,7 @@
 package com.example.bookmanagementsystembo.user.controller;
 
 import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
-import com.example.bookmanagementsystembo.bookrequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
 import com.example.bookmanagementsystembo.common.SecurityUtils;
 import com.example.bookmanagementsystembo.user.dto.*;
 import com.example.bookmanagementsystembo.user.service.UserService;
@@ -20,19 +20,19 @@ public class UserApiV1Controller {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<UserProfileRes> getMyProfile() {
+    public ResponseEntity<UserProfileResponse> getMyProfile() {
         Long userId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(userService.getMyProfile(userId));
     }
 
     @PutMapping
-    public ResponseEntity<UserProfileRes> updateMyProfile(@RequestBody UserUpdateReq request) {
+    public ResponseEntity<UserProfileResponse> updateMyProfile(@RequestBody UserUpdateRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(userService.updateMyProfile(userId, request));
     }
 
     @GetMapping("/borrows")
-    public ResponseEntity<UserBorrowPageRes> getMyBorrows(
+    public ResponseEntity<UserBorrowPageResponse> getMyBorrows(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) BorrowStatus status
@@ -42,18 +42,18 @@ public class UserApiV1Controller {
     }
 
     @GetMapping("/requests")
-    public ResponseEntity<UserRequestPageRes> getMyRequests(
+    public ResponseEntity<UserBookRequestPageResponse> getMyRequests(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Long userId = SecurityUtils.getCurrentUserId();
         Page<BookRequest> result = userService.getMyRequests(userId, page, size);
 
-        List<UserRequestRes> items = result.getContent().stream()
-                .map(UserRequestRes::from)
+        List<UserBookRequestResponse> items = result.getContent().stream()
+                .map(UserBookRequestResponse::from)
                 .toList();
 
-        UserRequestPageRes response = new UserRequestPageRes(
+        UserBookRequestPageResponse response = new UserBookRequestPageResponse(
                 items,
                 result.getTotalElements(),
                 result.getTotalPages(),
@@ -64,7 +64,7 @@ public class UserApiV1Controller {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<UserReservationRes>> getMyReservations() {
+    public ResponseEntity<List<UserReservationResponse>> getMyReservations() {
         Long userId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(userService.getMyReservations(userId));
     }

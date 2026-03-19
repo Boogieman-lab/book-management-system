@@ -4,9 +4,9 @@ import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
 import com.example.bookmanagementsystembo.book.entity.Book;
 import com.example.bookmanagementsystembo.book.enums.BookSearchField;
 import com.example.bookmanagementsystembo.book.service.BookService;
-import com.example.bookmanagementsystembo.book.dto.BookCreateReq;
-import com.example.bookmanagementsystembo.book.dto.BookDetailRes;
-import com.example.bookmanagementsystembo.book.dto.BookSummaryRes;
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
+import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -210,10 +210,10 @@ class BookQueryRepositoryTest {
         void searchBooksV1_includesStockInfo() {
             BookSearchCond cond = new BookSearchCond("이펙티브 자바", BookSearchField.TITLE);
 
-            Page<BookSummaryRes> result = bookService.searchBooksV1(cond, PageRequest.of(0, 10));
+            Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, PageRequest.of(0, 10));
 
             assertThat(result.getContent()).isNotEmpty();
-            BookSummaryRes summary = result.getContent().get(0);
+            BookSummaryResponse summary = result.getContent().get(0);
             // setUp에서 create() 호출 시 BookHold 1건(AVAILABLE) 자동 생성됨
             assertThat(summary.totalStock()).isGreaterThanOrEqualTo(1);
             assertThat(summary.availableStock()).isGreaterThanOrEqualTo(1);
@@ -225,7 +225,7 @@ class BookQueryRepositoryTest {
             // 이미 setUp에서 등록한 도서를 ISBN으로 찾아 테스트
             Book book = bookRepository.findByIsbn("9788966262281").orElseThrow();
 
-            BookDetailRes detail = bookService.getBookDetail(book.getBookId());
+            BookDetailResponse detail = bookService.getBookDetail(book.getBookId());
 
             assertThat(detail.bookId()).isEqualTo(book.getBookId());
             assertThat(detail.isbn()).isEqualTo("9788966262281");
@@ -251,8 +251,8 @@ class BookQueryRepositoryTest {
     // 헬퍼
     // ──────────────────────────────────────────────────────────────
 
-    private BookCreateReq sampleReq(String title, String isbn, String author, String publisher) {
-        return new BookCreateReq(
+    private BookCreateRequest sampleReq(String title, String isbn, String author, String publisher) {
+        return new BookCreateRequest(
                 title, "내용", "https://example.com/book", isbn,
                 LocalDateTime.now(),
                 List.of(author), List.of(),

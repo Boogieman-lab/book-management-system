@@ -50,7 +50,11 @@ public enum ErrorType {
     RESERVATION_ALREADY_EXISTS(ErrorCode.CONFLICT, "이미 해당 도서에 예약이 존재합니다.", LogLevel.WARN),
     USER_RESERVATION_LIMIT_EXCEEDED(ErrorCode.CONFLICT, "사용자 예약 한도(2권)를 초과했습니다.", LogLevel.WARN),
     RESERVATION_NOT_OWNER(ErrorCode.FORBIDDEN, "본인의 예약만 취소할 수 있습니다.", LogLevel.WARN),
-    RESERVATION_ALREADY_CANCELLED(ErrorCode.BAD_REQUEST, "이미 취소된 예약입니다.", LogLevel.WARN);
+    RESERVATION_ALREADY_CANCELLED(ErrorCode.BAD_REQUEST, "이미 취소된 예약입니다.", LogLevel.WARN),
+
+    BOOK_REQUEST_ALREADY_EXISTS(ErrorCode.CONFLICT, "이미 보유 중인 도서입니다.", LogLevel.WARN),
+    BOOK_REQUEST_DUPLICATE(ErrorCode.CONFLICT, "동일한 ISBN으로 대기 중인 신청이 존재합니다.", LogLevel.WARN),
+    BOOK_REQUEST_STATUS_ALREADY_PROCESSED(ErrorCode.BAD_REQUEST, "이미 처리된 신청입니다.", LogLevel.WARN);
 
 
     private final ErrorCode code;

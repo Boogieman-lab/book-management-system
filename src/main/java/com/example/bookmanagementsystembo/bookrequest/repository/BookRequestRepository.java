@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface BookRequestRepository extends JpaRepository<BookRequest, Long> {
+public interface BookRequestRepository extends JpaRepository<BookRequest, Long>, BookRequestQueryRepository {
 
     @Query(
             value = "SELECT br.* " +

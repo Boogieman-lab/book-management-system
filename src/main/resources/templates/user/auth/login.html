@@ -1,236 +1,141 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사내 도서관리 시스템 - 로그인</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        
-        body {
-            background-color: #E8F5E9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        
-        .login-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            padding: 40px;
-            text-align: center;
-        }
-        
-        .logo {
-            width: 150px;
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            color: #00796B;
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-        
-        .login-form {
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-size: 14px;
-        }
-        
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            border-color: #66BB6A;
-            outline: none;
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #66BB6A;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .login-btn:hover {
-            background-color: #00796B;
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: #777;
-            font-size: 14px;
-        }
-        
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .divider::before {
-            margin-right: 10px;
-        }
-        
-        .divider::after {
-            margin-left: 10px;
-        }
-        
-        .google-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px;
-            background-color: white;
-            color: #555;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .google-btn:hover {
-            background-color: #f5f5f5;
-        }
-
-        .kakao-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px;
-            background-color: #FEE500;
-            color: #391B1B;
-            border: 1px solid #FEE500;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-
-        .kakao-btn:hover {
-            background-color: #f2da00;
-        }
-
-        .kakao-btn img {
-            width: 18px;
-            height: 18px;
-            margin-right: 10px;
-        }
-        
-        .google-icon {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-        }
-        
-        .signup-link {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #555;
-        }
-        
-        .signup-link a {
-            color: #66BB6A;
-            text-decoration: none;
-        }
-        
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-        
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 30px 20px;
-                margin: 0 15px;
-            }
-            
-            h1 {
-                font-size: 22px;
-            }
-        }
-    </style>
+    <title>로그인</title>
 </head>
 <body>
-    <div class="login-container">
-        <img th:src="@{/images/logo.png}" alt="부기맨 로고" class="logo">
-        <h1>Boogieman</h1>
-        <p style="color: #00796B; margin-bottom: 25px; font-size: 16px;">부기맨과 도서 탐험을 시작해보세요!</p>
-        
-        <form class="login-form" action="/login" method="post">
-            <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" id="email" name="email" placeholder="example@company.com" required>
-            </div>
-            <div class="form-group">
-                <label for="password">비밀번호</label>
-                <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
-            </div>
-            <button type="submit" class="login-btn">로그인</button>
-        </form>
-        
-        <div class="divider">또는</div>
-        
-        <button class="google-btn" onclick="location.href='/oauth2/authorization/google'">
-            <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                <path fill="none" d="M0 0h48v48H0z"/>
-            </svg>
-            Google 계정으로 로그인
-        </button>
-        <a class="kakao-btn" th:href="${url}">
-            <img th:src="@{/images/kakaotalk_app_logo.png}" alt="Kakao logo"> 카카오톡으로 로그인
-        </a>
+    <th:block layout:fragment="content">
+        <div class="flex items-center justify-center min-h-[70vh]">
+            <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 md:p-12 w-full max-w-4xl flex flex-col md:flex-row gap-12 hover-lift transition-all">
+                
+                <!-- 왼쪽: 부기맨 일러스트 -->
+                <div class="hidden md:flex md:w-1/2 flex-col items-center justify-center bg-boogie-light rounded-2xl p-8 relative overflow-hidden group">
+                    <h2 class="text-3xl font-pretendard font-black text-boogie-dark mb-4 z-10 text-center tracking-tight">지식의 숲으로<br>오신 것을 환영합니다!</h2>
+                    <p class="text-sm text-boogie-main font-medium z-10 text-center mb-8">성실한 거북이 부기맨과 함께 매일매일 성장하세요.</p>
+                    
+                    <svg width="240" height="240" viewBox="0 0 100 100" fill="none" class="boogie-logo z-10 transition-transform duration-500 group-hover:scale-105">
+                        <ellipse cx="50" cy="85" rx="30" ry="5" fill="#C8E6D8"/>
+                        <rect x="30" y="70" width="12" height="10" rx="5" fill="#00A760" opacity="0.3"/>
+                        <rect x="60" y="70" width="12" height="10" rx="5" fill="#00A760" opacity="0.3"/>
+                        <g class="turtle-head">
+                            <path d="M15 45C15 36.7157 21.7157 30 30 30H40V60H30C21.7157 60 15 53.2843 15 45Z" fill="#00A760"/>
+                            <circle cx="25" cy="40" r="3.5" fill="#FFD700"/>
+                            <circle cx="22" cy="50" r="3" fill="#FF7B9C" opacity="0.6"/>
+                        </g>
+                        <rect x="35" y="15" width="50" height="60" rx="8" fill="#00A760"/>
+                        <path d="M75 15V30L80 25L85 30V15H75Z" fill="#FFD700"/>
+                    </svg>
 
-        <div class="signup-link">
-            계정이 없으신가요? <a href="/signup">회원가입</a>
+                    <!-- 장식용 뒷배경 원 -->
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white opacity-40 rounded-full blur-2xl"></div>
+                </div>
+
+                <!-- 오른쪽: 로그인 폼 -->
+                <div class="w-full md:w-1/2 flex flex-col justify-center">
+                    <h1 class="text-3xl font-pretendard font-black text-gray-900 mb-2">로그인</h1>
+                    <p class="text-gray-500 text-sm mb-8">이메일 계정이나 카카오로 안전하게 로그인하세요.</p>
+
+                    <!-- 자체 폼 로그인 제어 -->
+                    <form id="login-form" class="space-y-5">
+                        <div id="error-msg" class="hidden text-sm text-boogie-blush font-semibold bg-red-50 p-3 rounded-xl border border-red-100">
+                            <!-- 에러 메시지 출력 영역 -->
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">이메일 이메일</label>
+                            <input type="email" id="email" required
+                                   class="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-colors text-sm placeholder-gray-400" 
+                                   placeholder="이메일 주소를 입력해주세요">
+                        </div>
+                        <div>
+                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">비밀번호</label>
+                            <input type="password" id="password" required
+                                   class="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-colors text-sm placeholder-gray-400" 
+                                   placeholder="비밀번호를 입력해주세요">
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-sm">
+                            <label class="flex items-center text-gray-500 cursor-pointer">
+                                <input type="checkbox" class="rounded text-boogie-main border-gray-300 focus:ring-boogie-main mr-2"> 
+                                로그인 유지
+                            </label>
+                            <a href="#" class="text-boogie-main font-semibold hover:underline">비밀번호 찾기</a>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-black transition-colors shadow-sm">
+                            이메일로 로그인
+                        </button>
+                    </form>
+
+                    <div class="mt-6 flex items-center">
+                        <div class="flex-grow border-t border-gray-200"></div>
+                        <span class="px-4 text-xs text-gray-400 uppercase tracking-wider font-semibold">또는 간편 로그인</span>
+                        <div class="flex-grow border-t border-gray-200"></div>
+                    </div>
+
+                    <!-- 카카오 로그인 연동 -->
+                    <a th:href="${url}" class="mt-6 w-full flex items-center justify-center bg-[#FEE500] text-[#000000] font-bold py-3.5 px-4 rounded-xl hover:bg-[#F4DC00] transition-colors shadow-sm">
+                        <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2.5C6.477 2.5 2 5.56 2 9.336C2 11.603 3.523 13.633 5.926 14.843L4.996 18.239C4.945 18.423 5.023 18.623 5.188 18.723C5.26 18.766 5.342 18.788 5.424 18.788C5.539 18.788 5.654 18.749 5.742 18.675L9.673 15.352C10.428 15.483 11.206 15.55 12 15.55C17.523 15.55 22 12.489 22 8.714C22 4.938 17.523 1.878 12 1.878V2.5Z" />
+                        </svg>
+                        카카오로 3초만에 시작하기
+                    </a>
+
+                    <p class="mt-8 text-center text-sm text-gray-500">
+                        아직 계정이 없으신가요? 
+                        <a href="/user/auth/signup" class="text-boogie-main font-bold hover:underline ml-1">회원가입 하기</a>
+                    </p>
+                </div>
+            </div>
         </div>
-    </div>
+    </th:block>
+
+    <!-- JS: 로그인 처리 로직 -->
+    <th:block layout:fragment="script">
+        <script>
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const errorDiv = document.getElementById('error-msg');
+
+                try {
+                    // /api/auth/login 엔드포인트에 JSON 형태로 아이디/비밀번호 전송 (자체 Fetch 사용)
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Access Token을 로컬 스토리지에 저장! (refreshToken은 쿠키에서 자동 관리)
+                        localStorage.setItem('accessToken', data.accessToken);
+                        
+                        // 로그인 완료 후 홈 화면 리디렉트
+                        window.location.href = '/';
+                    } else if (response.status === 401) {
+                        errorDiv.textContent = "아이디나 비밀번호가 일치하지 않습니다.";
+                        errorDiv.classList.remove('hidden');
+                    } else if (response.status === 403) {
+                        errorDiv.textContent = "로그인 5회 실패로 계정이 잠겼습니다. 관리자에게 문의하세요.";
+                        errorDiv.classList.remove('hidden');
+                    } else {
+                        errorDiv.textContent = "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+                        errorDiv.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error("Login attempt failed:", error);
+                    errorDiv.textContent = "서버 통신 중 에러가 발생했습니다.";
+                    errorDiv.classList.remove('hidden');
+                }
+            });
+        </script>
+        <!-- 기존의 전역 API 래퍼 참조 (인터셉터 작동) -->
+        <script src="/js/api.js"></script>
+    </th:block>
 </body>
 </html>

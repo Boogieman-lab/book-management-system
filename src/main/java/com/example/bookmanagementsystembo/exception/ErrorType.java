@@ -54,7 +54,10 @@ public enum ErrorType {
 
     BOOK_REQUEST_ALREADY_EXISTS(ErrorCode.CONFLICT, "이미 보유 중인 도서입니다.", LogLevel.WARN),
     BOOK_REQUEST_DUPLICATE(ErrorCode.CONFLICT, "동일한 ISBN으로 대기 중인 신청이 존재합니다.", LogLevel.WARN),
-    BOOK_REQUEST_STATUS_ALREADY_PROCESSED(ErrorCode.BAD_REQUEST, "이미 처리된 신청입니다.", LogLevel.WARN);
+    BOOK_REQUEST_STATUS_ALREADY_PROCESSED(ErrorCode.BAD_REQUEST, "이미 처리된 신청입니다.", LogLevel.WARN),
+
+    NOTIFICATION_NOT_FOUND(ErrorCode.NOT_FOUND, "알림을 찾을 수 없습니다.", LogLevel.WARN),
+    NOTIFICATION_NOT_OWNER(ErrorCode.FORBIDDEN, "본인의 알림만 처리할 수 있습니다.", LogLevel.WARN);
 
 
     private final ErrorCode code;

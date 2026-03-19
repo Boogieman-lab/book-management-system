@@ -37,7 +37,12 @@ public enum ErrorType {
     TOKEN_MISMATCH(ErrorCode.BAD_REQUEST,"토큰 일치하지 않습니다.", LogLevel.WARN),
 
     TOKEN_JTI_MISSING(ErrorCode.UNAUTHORIZED, "토큰 식별자가 없습니다.", LogLevel.WARN),
-    TOKEN_BLACKLISTED(ErrorCode.UNAUTHORIZED, "로그아웃된 토큰입니다.", LogLevel.WARN);
+    TOKEN_BLACKLISTED(ErrorCode.UNAUTHORIZED, "로그아웃된 토큰입니다.", LogLevel.WARN),
+
+    BOOK_NOT_AVAILABLE(ErrorCode.CONFLICT, "대출 가능한 상태가 아닙니다.", LogLevel.WARN),
+    BORROW_LIMIT_EXCEEDED(ErrorCode.CONFLICT, "대출 한도(10권)를 초과했습니다.", LogLevel.WARN),
+    BORROW_NOT_OWNER(ErrorCode.FORBIDDEN, "본인의 대출 건만 처리할 수 있습니다.", LogLevel.WARN),
+    BORROW_ALREADY_RETURNED(ErrorCode.BAD_REQUEST, "이미 반납된 도서입니다.", LogLevel.WARN);
 
 
     private final ErrorCode code;

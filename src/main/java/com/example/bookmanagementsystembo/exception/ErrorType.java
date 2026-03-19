@@ -37,7 +37,27 @@ public enum ErrorType {
     TOKEN_MISMATCH(ErrorCode.BAD_REQUEST,"토큰 일치하지 않습니다.", LogLevel.WARN),
 
     TOKEN_JTI_MISSING(ErrorCode.UNAUTHORIZED, "토큰 식별자가 없습니다.", LogLevel.WARN),
-    TOKEN_BLACKLISTED(ErrorCode.UNAUTHORIZED, "로그아웃된 토큰입니다.", LogLevel.WARN);
+    TOKEN_BLACKLISTED(ErrorCode.UNAUTHORIZED, "로그아웃된 토큰입니다.", LogLevel.WARN),
+
+    BOOK_NOT_AVAILABLE(ErrorCode.CONFLICT, "대출 가능한 상태가 아닙니다.", LogLevel.WARN),
+    BORROW_LIMIT_EXCEEDED(ErrorCode.CONFLICT, "대출 한도(10권)를 초과했습니다.", LogLevel.WARN),
+    BORROW_NOT_OWNER(ErrorCode.FORBIDDEN, "본인의 대출 건만 처리할 수 있습니다.", LogLevel.WARN),
+    BORROW_ALREADY_RETURNED(ErrorCode.BAD_REQUEST, "이미 반납된 도서입니다.", LogLevel.WARN),
+
+    RESERVATION_NOT_FOUND(ErrorCode.NOT_FOUND, "예약을 찾을 수 없습니다.", LogLevel.WARN),
+    BOOK_AVAILABLE_NO_RESERVATION(ErrorCode.BAD_REQUEST, "대출 가능한 도서는 예약할 수 없습니다.", LogLevel.WARN),
+    RESERVATION_LIMIT_EXCEEDED(ErrorCode.CONFLICT, "해당 도서의 예약 한도를 초과했습니다.", LogLevel.WARN),
+    RESERVATION_ALREADY_EXISTS(ErrorCode.CONFLICT, "이미 해당 도서에 예약이 존재합니다.", LogLevel.WARN),
+    USER_RESERVATION_LIMIT_EXCEEDED(ErrorCode.CONFLICT, "사용자 예약 한도(2권)를 초과했습니다.", LogLevel.WARN),
+    RESERVATION_NOT_OWNER(ErrorCode.FORBIDDEN, "본인의 예약만 취소할 수 있습니다.", LogLevel.WARN),
+    RESERVATION_ALREADY_CANCELLED(ErrorCode.BAD_REQUEST, "이미 취소된 예약입니다.", LogLevel.WARN),
+
+    BOOK_REQUEST_ALREADY_EXISTS(ErrorCode.CONFLICT, "이미 보유 중인 도서입니다.", LogLevel.WARN),
+    BOOK_REQUEST_DUPLICATE(ErrorCode.CONFLICT, "동일한 ISBN으로 대기 중인 신청이 존재합니다.", LogLevel.WARN),
+    BOOK_REQUEST_STATUS_ALREADY_PROCESSED(ErrorCode.BAD_REQUEST, "이미 처리된 신청입니다.", LogLevel.WARN),
+
+    NOTIFICATION_NOT_FOUND(ErrorCode.NOT_FOUND, "알림을 찾을 수 없습니다.", LogLevel.WARN),
+    NOTIFICATION_NOT_OWNER(ErrorCode.FORBIDDEN, "본인의 알림만 처리할 수 있습니다.", LogLevel.WARN);
 
 
     private final ErrorCode code;

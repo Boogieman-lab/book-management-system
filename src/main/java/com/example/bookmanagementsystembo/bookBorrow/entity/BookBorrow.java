@@ -68,8 +68,9 @@ public class BookBorrow extends BaseEntity {
     private LocalDateTime returnDate;
 
     public static BookBorrow create(Long bookHoldId, Long userId, String reason) {
+        LocalDateTime now = LocalDateTime.now();
         return new BookBorrow(null, bookHoldId, userId, reason, BorrowStatus.BORROWED,
-                LocalDateTime.now(), null, null);
+                now, now.plusDays(14), null);
     }
 
     public void updateStatus(BorrowStatus status) {

@@ -61,6 +61,10 @@ public class BookRequest extends BaseEntity {
     @Comment("책 신청 싱태")
     private BookRequestStatus status;
 
+    @Column(name = "reject_reason", length = 512)
+    @Comment("거절 사유")
+    private String rejectReason;
+
     public static BookRequest create(
             Long userId,
             String title,
@@ -76,7 +80,8 @@ public class BookRequest extends BaseEntity {
                 publisher,
                 isbn,
                 reason,
-                BookRequestStatus.PENDING
+                BookRequestStatus.PENDING,
+                null
         );
     }
 
@@ -86,5 +91,10 @@ public class BookRequest extends BaseEntity {
         this.publisher = publisher;
         this.isbn = isbn;
         this.reason = reason;
+    }
+
+    public void updateStatus(BookRequestStatus status, String rejectReason) {
+        this.status = status;
+        this.rejectReason = rejectReason;
     }
 }

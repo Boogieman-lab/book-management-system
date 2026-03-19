@@ -18,11 +18,11 @@
 | POST | `/auth/login` | 이메일 패스워드 검증 및 Access/Refresh Token 신규 발행 (5회 실패 시 계정 잠금, HTTP 401/403) | - | ✅ |
 | POST | `/auth/logout` | 현재 로그인 Access Token Redis 블랙리스트 등록 (강제 만료, HTTP 204) | User | ✅ |
 | POST | `/auth/refresh` | Refresh Token 교환하여 새 Access Token + Refresh Token 동시 재발급 (Rotation, HTTP 200) | User | ✅ |
-| GET | `/users/me` | 로그인된 주체의 개인 프로필 자원 열람 | User | ⬜ |
-| PUT | `/users/me` | 프로필 갱신 업데이트 (아바타/이름 변경) | User | ⬜ |
-| GET | `/users/me/borrows` | 본인 계정의 과거 및 현재 소장 대출 이력의 일괄 발송 | User | ⬜ |
-| GET | `/users/me/requests` | 희망 도서 구매 추천내역의 상태/이력 점검 | User | ⬜ |
-| GET | `/users/me/reservations` | 소속된 모든 "도서 예약 및 대기열의 상태와 만료일" 시퀀스 발송 | User | ⬜ |
+| GET | `/users/me` | 로그인된 주체의 개인 프로필 자원 열람 | User | ✅ |
+| PUT | `/users/me` | 프로필 갱신 업데이트 (아바타/이름 변경) | User | ✅ |
+| GET | `/users/me/borrows` | 본인 계정의 과거 및 현재 소장 대출 이력의 일괄 발송 | User | ✅ |
+| GET | `/users/me/requests` | 희망 도서 구매 추천내역의 상태/이력 점검 | User | ✅ |
+| GET | `/users/me/reservations` | 소속된 모든 "도서 예약 및 대기열의 상태와 만료일" 시퀀스 발송 | User | ✅ |
 
 ### 📚 도서 검색 서비스 (Books/Book_Holds)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
@@ -45,32 +45,32 @@
 ### 📖 책 빌리기 및 반납 / 대출 자원 (Borrows)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
 |---|---|---|---|---|
-| POST | `/borrows` | 보유 재고를 대상으로 신규 '대출 이력' 생성 실행 (1인 제한 방어 필요) | User | ⬜ |
-| POST | `/borrows/{borrowId}/return` | 도서물 점유를 포기/반납 실행 통지 (본인 IDOR 검증 진행 통과) | User | ⬜ |
+| POST | `/borrows` | 보유 재고를 대상으로 신규 '대출 이력' 생성 실행 (1인 제한 방어 필요) | User | ✅ |
+| POST | `/borrows/{borrowId}/return` | 도서물 점유를 포기/반납 실행 통지 (본인 IDOR 검증 진행 통과) | User | ✅ |
 | POST | `/borrows/{borrowId}/extend` | 대출 7일 연장 권한 청구 (단 1회, 해당 도서 예약자 없을 시 관리자 승인 후 인정됨) | User | ⬜ |
-| GET | `/admin/borrows` | [관리자용] 현재 시스템 대출자 확인 및 미납 명단 조회 | Admin | ⬜ |
+| GET | `/admin/borrows` | [관리자용] 현재 시스템 대출자 확인 및 미납 명단 조회 | Admin | ✅ |
 | POST | `/admin/borrows/{borrowId}/notify-overdue`| [관리자용] 연체 사용자 대상 알림 수동 발송 (R2) | Admin | ⬜ |
 | PATCH | `/admin/borrows/{borrowId}/extend/approve`| [관리자용] 사용자 연장 건에 대한 심의 평가/승인 관리 (R2) | Admin | ⬜ |
 
 ### 📅 재고 예약 선점 등록 (Reservations)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
 |---|---|---|---|---|
-| POST | `/reservations` | 단 권도 남지 않은 도서에 '대기 알람 예약(최대 2권)' 선점 | User | ⬜ |
-| DELETE | `/reservations/{reservationId}` | 대기 차례가 필요 없을 때 예약 목록 청약 파기 철회 | User | ⬜ |
+| POST | `/reservations` | 단 권도 남지 않은 도서에 '대기 알람 예약(최대 2권)' 선점 | User | ✅ |
+| DELETE | `/reservations/{reservationId}` | 대기 차례가 필요 없을 때 예약 목록 청약 파기 철회 | User | ✅ |
 | GET | `/admin/reservations` | [관리자용] 어떤 도서가 예약 누적이 많은지 순위별 차세대 통계 | Admin | ⬜ |
 
 ### 🛒 희망 도서 신청망 (Book-Requests)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
 |---|---|---|---|---|
-| POST | `/book-requests` | 사용자가 도서의 정보(사유, ISBN 등)를 적어 문서 제출 | User | ⬜ |
-| GET | `/book-requests` | (관리자는 모두/사용자는 자신이 올린) 내역의 리스트 업 | User/Admin| ⬜ |
-| PATCH | `/admin/book-requests/{requestId}/status`| [관리자용] 구매 결제 통과/실패 도장에 대한 패치 업데이트 | Admin | ⬜ |
+| POST | `/book-requests` | 사용자가 도서의 정보(사유, ISBN 등)를 적어 문서 제출 | User | ✅ |
+| GET | `/book-requests` | (관리자는 모두/사용자는 자신이 올린) 내역의 리스트 업 | User/Admin| ✅ |
+| PATCH | `/admin/book-requests/{requestId}/status`| [관리자용] 구매 결제 통과/실패 도장에 대한 패치 업데이트 | Admin | ✅ |
 
 ### 🔔 서비스 수발신 단말 알림 (Notifications)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
 |---|---|---|---|---|
-| GET | `/notifications` | 어플리케이션 안의 내가 받은 (문자제외/플랫폼 내부) 수신 알람 | User | ⬜ |
-| PATCH | `/notifications/{notificationId}/read`| 신규 표시 (1 마크) 지우기 및 읽음 강제 지정 처방 | User | ⬜ |
+| GET | `/notifications` | 어플리케이션 안의 내가 받은 (문자제외/플랫폼 내부) 수신 알람 | User | ✅ |
+| PATCH | `/notifications/{notificationId}/read`| 신규 표시 (1 마크) 지우기 및 읽음 강제 지정 처방 | User | ✅ |
 
 ### 📢 시스템 공지사항 및 운영 (Notices)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |

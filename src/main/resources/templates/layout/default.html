@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 타임리프 페이지별 타이틀 동적 할당 -->
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">부기맨 도서관리시스템</title>
+
+    <!-- Noto Sans KR 폰트 로드 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (CDN 방식) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind 설정 및 커스텀 컬러링 (Green Turtle Edition) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        boogie: {
+                            main: '#00A760',   // Boogie Green
+                            dark: '#008f51',   // Dark Green
+                            light: '#E1F7EF',  // Light Mint
+                            gold: '#FFD700',   // Bookmark Gold
+                            blush: '#FF7B9C',  // Turtle Blush
+                            darkbg: '#0D1B15'  // Deep Forest
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
+                        pretendard: ['Pretendard', '-apple-system', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- 커스텀 스타일 및 디자인 시스템 애니메이션 -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f7f5;
+            color: #111827;
+        }
+
+        /* 통통 튀는 카드 마이크로 애니메이션 (Hover Lift) */
+        .hover-lift {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 거북이 로고 노딩(Nod) 애니메이션 */
+        @keyframes turtle-nod {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-8deg); }
+        }
+        .boogie-logo { cursor: pointer; }
+        .boogie-logo:hover .turtle-head {
+            animation: turtle-nod 0.6s ease-in-out infinite;
+            transform-origin: center;
+        }
+    </style>
+
+    <!-- 각 페이지별 <head> 추가 영역 -->
+    <th:block layout:fragment="head"></th:block>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+    <!-- 글로벌 헤더 (GNB) -->
+    <header class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <!-- 좌측 부기맨 로고 영역 -->
+                <a href="/" class="flex items-center space-x-3 group boogie-logo">
+                    <!-- 미니 거북이 SVG 심볼 -->
+                    <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="50" cy="85" rx="30" ry="5" fill="#E8F5E9"/>
+                        <rect x="30" y="70" width="12" height="10" rx="5" fill="#00A760" opacity="0.3"/>
+                        <rect x="60" y="70" width="12" height="10" rx="5" fill="#00A760" opacity="0.3"/>
+                        <g class="turtle-head">
+                            <path d="M15 45C15 36.7157 21.7157 30 30 30H40V60H30C21.7157 60 15 53.2843 15 45Z" fill="#00A760"/>
+                            <circle cx="25" cy="40" r="3.5" fill="#FFD700"/>
+                        </g>
+                        <rect x="35" y="15" width="50" height="60" rx="8" fill="#00A760"/>
+                        <path d="M75 15V30L80 25L85 30V15H75Z" fill="#FFD700"/>
+                    </svg>
+                    <span class="font-pretendard font-black text-2xl tracking-tight text-gray-900 group-hover:text-boogie-main transition-colors duration-300">부기맨</span>
+                </a>
+
+                <!-- 중앙 도서 통합 검색창 -->
+                <div class="flex-1 max-w-2xl px-12 hidden md:block relative">
+                    <form action="/books/search" method="GET" class="relative">
+                        <input type="text" name="query" placeholder="도서명, 저자, ISBN을 검색해 보세요..."
+                               class="w-full bg-gray-50 border border-gray-200 rounded-full px-6 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-all placeholder-gray-400">
+                        <button type="submit" class="absolute right-4 top-2.5 p-1 text-gray-400 hover:text-boogie-main transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 우측 인증/유저 액션 메뉴 -->
+                <div class="flex items-center space-x-2">
+                    <!-- 비로그인 시 노출 (Default) -->
+                    <div id="auth-buttons" class="flex space-x-2">
+                        <a href="/user/auth/login" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-boogie-main transition-colors hover:bg-gray-50 rounded-full">로그인</a>
+                        <a href="/user/auth/signup" class="hover-lift px-5 py-2.5 text-sm font-bold text-white bg-boogie-main rounded-full shadow-sm hover:bg-boogie-dark">회원가입</a>
+                    </div>
+
+                    <!-- 로그인 시 노출 (JS 토큰 감지 후 hidden 해제할 대상) -->
+                    <div id="user-menu" class="hidden items-center space-x-2">
+                        <a href="/user/mypage" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-boogie-light text-boogie-dark rounded-full hover:bg-[#d1efe3] transition-colors shadow-sm">마이페이지</a>
+                        <a href="/book-requests" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-boogie-main transition-colors">희망도서 신청</a>
+                        <button id="logout-btn" class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-red-500 transition-colors">로그아웃</button>
+                        
+                        <!-- 관리자일 경우 노출 -->
+                        <a href="/admin/dashboard" id="admin-btn" class="hidden hover-lift px-5 py-2.5 text-sm font-bold text-white bg-gray-800 rounded-full hover:bg-black shadow-md ml-2">관리자</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 (페이지별 삽입) -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" layout:fragment="content">
+        <!-- 각 html의 content 파트가 여기에 렌더링 됩니다. -->
+    </main>
+
+    <!-- 글로벌 푸터 -->
+    <footer class="bg-boogie-darkbg text-gray-400 py-12 mt-auto border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+            <div class="flex items-center space-x-2 mb-6">
+                <!-- 흰색 거북이 로고 -->
+                <svg width="24" height="24" viewBox="0 0 100 100" fill="none" opacity="0.6">
+                    <rect x="35" y="15" width="50" height="60" rx="8" fill="white"/>
+                    <path d="M15 45C15 36.7157 21.7157 30 30 30H40V60H30C21.7157 60 15 53.2843 15 45Z" fill="white"/>
+                </svg>
+                <span class="font-pretendard font-bold text-xl text-white opacity-80 tracking-tight">부기맨 Boogieman</span>
+            </div>
+            
+            <p class="text-sm font-medium text-gray-300 mb-2">지식의 숲을 가꾸는 성실한 거북이 도서관 서재</p>
+            <p class="text-xs text-gray-500 max-w-xl text-center leading-relaxed">
+                운영 시간: 평일 09:00 - 18:00 (주말 및 공휴일 제외)<br>
+                시스템 오류 및 도서 신청 문의: library@boogieman.company.com
+            </p>
+            
+            <div class="mt-8 pt-8 border-t border-gray-800 w-full text-center">
+                <p class="text-xs opacity-40">&copy; 2026 Boogieman Library System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 각 페이지별 <script> 추가 영역 -->
+    <th:block layout:fragment="script"></th:block>
+    
+    <!-- 향후 토큰 검증 및 메뉴 스위칭을 담당할 글로벌 JS (예약 공간) -->
+    <!-- <script src="/js/api.js"></script> -->
+
+</body>
+</html>

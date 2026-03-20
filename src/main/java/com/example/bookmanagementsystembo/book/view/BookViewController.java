@@ -7,16 +7,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/user/book")
 public class BookViewController {
 
-    @GetMapping("/bookList")
+    @GetMapping({"/books", "/user/book/bookList"})
     public String bookList(Model model) {
         model.addAttribute("activeMenu", "books");
-        return "user/book/book_list"; // 경로 수정
+        return "user/book/book_list";
     }
 
-    @GetMapping("/bookDetail/{bookId}")
+    @GetMapping({"/books/{bookId}", "/user/book/bookDetail/{bookId}"})
     public String bookDetail(@PathVariable Long bookId, Model model) {
         model.addAttribute("bookId", bookId);
         return "user/book/book_detail";

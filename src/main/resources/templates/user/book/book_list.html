@@ -1,997 +1,292 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/default}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boogieman - 도서 목록</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-
-        body {
-            background-color: #E8F5E9;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .content {
-            flex: 1;
-            background-color: white;
-            /*border-radius: 10px;*/
-            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
-            padding: 10px;
-            /*margin-bottom: 20px;*/
-        }
-
-        /*.page-title {*/
-        /*    color: #00796B;*/
-        /*    margin-bottom: 20px;*/
-        /*    font-size: 22px;*/
-        /*    display: flex;*/
-        /*    align-items: center;*/
-        /*}*/
-
-        /*.page-title i {*/
-        /*    margin-right: 10px;*/
-        /*}*/
-
-        /*.search-filter-section {*/
-        /*    display: flex;*/
-        /*    flex-wrap: wrap;*/
-        /*    gap: 15px;*/
-        /*    margin-bottom: 30px;*/
-        /*}*/
-
-        .search-bar button {
-            padding: 12px 20px;
-            background-color: #66BB6A;
-            color: white;
-            border: none;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .search-bar button:hover {
-            background-color: #00796B;
-        }
-
-        /* 필터 칩 */
-        .filter-section { display:flex; align: right; gap:8px; align-items:center; margin-top:20px; margin-bottom:20px; }
-        .filter-item { display:inline-flex; align-items:center; justify-content:center; min-height:32px; line-height:1; padding:8px 14px; border:1px solid #ddd; border-radius:20px; background:#fff; color:#555; cursor:pointer; transition: all 0.2s ease; }
-        .filter-item.active, .filter-item:hover {
-            background: #66bb6a;
-            color: #fff;
-            border-color: #4caf50;
-            box-shadow: 0 2px 4px rgba(102,187,106,0.2);
-        }
-
-        @media (max-width: 600px) {
-            .filter-section {
-                overflow-x: auto;
-                white-space: nowrap;
-                padding-bottom: 8px;
-            }
-        }
-
-        .book-grid {
-            display: flex;
-            flex-direction: column;
-            /*gap: 16px;*/
-            /*margin-bottom: 30px;*/
-            /*margin-top: 30px;*/
-        }
-        /* 세로 리스트 레이아웃 */
-        .book-grid .book-card {
-            position: relative;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            padding: 16px 140px 16px 16px; /* 우측 버튼 공간 확보 */
-            background-color: #fff;
-            border: 1px solid #eaeaea;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-            cursor: pointer;
-        }
-        /*.book-grid .book-cover {*/
-        /*    flex: 0 0 120px;*/
-        /*    !*width: 120px;*!*/
-        /*    !*height: 174px;*!*/
-        /*    background-color: #f0f0f0;*/
-        /*    display: flex;*/
-        /*    justify-content: center;*/
-        /*    align-items: center;*/
-        /*    color: #999;*/
-        /*    overflow: hidden;*/
-        /*    border-radius: 4px;*/
-        /*}*/
-        .book-grid .book-cover { flex: 0 0 120px; width:120px; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; overflow:hidden; border-radius:4px; }
-        .book-grid .book-cover img { width:100%; height:100%; object-fit:cover; display:block; }
-        /* book-grid 내 best-cover를 리스트 규격(120x174)로 오버라이드 */
-        .book-grid .best-cover { flex: 0 0 120px; width:120px; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; overflow:hidden; border-radius:4px; }
-        .book-grid .best-cover img { width:100%; height:100%; object-fit:cover; display:block; }
-        .book-grid .book-info { flex: 1; padding: 0; }
-        .book-grid .book-title { font-size: 18px; margin-bottom: 6px; color: #333; }
-        .book-grid .book-author { font-size: 14px; color: #666; margin-bottom: 8px; }
-        .book-grid .book-status { margin-top: 4px; }
-        /* 추가: 메타/디테일/상태/소개, 액션 버튼 스타일 */
-
-
-        .book-grid .book-title-lg { font-size: 20px; font-weight:600; color:#333; margin: 2px 0 6px; line-height: 1.4;}
-        .book-grid .detail-line { font-size: 13px; color:#666; margin-bottom:6px; }
-        .book-grid .status-line { display:flex; gap:14px; font-size:13px; margin:6px 0; color:#607D8B; }
-        .book-grid .status-line .danger { color:#C62828; font-weight:600; }
-        .book-grid .desc { font-size:13px; color:#555; margin-top:6px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .book-grid .book-actions { position:absolute; top:50%; right:20px; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-width:92px; margin:0; }
-        .book-grid .action-btn { width:92px; padding:8px 0; border:1.5px solid #666; background:#fff; color:#666; border-radius:8px; font-weight:600; font-size:14px; }
-        .book-grid .loan-btn:hover {
-            border: 1px solid #2E7D32;
-            background-color: #E8F5E9;
-            box-shadow: inset 0 0 1px 1px #2E7D32;
-        }
-        .book-grid .wish-btn:hover {     color: #b90057;
-            border: 1px solid #e33d8b;
-            background-color: #FCE4EC;
-            box-shadow: inset 0 0 1px 1px #e33d8b;
-        }
-        .book-grid .wish-btn i { margin-right:6px; }
-        .book-grid .wish-btn { border-color:#e0245e; color:#e0245e; }
-        .book-grid .wish-btn.liked i { color:#e0245e; }
-        
-        /* 검색 결과 없음 표시 */
-        .empty-state {
-            display: none; /* 기본은 숨김, JS/Thymeleaf로 제어 */
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px dashed #CFD8DC;
-            background: #FAFAFA;
-            color: #607D8B;
-            font-size: 16px;
-        }
-
-        /*.book-card {*/
-        /*    background-color: #fff;*/
-        /*    border-radius: 8px;*/
-        /*    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
-        /*    overflow: hidden;*/
-        /*    transition: transform 0.3s, box-shadow 0.3s;*/
-        /*    cursor: pointer;*/
-        /*}*/
-
-        .book-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .book-info {
-            padding: 15px;
-        }
-
-        .book-title {
-            font-weight: 500;
-            margin-bottom: 5px;
-            font-size: 16px;
-            color: #333;
-        }
-
-        .book-author {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .book-status {
-            font-size: 13px;
-            padding: 3px 8px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
-        .status-available {
-            background-color: #E8F5E9;
-            color: #2E7D32;
-        }
-
-        .status-unavailable {
-            background-color: #FFEBEE;
-            color: #C62828;
-        }
-
-
-
-        .section-title {
-            font-size: 20px;
-            color: #00796B;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .section-title i {
-            margin-right: 10px;
-        }
-
-
-
-
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .page-item {
-            margin: 0 5px;
-        }
-
-        .page-link {
-            display: block;
-            padding: 8px 12px;
-            border-radius: 5px;
-            background-color: #f5f5f5;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .page-link:hover, .page-item.active .page-link {
-            background-color: #66BB6A;
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .best-item { width:130px; flex:0 0 130px; }
-            .best-cover { height:170px; }
-            .best-btn { width:32px; height:32px; font-size:14px; margin:0 4px; }
-
-            .book-grid .book-card {
-                flex-direction: column;
-                padding: 12px;
-                align-items: center;
-            }
-            .book-actions {
-                position: static;
-                transform: none;
-                flex-direction: row;
-                justify-content: center;
-                margin-top: 10px;
-            }
-
-            .main-content {
-                flex-direction: column;
-            }
-
-            /*.sidebar {*/
-            /*    width: 100%;*/
-            /*    margin-bottom: 20px;*/
-            /*}*/
-
-            .content {
-                padding: 20px;
-            }
-
-            .book-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-        }
-        /* 베스트 도서 Top 30 슬라이더 */
-        .best-section { overflow: hidden; border-bottom: 1px solid #e0e0e0; }
-        .best-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-        .best-title { font-size:18px; color: #000000FF; display:flex; align-items:center; }
-        .best-title i { margin-right:8px; }
-        .best-slider { position:relative; display:flex; align-items:center; }
-        .best-viewport { overflow:hidden; min-width: 0; padding: 0; flex:1; }
-        .best-track { display:flex; gap:12px; transition:transform .35s ease; will-change:transform; }
-        .best-item { width:120px; flex:0 0 120px; }
-        .best-card { position:relative; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden; transition: transform 0.3s, box-shadow 0.3s; }
-        .best-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18); }
-        .best-cover { position:relative; height:174px; background:#f0f0f0; display:flex; justify-content:center; align-items:center; color:#999; font-size:32px; overflow:hidden; z-index:1; }
-        .best-cover img { width:100%; height:100%; object-fit:cover; display:block; }
-        .best-info { padding:6px; }
-        .best-title-text { font-size:12px; font-weight:600; color:#333; margin-bottom:3px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-        .best-author { font-size:12px; color:#666; }
-        .rank-badge { position:absolute; top:6px; left:6px; background:#2E7D32; color:#fff; width:24px; height:24px; border-radius:4px; font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.2); z-index:3; pointer-events:none; }
-        .ebook-badge { position:absolute; top:6px; right:6px; background:#E8F5E9; color:#2E7D32; padding:2px 6px; border-radius:10px; font-size:11px; border:1px solid #C8E6C9; }
-        /* 표지 이미지를 담는 변형 */
-        .ebook-badge.image { position:absolute; top:6px; right:6px; width:120px; height:174px; padding:0; background:transparent; border:none; z-index:2; }
-        .ebook-badge.image img { width:100%; height:100%; object-fit:cover; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
-        .best-footer { display:none; }
-        .best-btn { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#fff; border:1px solid #ddd; color:#00796B; border-radius:50%; cursor:pointer; font-size:16px; margin:0 8px; }
-        .best-btn:hover { background:#66BB6A; color:#fff; box-shadow:0 2px 6px rgba(0,0,0,.12); }
-        .best-btn:disabled { opacity:0.5; cursor:not-allowed; }
-        .best-btn i { pointer-events:none; }
-
-        /* 슬라이더 반응형 */
-        @media (max-width: 1200px) {
-            .best-item { width:140px; flex:0 0 140px; }
-            .best-cover { height:180px; }
-        }
-        @media (max-width: 992px) {
-            .best-item { width:135px; flex:0 0 135px; }
-            .best-cover { height:175px; }
-        }
-        @media (max-width: 576px) {
-            .best-item { width:120px; flex:0 0 120px; }
-            .best-cover { height:160px; }
-            .best-btn { width:28px; height:28px; font-size:12px; margin:0 2px; }
-        }
-
-        main {
-            min-width: 0; /* 핵심: Grid/Slider가 부모를 밀지 못하도록 */
-            padding-top: 0; /* 고정 검색바 높이 보정 제거 */
-        }
-
-        /* 상단 고정 검색바 */
-        .fixed-searchbar { position: sticky; top: 0; left: 0; right: 0; background: #fff; border-bottom: 1px solid #eaeaea; box-shadow: 0 3px 8px rgba(0,0,0,0.05); z-index: 1000; padding: 8px 16px; display: flex; justify-content: center; }
-        .fixed-searchbar .search-bar { max-width: 720px; width: 100%; }
-
-        /* 검색 모드 토글 */
-        /*.no-search .search-filter-section, .no-search .book-grid { display: none; }*/
-        /*.search-mode .search-filter-section { display: block; }*/
-        /*.search-mode .book-grid { display: flex; }*/
-
-        .search-bar {
-            display: flex;
-            flex: 1;
-            min-width: 300px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            overflow: hidden; /* 경계 자연스러움 핵심 */
-        }
-
-        /* Select, Input, Button 공통 */
-        .search-select,
-        .search-bar input,
-        .search-bar button {
-            border: none;
-            outline: none;
-            transition: background-color .2s ease, box-shadow .2s ease;
-        }
-
-        /* Select 박스 */
-        .search-select {
-            padding: 12px 10px;
-            cursor: pointer;
-            min-width: 110px;
-            border-right: 1px solid #eee; /* 아주 약한 구분선 */
-        }
-
-        /* Input */
-        .search-bar input {
-            flex: 1;
-            padding: 12px 15px;
-            font-size: 16px;
-        }
-
-        /* 버튼 */
-        .search-bar button {
-            padding: 12px 20px;
-            background-color: #66BB6A;
-            color: white;
-            cursor: pointer;
-        }
-
-        /* Hover & Focus 효과 */
-        .search-select:hover,
-        .search-bar input:hover {
-            background-color: #f7fdf8;
-        }
-
-        .search-select:focus,
-        .search-bar input:focus {
-            background-color: #f0fbf3;
-            box-shadow: inset 0 0 0 2px #66BB6A; /* Focus 시 강조 */
-        }
-
-        /* 버튼 hover */
-        .search-bar button:hover {
-            background-color: #00796B;
-        }
-
-        .more-btn {
-            background: none;
-            border: none;
-            color: #3ba55c;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .more-btn:hover {
-            text-decoration: underline;
-        }
-
-    </style>
+    <title>도서 목록</title>
 </head>
 <body>
 
-<main layout:fragment="content" th:with="activeMenu='books'" class="no-search">
-    <div class="fixed-searchbar">
-        <div class="search-bar">
-            <select class="search-select">
-                <option value="title">제목</option>
-                <option value="author">저자</option>
-                <option value="publisher">출판사</option>
-                <option value="isbn">ISBN</option>
-            </select>
-            <input type="text" placeholder="도서명, 저자, 출판사, ISBN 검색">
-            <button id="searchBtn"><i class="fas fa-search"></i></button>
+<th:block layout:fragment="head">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        /* 검색바 sticky 위치를 GNB(h-20=80px) 바로 아래로 고정 */
+        .sticky-search { position: sticky; top: 80px; z-index: 40; background: #f4f7f5; padding: 12px 0 8px; }
+    </style>
+</th:block>
+
+<th:block layout:fragment="content">
+
+    <!-- ── 검색 바 (GNB 바로 아래 고정) ─────────────────────────────── -->
+    <div class="sticky-search">
+        <div class="flex gap-3">
+            <div class="flex flex-1 bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-boogie-light focus-within:border-boogie-main transition-all">
+                <select id="searchField"
+                        class="px-4 py-3 text-sm text-gray-600 border-r border-gray-100 bg-transparent focus:outline-none cursor-pointer min-w-[80px]">
+                    <option value="title">제목</option>
+                    <option value="author">저자</option>
+                    <option value="publisher">출판사</option>
+                    <option value="isbn">ISBN</option>
+                </select>
+                <input id="searchInput" type="text" placeholder="도서명, 저자, 출판사, ISBN 검색..."
+                       class="flex-1 px-4 py-3 text-sm focus:outline-none bg-transparent placeholder-gray-400">
+                <button id="searchBtn"
+                        class="px-5 py-3 bg-boogie-main text-white text-sm font-bold hover:bg-boogie-dark transition-colors flex items-center gap-2">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 필터 칩 -->
+        <div class="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-none">
+            <button class="filter-chip flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border border-boogie-main bg-boogie-main text-white transition-all" data-sort="">전체</button>
+            <button class="filter-chip flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:border-boogie-main hover:text-boogie-main transition-all" data-filter="available">대출 가능</button>
+            <button class="filter-chip flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:border-boogie-main hover:text-boogie-main transition-all" data-sort="createdAt,desc">최신순</button>
+            <button class="filter-chip flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:border-boogie-main hover:text-boogie-main transition-all" data-sort="borrowCount,desc">인기순</button>
+            <button class="filter-chip flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:border-boogie-main hover:text-boogie-main transition-all" data-sort="title,asc">가나다순</button>
         </div>
     </div>
-    
-<!--    <h2 class="page-title">-->
-<!--        <i class="fas fa-book"></i> 도서 목록-->
-<!--    </h2>-->
 
-    <!-- 베스트 도서 Top 30 슬라이더 -->
-    <div class="content">
-        <div class="best-section">
-            <div class="best-header">
-                <h3 class="best-title"><!--<i class="fas fa-crown"></i>--> 베스트자료 </h3>
-            </div>
-            <div class="best-slider">
-                <button class="best-btn" id="bestPrevBottom" aria-label="이전"><i class="fas fa-chevron-left"></i></button>
-                <div class="best-viewport">
-                    <div class="best-track" id="bestTrack">
-                        <!-- JS로 30개 항목을 렌더링합니다 -->
-                    </div>
+    <!-- ── 결과 카운트 ────────────────────────────────────────────────── -->
+    <div id="resultInfo" class="hidden flex items-center justify-between mt-4 mb-2">
+        <p class="text-sm text-gray-500">
+            총 <span id="totalCount" class="font-black text-boogie-main">0</span>권
+        </p>
+    </div>
+
+    <!-- ── 스켈레톤 로딩 ──────────────────────────────────────────────── -->
+    <div id="skeletonGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+    </div>
+
+    <!-- ── 도서 카드 그리드 ───────────────────────────────────────────── -->
+    <div id="bookGrid" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+    </div>
+
+    <!-- ── 빈 상태 ────────────────────────────────────────────────────── -->
+    <div id="emptyState" class="hidden flex flex-col items-center justify-center py-24 text-gray-400">
+        <div class="w-24 h-24 bg-gray-100 rounded-[32px] flex items-center justify-center mb-5 shadow-sm">
+            <i class="fas fa-book-open text-3xl text-gray-300"></i>
+        </div>
+        <p class="text-base font-bold text-gray-500">검색 결과가 없습니다</p>
+        <p class="text-sm text-gray-400 mt-1">다른 검색어로 다시 시도해보세요</p>
+    </div>
+
+    <!-- ── 페이지네이션 ───────────────────────────────────────────────── -->
+    <div id="pagination" class="hidden flex justify-center gap-2 mt-10 mb-4">
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="script">
+<script>
+    /* ── 상태 ─────────────────────────────────────────────────────────── */
+    let currentPage  = 0;
+    let currentQuery = '';
+    let currentField = 'title';
+    let currentSort  = '';
+    let availableOnly = false;
+
+    /* ── 진입점 ───────────────────────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', () => {
+        showSkeleton();
+        fetchBooks(0);
+        initSearch();
+        initFilterChips();
+    });
+
+    /* ── API 호출 ─────────────────────────────────────────────────────── */
+    async function fetchBooks(page) {
+        showSkeleton();
+
+        const params = new URLSearchParams({ page, size: 20 });
+        if (currentQuery) { params.set('keyword', currentQuery); params.set('field', currentField); }
+        if (availableOnly) params.set('available', 'true');
+        if (currentSort)   params.set('sort', currentSort);
+
+        try {
+            const res = await window.api.fetch(`/api/v1/books?${params}`);
+            if (!res || !res.ok) throw new Error(res?.status);
+            const data = await res.json();
+            renderBooks(data);
+        } catch (e) {
+            console.error('도서 목록 조회 실패:', e);
+            showEmpty();
+        }
+    }
+
+    /* ── 렌더링 ───────────────────────────────────────────────────────── */
+    function renderBooks(data) {
+        // 배열 또는 페이지 응답 모두 처리
+        const books      = Array.isArray(data) ? data : (data.content ?? []);
+        const total      = data.totalElements  ?? books.length;
+        const totalPages = data.totalPages      ?? Math.ceil(total / (data.size ?? 20));
+        const page       = data.number          ?? currentPage;
+
+        hideSkeleton();
+
+        if (books.length === 0) { showEmpty(); return; }
+
+        document.getElementById('totalCount').textContent = total.toLocaleString();
+        document.getElementById('resultInfo').classList.remove('hidden');
+        document.getElementById('emptyState').classList.add('hidden');
+
+        const grid = document.getElementById('bookGrid');
+        grid.innerHTML = books.map(createBookCard).join('');
+        grid.classList.remove('hidden');
+
+        renderPagination(page, totalPages);
+    }
+
+    /* ── 카드 HTML 생성 ───────────────────────────────────────────────── */
+    function createBookCard(book) {
+        const authors     = Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || '저자 미상');
+        const isAvailable = (book.availableStock ?? 0) > 0;
+        const stock       = book.availableStock ?? 0;
+
+        const badge = isAvailable
+            ? `<span class="absolute top-3 right-3 px-2.5 py-1 bg-boogie-light text-boogie-dark text-[10px] font-black rounded-full border border-boogie-main border-opacity-20 shadow-sm whitespace-nowrap">
+                   대출가능 <span class="opacity-70">(${stock})</span>
+               </span>`
+            : `<span class="absolute top-3 right-3 px-2.5 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full border border-amber-200 shadow-sm">
+                   예약만 가능
+               </span>`;
+
+        const thumb = (book.thumbnail && book.thumbnail.trim())
+            ? `<img src="${book.thumbnail}" alt="${escapeHtml(book.title)}"
+                    class="w-full h-full object-cover"
+                    onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-300\\'><i class=\\'fas fa-book text-4xl\\'></i></div>'">`
+            : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-book text-4xl"></i></div>`;
+
+        return `
+            <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-4 hover-lift cursor-pointer relative group"
+                 onclick="location.href='/books/${book.bookId}'">
+                ${badge}
+                <!-- 표지 -->
+                <div class="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 mb-3">
+                    ${thumb}
                 </div>
-                <button class="best-btn" id="bestNextBottom" aria-label="다음"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <div class="content" th:if="${searchResults == null or #lists.isEmpty(searchResults)}">
-        <div class="new-section">
-            <div class="best-header">
-                <h3 class="best-title"><!--<i class="fas fa-star"></i>--> 신착자료</h3>
-                <button class="more-btn" id="newMore">더보기 +</button>
-            </div>
-            <div class="best-slider">
-                <button class="best-btn" id="newPrev" aria-label="이전"><i class="fas fa-chevron-left"></i></button>
-                <div class="best-viewport">
-                    <div class="best-track" id="newTrack"></div>
+                <!-- 정보 -->
+                <div class="px-1">
+                    <h3 class="text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-1 group-hover:text-boogie-main transition-colors">
+                        ${escapeHtml(book.title || '제목 없음')}
+                    </h3>
+                    <p class="text-xs text-gray-500 line-clamp-1">${escapeHtml(authors)}</p>
+                    <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">${escapeHtml(book.publisher || '')}</p>
                 </div>
-                <button class="best-btn" id="newNext" aria-label="다음"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        </div>
-    </div>
+            </div>`;
+    }
 
-    <div class="book-grid">
-        <div class="filter-section">
-            <div class="filter-item active">전체</div>
-            <div class="filter-item">대출 가능</div>
-            <div class="filter-item">인기순</div>
-            <div class="filter-item">최신순</div>
-            <div class="filter-item">가나다순</div>
-        </div>
-        <!-- 검색 결과 건수 표시 -->
-        <div class="search-count" id="searchCount" style="margin: 8px 0; color: #333; display: none;">
-            검색 결과: 총 <span id="searchCountNumber">0</span>건
-        </div>
-        <div id="bookList"></div>
-    </div>
+    /* ── 스켈레톤 ─────────────────────────────────────────────────────── */
+    function showSkeleton() {
+        document.getElementById('bookGrid').classList.add('hidden');
+        document.getElementById('emptyState').classList.add('hidden');
+        document.getElementById('resultInfo').classList.add('hidden');
+        document.getElementById('pagination').classList.add('hidden');
+        const sk = document.getElementById('skeletonGrid');
+        sk.innerHTML = Array(10).fill(0).map(() => `
+            <div class="bg-white rounded-[32px] p-4 animate-pulse border border-gray-100">
+                <div class="w-full aspect-[3/4] bg-gray-100 rounded-2xl mb-3"></div>
+                <div class="h-3 bg-gray-100 rounded-full mb-2 w-full"></div>
+                <div class="h-2 bg-gray-100 rounded-full w-2/3"></div>
+            </div>`).join('');
+        sk.classList.remove('hidden');
+    }
 
-    <!-- 검색 결과 없음 상태 영역 -->
-    <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
+    function hideSkeleton() {
+        document.getElementById('skeletonGrid').classList.add('hidden');
+    }
 
-    <script>
-        // DOM 요소 캐싱
-        const searchInput = document.querySelector('.search-bar input');
-        const searchBtn = document.querySelector('.search-bar button');
-        const emptyStateEl = document.getElementById('emptyState');
-        const bookGridEl = document.querySelector('.book-grid');
-        const bestContentEl = document.querySelector('.best-section')?.closest('.content');
-        const newContentEl = document.querySelector('.new-section')?.closest('.content');
-        const searchCountEl = document.getElementById('searchCount');
-        const searchCountNumberEl = document.getElementById('searchCountNumber');
+    function showEmpty() {
+        hideSkeleton();
+        document.getElementById('bookGrid').classList.add('hidden');
+        document.getElementById('resultInfo').classList.add('hidden');
+        document.getElementById('pagination').classList.add('hidden');
+        document.getElementById('emptyState').classList.remove('hidden');
+    }
 
-        // 도서 목록 렌더링 + 검색 건수 표시
-        function renderBooks(books) {
-            const $list = $("#bookList");
-            $list.empty();
+    /* ── 페이지네이션 ─────────────────────────────────────────────────── */
+    function renderPagination(page, totalPages) {
+        const el = document.getElementById('pagination');
+        if (totalPages <= 1) { el.classList.add('hidden'); return; }
 
-            if (!books || books.length === 0) {
-                emptyStateEl.style.display = 'flex';
-                bookGridEl.style.display = 'none';
+        el.classList.remove('hidden');
+        const start = Math.max(0, page - 2);
+        const end   = Math.min(totalPages - 1, page + 2);
+        const pages = [];
 
-                if (searchCountEl && searchCountNumberEl) {
-                    searchCountEl.style.display = 'none';
-                    searchCountNumberEl.textContent = '0';
-                }
-                return;
-            }
+        if (start > 0) { pages.push({ l: '1', p: 0 }); if (start > 1) pages.push({ l: '…', p: -1 }); }
+        for (let i = start; i <= end; i++) pages.push({ l: String(i + 1), p: i });
+        if (end < totalPages - 1) { if (end < totalPages - 2) pages.push({ l: '…', p: -1 }); pages.push({ l: String(totalPages), p: totalPages - 1 }); }
 
-            emptyStateEl.style.display = 'none';
-            bookGridEl.style.display = '';
+        const btnBase = 'px-3.5 py-2 rounded-xl text-sm font-medium transition-all';
+        el.innerHTML = `
+            <button onclick="goPage(${page - 1})" ${page === 0 ? 'disabled' : ''}
+                    class="${btnBase} bg-white border border-gray-200 text-gray-500 hover:border-boogie-main hover:text-boogie-main disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fas fa-chevron-left text-xs"></i>
+            </button>
+            ${pages.map(({ l, p }) => p === -1
+                ? `<span class="px-2 text-gray-400 text-sm self-center">…</span>`
+                : `<button onclick="goPage(${p})" class="${btnBase} ${p === page
+                    ? 'bg-boogie-main text-white shadow-sm'
+                    : 'bg-white border border-gray-200 text-gray-600 hover:border-boogie-main hover:text-boogie-main'}">${l}</button>`
+            ).join('')}
+            <button onclick="goPage(${page + 1})" ${page >= totalPages - 1 ? 'disabled' : ''}
+                    class="${btnBase} bg-white border border-gray-200 text-gray-500 hover:border-boogie-main hover:text-boogie-main disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fas fa-chevron-right text-xs"></i>
+            </button>`;
+    }
 
-            books.forEach(book => {
-                const authors = Array.isArray(book.authors) ? book.authors.join(", ") : book.authors || "저자 미상";
-                const pubDate = book.datetime ? new Date(book.datetime).toISOString().split("T")[0] : "-";
-                const thumbnailHtml = (book.thumbnail && book.thumbnail.trim() !== '')
-                    ? `<img src="${book.thumbnail.trim()}" alt="${book.title}">`
-                    : `<i class="fas fa-book"></i>`;
-                const cardHtml = `
-                    <div class="book-card" onclick="location.href='/user/book/bookDetail/${book.bookId}'">
-                        <div class="best-cover">${thumbnailHtml}</div>
-                        <div class="book-info">
-                            <h3 class="book-title-lg">${book.title || "제목 없음"}</h3>
-                            <div class="detail-line">
-                                <span class="author">${authors}</span> /
-                                <span class="publisher">${book.publisher || "출판사 미상"}</span> /
-                                <span class="pubdate">${pubDate}</span>
-                            </div>
-                            <div class="status-line">
-                                <!--<span class="status-loan danger">판매상태: </span>-->
-                                <span class="status-total">ISBN: ${book.isbn || "-"}</span>
-                            </div>
-                            <p class="desc">${book.contents || ""}</p>
-                        </div>
-                        <div class="book-actions">
-                            <button class="action-btn loan-btn">대출</button>
-                            <button class="action-btn wish-btn"><i class="far fa-heart"></i> 찜</button>
-                        </div>
-                    </div>
-                `;
-                $list.append(cardHtml);
-            });
+    function goPage(page) {
+        if (page < 0) return;
+        currentPage = page;
+        fetchBooks(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-            // Ajax 호출 후 바로 검색 건수 업데이트
-            if (searchCountEl && searchCountNumberEl) {
-                const visibleCount = books.length;
-                searchCountEl.style.display = 'block';
-                searchCountNumberEl.textContent = visibleCount;
-            }
-        }
+    /* ── 검색 ─────────────────────────────────────────────────────────── */
+    function initSearch() {
+        const input = document.getElementById('searchInput');
+        const btn   = document.getElementById('searchBtn');
+        const field = document.getElementById('searchField');
+        const doSearch = () => {
+            currentQuery = input.value.trim();
+            currentField = field.value;
+            currentPage  = 0;
+            fetchBooks(0);
+        };
+        btn.addEventListener('click', doSearch);
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+    }
 
-        // 검색어 입력에 따른 Ajax 호출
-        const searchSelect = document.querySelector('.search-select'); // select box
-        function applySearchFilter() {
-            const searchQuery = (searchInput?.value || '').trim();      // 검색어
-            const searchField = (searchSelect?.value || 'title').toUpperCase();       // 검색 조건: title, author, publisher, isbn
+    /* ── 필터 칩 ──────────────────────────────────────────────────────── */
+    function initFilterChips() {
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function () {
+                document.querySelectorAll('.filter-chip').forEach(c => {
+                    c.classList.remove('bg-boogie-main', 'text-white', 'border-boogie-main');
+                    c.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                });
+                this.classList.add('bg-boogie-main', 'text-white', 'border-boogie-main');
+                this.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
 
-            if (!searchQuery) {
-                // 검색어가 없으면 기존 화면 표시
-                emptyStateEl.style.display = 'none';       // "검색 결과 없음" 메시지 숨김
-                bookGridEl.style.display = 'none';         // 검색 결과 그리드 숨김
-                searchCountEl.style.display = 'none';      // 검색 건수 숨김
-
-                // 베스트/신착 영역 표시
-                if (bestContentEl) bestContentEl.style.display = '';
-                if (newContentEl) newContentEl.style.display = '';
-
-                return;
-            }
-            console.log(searchField);
-            $.ajax({
-                url: `/api/books?field=${encodeURIComponent(searchField)}&query=${encodeURIComponent(searchQuery)}`,
-                type: "GET",
-                contentType: "application/json; charset=utf-8",
-                success: function(data) {
-                    renderBooks(data);
-
-                    if (bestContentEl) bestContentEl.style.display = 'none';
-                    if (newContentEl) newContentEl.style.display = 'none';
-                },
-                error: function(xhr, status, error) {
-                    console.error("에러 발생:", error);
-                    alert("도서 검색 중 오류가 발생했습니다.");
-                }
-            });
-        }
-
-        searchBtn?.addEventListener('click', applySearchFilter);
-        searchInput?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') applySearchFilter();
-        });
-
-
-        // 필터 아이템 클릭 이벤트
-        document.querySelectorAll('.filter-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.filter-item').forEach(el => el.classList.remove('active'));
-                this.classList.add('active');
-                console.log('필터 적용:', this.textContent);
-                // TODO: filterBooks(this.textContent);
-            });
-        });
-
-        // 초기 상태
-        bookGridEl.style.display = 'none';
-        emptyStateEl.style.display = 'none';
-
-        // 도서 필터링 함수 (실제 구현 필요)
-        /*
-         * 선택된 필터 타입을 기준으로 도서 목록을 필터링하는 자리입니다.
-         * 현재는 데모로 콘솔 로그만 출력합니다.
-         * 실제 구현 시 서버 API 호출 또는 클라이언트 필터링 로직을 추가하세요.
-         */
-        function filterBooks(filterType) {
-            // 실제로는 서버에 API 요청을 보내거나 클라이언트 측에서 필터링
-            // 이 예시에서는 콘솔에 로그만 출력
-            console.log(`${filterType} 기준으로 도서 목록 필터링`);
-        }
-
-        // API 응답 샘플 데이터를 기반으로 변환
-        const documents = [
-            {
-                "authors": ["김기수"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6052846%3Ftimestamp%3D20250716142640",
-                "title": "코딩 자율학습 HTML + CSS + 자바스크립트"
-            },
-            {
-                "authors": ["Savitch", "Mock"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3383739%3Ftimestamp%3D20190220072908",
-                "title": "Java"
-            },
-            {
-                "authors": ["Schildt Herbert"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3506724%3Ftimestamp%3D20230918205000",
-                "title": "Java"
-            },
-            {
-                "authors": ["Herbert Schildt"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3189332%3Ftimestamp%3D20190218082046",
-                "title": "Java"
-            },
-            {
-                "authors": ["이태동", "임정목", "오연재"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5585286%3Ftimestamp%3D20240810152637",
-                "title": "Java Programming 입문 마스터"
-            },
-            {
-                "authors": ["천인국", "하상호"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1377153%3Ftimestamp%3D20230217191354",
-                "title": "Power JAVA"
-            },
-            {
-                "authors": ["Levenick James"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2586230%3Ftimestamp%3D20250122113548",
-                "title": "Simply Java : An Introduction to Java Programming"
-            },
-            {
-                "authors": ["남궁성"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1422248%3Ftimestamp%3D20250904110259",
-                "title": "Java의 정석"
-            },
-            {
-                "authors": ["황기태"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F961292%3Ftimestamp%3D20230310155338",
-                "title": "HTML5 + CSS3 + Javascript 웹 프로그래밍"
-            },
-            {
-                "authors": ["Walter Savitch"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4897617%3Ftimestamp%3D20250328131041",
-                "title": "Java"
-            },
-            {
-                "authors": ["윤인성"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F945010%3Ftimestamp%3D20211206153147",
-                "title": "JavaScript + jQuery 입문(모던 웹을 위한)(3판)"
-            },
-            {
-                "authors": ["김충석"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5458557%3Ftimestamp%3D20231024182203",
-                "title": "JAVA"
-            },
-            {
-                "authors": ["채현석", "김성학"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F956074%3Ftimestamp%3D20230217220905",
-                "title": "JAVA 언어"
-            },
-            {
-                "authors": ["케이시 시에라", "버트 베이츠"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1102941%3Ftimestamp%3D20240721112431",
-                "title": "Head First Java"
-            },
-            {
-                "authors": ["임정목", "이태동", "김점구"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1126768%3Ftimestamp%3D20221108001540",
-                "title": "JAVA 8.0 쉽게 배우기"
-            },
-            {
-                "authors": ["모리 요시나오"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4854277%3Ftimestamp%3D20240420131734",
-                "title": "자바(Java) 1학년"
-            },
-            {
-                "authors": ["Michael Sikora"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4638033%3Ftimestamp%3D20190301223939",
-                "title": "Java"
-            },
-            {
-                "authors": ["Walter Savitch", "Mock Kenrick"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4879676%3Ftimestamp%3D20230714215226",
-                "title": "Java"
-            },
-            {
-                "authors": ["Schildt Herbert"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2885923%3Ftimestamp%3D20230714191648",
-                "title": "Java"
-            },
-            {
-                "authors": ["Arnold V Willemer"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F4471001%3Ftimestamp%3D20190301011740",
-                "title": "Java"
-            },
-            {
-                "authors": ["Turner Peter"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1815624%3Ftimestamp%3D20230802195406",
-                "title": "Java"
-            },
-            {
-                "authors": ["Adams Joel/ Nyhoff Jeffrey L/ Nyhoff Larry R"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F2105237%3Ftimestamp%3D20230714203149",
-                "title": "Java"
-            },
-            {
-                "authors": ["Chongqing"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3470105%3Ftimestamp%3D20230718191656",
-                "title": "Bible (18 Books in 1 -- HTML, CSS, JavaScript, PHP, SQL, XML, Svg..."
-            },
-            {
-                "authors": ["Herbert Schildt", "Danny Coward"],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F7019948%3Ftimestamp%3D20251025143701",
-                "title": "Java"
-            },
-            {
-                "authors": [],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F7046703%3Ftimestamp%3D20251027150103",
-                "title": "Java"
-            },
-            {
-                "authors": [],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6106032%3Ftimestamp%3D20251027144727",
-                "title": "Java"
-            },
-            {
-                "authors": [],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F6023665%3Ftimestamp%3D20251027144259",
-                "title": "Java"
-            },
-            {
-                "authors": [],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5017838%3Ftimestamp%3D20251027124007",
-                "title": "Java"
-            },
-            {
-                "authors": [],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F5021768%3Ftimestamp%3D20251027124246",
-                "title": "Java"
-            },
-            {
-                "authors": [],
-                "thumbnail": "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3877987%3Ftimestamp%3D20251027115423",
-                "title": "Java"
-            }
-        ];
-
-        // Best Books Top 30 샘플 → documents 기반으로 변경
-        const bestBooks = documents.map((doc, idx) => ({
-            rank: idx + 1,
-            title: doc.title,
-            image: doc.thumbnail,
-            author: doc.authors.join(', '),
-            isEbook: false // 필요 시 문서 데이터 기반 조건으로 수정 가능
-        }));
-
-        /*
-         * 샘플 데이터(bestBooks)를 사용해 베스트 도서 슬라이더 트랙에 카드를 렌더링합니다.
-         * 각 카드에는 순위, 표지 이미지, 제목, 저자를 표시합니다.
-         */
-        function renderBest() {
-            const track = document.getElementById('bestTrack');
-            track.innerHTML = bestBooks.map(b => `
-                <div class="best-item">
-                    <div class="best-card" onclick="location.href='/book/detail/${b.rank}'">
-                        <div class="rank-badge">${b.rank}</div>
-                        ${b.isEbook ? '<div class="ebook-badge">전자책</div>' : ''}
-                        <div class="best-cover">
-                            ${b.image
-                                ? `<img src=${b.image} alt="전자책 표지">`
-                                : '<i class="fas fa-book"></i>'}
-                        </div>
-                        <div class="best-info">
-                            <div class="best-title-text">${b.title}</div>
-                            <div class="best-author">${b.author}</div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        /*
-         * 베스트 도서 슬라이더를 초기화합니다.
-         * 화면 너비에 따른 페이지당 항목 수 계산, 좌/우 버튼 상태 갱신,
-         * 슬라이더 이동 처리 등의 로직을 포함합니다.
-         */
-        function initBestSlider() {
-            const viewport = document.querySelector('.best-viewport');
-            const track = document.getElementById('bestTrack');
-            // const prev = document.getElementById('bestPrev');
-            // const next = document.getElementById('bestNext');
-            const prevBottom = document.getElementById('bestPrevBottom');
-            const nextBottom = document.getElementById('bestNextBottom');
-
-            const PAGE_SIZE = 8; // 최대 8개씩
-            let currentIndex = 0; // 페이지 인덱스
-            let itemFullWidth = 166; // item width 150 + gap 16 (default)
-            let itemsPerPage = PAGE_SIZE; // 화면 너비에 맞춰 조정
-            let maxIndex = 0; // 마지막 페이지 인덱스
-
-            const recompute = () => {
-                const firstItem = track.querySelector('.best-item');
-                if (firstItem) {
-                    const style = getComputedStyle(track);
-                    const gap = parseInt(style.columnGap || style.gap || '16', 10);
-                    itemFullWidth = firstItem.offsetWidth + gap;
-                }
-
-                // 화면 너비에 맞게 페이지당 아이템 수 계산 (최대 8)
-                itemsPerPage = Math.max(1, Math.min(PAGE_SIZE, Math.floor(viewport.clientWidth / itemFullWidth)));
-
-                // 총 페이지 계산
-                const totalPages = Math.ceil(bestBooks.length / itemsPerPage);
-                maxIndex = Math.max(0, totalPages - 1);
-
-                // 현재 인덱스 조정
-                currentIndex = Math.min(currentIndex, maxIndex);
-
-                update();
-            };
-
-            const update = () => {
-                const offset = currentIndex * itemFullWidth * itemsPerPage;
-                track.style.transform = `translateX(-${offset}px)`;
-
-                const atStart = currentIndex === 0;
-                const atEnd = currentIndex >= maxIndex;
-
-                [/*prev, */prevBottom].forEach(btn => { if (btn) { btn.disabled = atStart; btn.style.opacity = atStart ? '0.5' : '1'; btn.style.cursor = atStart ? 'not-allowed' : 'pointer'; } });
-                [/*next, */nextBottom].forEach(btn => { if (btn) { btn.disabled = atEnd; btn.style.opacity = atEnd ? '0.5' : '1'; btn.style.cursor = atEnd ? 'not-allowed' : 'pointer'; } });
-            };
-
-            const goPrev = () => {
-                if (currentIndex > 0) {
-                    currentIndex = Math.max(0, currentIndex - 1);
-                    update();
-                }
-            };
-            const goNext = () => {
-                if (currentIndex < maxIndex) {
-                    currentIndex = Math.min(maxIndex, currentIndex + 1);
-                    update();
-                }
-            };
-
-            // 버튼 이벤트
-            // prev.addEventListener('click', goPrev);
-            // next.addEventListener('click', goNext);
-            if (prevBottom) prevBottom.addEventListener('click', goPrev);
-            if (nextBottom) nextBottom.addEventListener('click', goNext);
-
-            window.addEventListener('resize', recompute);
-            recompute();
-        }
-
-        // 찜 버튼 토글: 하트 채우기 및 색상 빨강
-        document.querySelectorAll('.wish-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                const liked = btn.classList.toggle('liked');
-                const icon = btn.querySelector('i');
-                if (icon) {
-                    if (liked) {
-                        icon.classList.remove('far');
-                        icon.classList.add('fas');
-                    } else {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                    }
-                }
-                btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+                currentSort   = this.dataset.sort  || '';
+                availableOnly = this.dataset.filter === 'available';
+                currentPage   = 0;
+                fetchBooks(0);
             });
         });
+    }
 
-        // 초기화
-        renderBest();
-        initBestSlider();
+    /* ── XSS 방어 ─────────────────────────────────────────────────────── */
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+</script>
+</th:block>
 
-        // 신착 도서 데이터: 샘플 documents 기반으로 구성 (임시)
-        const newArrivals = documents.slice(0, 20).map((doc) => ({
-            title: doc.title,
-            image: doc.thumbnail,
-            author: doc.authors.join(', '),
-        }));
-
-        /*
-         * 샘플 데이터(newArrivals)를 사용해 신착 도서 슬라이더 트랙에 카드를 렌더링합니다.
-         * 각 카드에는 표지 이미지, 제목, 저자를 표시합니다.
-         */
-        function renderNewArrivals() {
-            const track = document.getElementById('newTrack');
-            if (!track) return;
-            track.innerHTML = newArrivals.map(b => `
-                <div class="best-item">
-                    <div class="best-card" onclick="location.href='/book/detail'">
-                        <div class="best-cover">
-                            ${b.image ? `<img src=${b.image} alt="표지">` : '<i class="fas fa-book"></i>'}
-                        </div>
-                        <div class="best-info">
-                            <div class="best-title-text">${b.title}</div>
-                            <div class="best-author">${b.author}</div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        /*
-         * 신착 도서 슬라이더를 초기화합니다.
-         * 화면 너비에 따른 페이지당 항목 수 계산,
-         * 좌/우 버튼 상태 갱신 및 슬라이더 이동 처리 로직을 포함합니다.
-         */
-        function initNewSlider() {
-            const track = document.getElementById('newTrack');
-            if (!track) return;
-            const viewport = track.closest('.best-viewport');
-            const prev = document.getElementById('newPrev');
-            const next = document.getElementById('newNext');
-
-            const PAGE_SIZE = 8;
-            let currentIndex = 0;
-            let itemFullWidth = 166; // item width 150 + gap 16
-            let itemsPerPage = PAGE_SIZE;
-            let maxIndex = 0;
-
-            const recompute = () => {
-                const firstItem = track.querySelector('.best-item');
-                if (firstItem) {
-                    const style = getComputedStyle(track);
-                    const gap = parseInt(style.columnGap || style.gap || '16', 10);
-                    itemFullWidth = firstItem.offsetWidth + gap;
-                }
-                itemsPerPage = Math.max(1, Math.min(PAGE_SIZE, Math.floor(viewport.clientWidth / itemFullWidth)));
-                const totalPages = Math.ceil(newArrivals.length / itemsPerPage);
-                maxIndex = Math.max(0, totalPages - 1);
-                currentIndex = Math.min(currentIndex, maxIndex);
-                update();
-            };
-
-            const update = () => {
-                const offset = currentIndex * itemFullWidth * itemsPerPage;
-                track.style.transform = `translateX(-${offset}px)`;
-                const atStart = currentIndex === 0;
-                const atEnd = currentIndex >= maxIndex;
-                [prev].forEach(btn => { if (btn) { btn.disabled = atStart; btn.style.opacity = atStart ? '0.5' : '1'; btn.style.cursor = atStart ? 'not-allowed' : 'pointer'; } });
-                [next].forEach(btn => { if (btn) { btn.disabled = atEnd; btn.style.opacity = atEnd ? '0.5' : '1'; btn.style.cursor = atEnd ? 'not-allowed' : 'pointer'; } });
-            };
-
-            const goPrev = () => { if (currentIndex > 0) { currentIndex = Math.max(0, currentIndex - 1); update(); } };
-            const goNext = () => { if (currentIndex < maxIndex) { currentIndex = Math.min(maxIndex, currentIndex + 1); update(); } };
-
-            if (prev) prev.addEventListener('click', goPrev);
-            if (next) next.addEventListener('click', goNext);
-            window.addEventListener('resize', recompute);
-            recompute();
-        }
-
-        // 신착 도서 초기화
-        renderNewArrivals();
-        initNewSlider();
-    </script>
-</main>
 </body>
 </html>

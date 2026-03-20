@@ -89,7 +89,8 @@
                         errorDiv.textContent = errorData?.message || "입력 양식을 다시 확인해주세요.";
                         errorDiv.classList.remove('hidden');
                     } else {
-                        errorDiv.textContent = "서버 통신 중 오류가 발생했습니다. 잠시 후 시도해주세요.";
+                        const errorData = await response.json().catch(() => null);
+                        errorDiv.textContent = errorData?.message || "서버 통신 중 오류가 발생했습니다. 잠시 후 시도해주세요.";
                         errorDiv.classList.remove('hidden');
                     }
                 } catch (error) {

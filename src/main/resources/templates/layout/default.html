@@ -42,6 +42,14 @@
     </script>
 
     <!-- 커스텀 스타일 및 디자인 시스템 애니메이션 -->
+    <style type="text/tailwindcss">
+        @layer components {
+            /* 공통 레이아웃 컨테이너 */
+            .layout-container {
+                @apply w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8;
+            }
+        }
+    </style>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -78,7 +86,7 @@
 
     <!-- 글로벌 헤더 (GNB) -->
     <header class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="layout-container">
             <div class="flex justify-between items-center h-20">
                 
                 <!-- 좌측 부기맨 로고 영역 -->
@@ -97,21 +105,6 @@
                     </svg>
                     <span class="font-pretendard font-black text-2xl tracking-tight text-gray-900 group-hover:text-boogie-main transition-colors duration-300">부기맨</span>
                 </a>
-
-                <!-- 중앙 도서 통합 검색창 (주석 처리) -->
-                <!--
-                <div class="flex-1 max-w-2xl px-12 hidden md:block relative">
-                    <form action="/books/search" method="GET" class="relative">
-                        <input type="text" name="query" placeholder="도서명, 저자, ISBN을 검색해 보세요..."
-                               class="w-full bg-gray-50 border border-gray-200 rounded-full px-6 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-all placeholder-gray-400">
-                        <button type="submit" class="absolute right-4 top-2.5 p-1 text-gray-400 hover:text-boogie-main transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </button>
-                    </form>
-                </div>
-                -->
 
                 <!-- 중앙 권한별 메뉴 영역 (서버사이드 렌더링 — sec:authorize) -->
                 <div class="flex-1 px-8 hidden md:flex items-center justify-center">
@@ -158,13 +151,16 @@
     </header>
 
     <!-- 메인 컨텐츠 영역 (페이지별 삽입) -->
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" layout:fragment="content">
-        <!-- 각 html의 content 파트가 여기에 렌더링 됩니다. -->
+    <main class="flex-grow w-full">
+        <div class="layout-container py-10">
+            <!-- 각 html의 content 파트가 레이아웃 컨테이너를 덮어쓰지 않고 내부에 안전하게 렌더링 됩니다. -->
+            <th:block layout:fragment="content"></th:block>
+        </div>
     </main>
 
     <!-- 글로벌 푸터 -->
     <footer class="bg-boogie-darkbg text-gray-400 py-12 mt-auto border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+        <div class="layout-container flex flex-col items-center">
             <div class="flex items-center space-x-2 mb-6">
                 <!-- 흰색 거북이 로고 -->
                 <svg width="24" height="24" viewBox="0 0 100 100" fill="none" opacity="0.6">

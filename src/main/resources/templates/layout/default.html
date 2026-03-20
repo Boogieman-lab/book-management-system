@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko" 
-      xmlns:th="http://www.thymeleaf.org" 
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,7 +98,8 @@
                     <span class="font-pretendard font-black text-2xl tracking-tight text-gray-900 group-hover:text-boogie-main transition-colors duration-300">부기맨</span>
                 </a>
 
-                <!-- 중앙 도서 통합 검색창 -->
+                <!-- 중앙 도서 통합 검색창 (주석 처리) -->
+                <!--
                 <div class="flex-1 max-w-2xl px-12 hidden md:block relative">
                     <form action="/books/search" method="GET" class="relative">
                         <input type="text" name="query" placeholder="도서명, 저자, ISBN을 검색해 보세요..."
@@ -109,23 +111,45 @@
                         </button>
                     </form>
                 </div>
+                -->
+
+                <!-- 중앙 권한별 메뉴 영역 (서버사이드 렌더링 — sec:authorize) -->
+                <div class="flex-1 px-8 hidden md:flex items-center justify-center">
+
+                    <!-- 로그인한 사용자 공통 메뉴 (ROLE_USER, ROLE_ADMIN 모두 노출) -->
+                    <nav sec:authorize="isAuthenticated()" class="flex space-x-8">
+                        <a href="/about" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">소개</a>
+                        <a href="/books" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">도서 검색</a>
+                        <a href="/book-requests" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">희망 도서 신청</a>
+                        <a href="/user/mypage" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">마이페이지</a>
+
+                        <!-- 관리자 전용 메뉴 (ROLE_ADMIN만 렌더링) -->
+                        <th:block sec:authorize="hasRole('ADMIN')">
+                            <a href="/admin/books" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">도서 관리</a>
+                            <a href="/admin/borrows" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">대출/예약 관리</a>
+                            <a href="/admin/requests" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">신청 관리</a>
+                            <a href="/admin/users" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">회원 관리</a>
+                            <a href="/admin/dashboard" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">통계</a>
+                        </th:block>
+                    </nav>
+                </div>
 
                 <!-- 우측 인증/유저 액션 메뉴 -->
                 <div class="flex items-center space-x-2">
-                    <!-- 비로그인 시 노출 (Default) -->
-                    <div id="auth-buttons" class="flex space-x-2">
+
+                    <!-- 비로그인 시: 로그인·회원가입 버튼 -->
+                    <div sec:authorize="isAnonymous()" class="flex space-x-2">
                         <a href="/user/auth/login" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-boogie-main transition-colors hover:bg-gray-50 rounded-full">로그인</a>
                         <a href="/user/auth/signup" class="hover-lift px-5 py-2.5 text-sm font-bold text-white bg-boogie-main rounded-full shadow-sm hover:bg-boogie-dark">회원가입</a>
                     </div>
 
-                    <!-- 로그인 시 노출 (JS 토큰 감지 후 hidden 해제할 대상) -->
-                    <div id="user-menu" class="hidden items-center space-x-2">
-                        <a href="/user/mypage" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-boogie-light text-boogie-dark rounded-full hover:bg-[#d1efe3] transition-colors shadow-sm">마이페이지</a>
-                        <a href="/book-requests" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-boogie-main transition-colors">희망도서 신청</a>
-                        <button id="logout-btn" class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-red-500 transition-colors">로그아웃</button>
-                        
-                        <!-- 관리자일 경우 노출 -->
-                        <a href="/admin/dashboard" id="admin-btn" class="hidden hover-lift px-5 py-2.5 text-sm font-bold text-white bg-gray-800 rounded-full hover:bg-black shadow-md ml-2">관리자</a>
+                    <!-- 로그인 시: 관리자 배지 + 로그아웃 버튼 -->
+                    <div sec:authorize="isAuthenticated()" class="flex items-center space-x-2">
+                        <!-- 관리자 배지 (ROLE_ADMIN만 노출) -->
+                        <div sec:authorize="hasRole('ADMIN')" class="mr-2">
+                            <span class="px-3 py-1 text-xs font-bold text-white bg-red-500 rounded-full shadow-sm">관리자</span>
+                        </div>
+                        <button id="logout-btn" class="px-5 py-2.5 text-sm font-bold text-gray-500 bg-gray-100 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors shadow-sm hover-lift">로그아웃</button>
                     </div>
                 </div>
 
@@ -165,8 +189,8 @@
     <!-- 각 페이지별 <script> 추가 영역 -->
     <th:block layout:fragment="script"></th:block>
     
-    <!-- 향후 토큰 검증 및 메뉴 스위칭을 담당할 글로벌 JS (예약 공간) -->
-    <!-- <script src="/js/api.js"></script> -->
+    <!-- 전역 API 래퍼: 로그아웃 처리 + 네비게이션 활성화 -->
+    <script src="/js/api.js"></script>
 
 </body>
 </html>

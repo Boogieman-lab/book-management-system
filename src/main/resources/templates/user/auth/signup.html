@@ -82,8 +82,8 @@
                     });
 
                     if (response.status === 201 || response.ok) {
-                        alert("부기맨의 회원이 되신 것을 환영합니다!\n로그인 페이지로 이동합니다.");
-                        window.location.href = '/user/auth/login';
+                        alert("부기맨의 회원이 되신 것을 환영합니다!\n소개 페이지로 이동합니다.");
+                        window.location.href = '/about';
                     } else if (response.status === 400) {
                         const errorData = await response.json().catch(() => null);
                         errorDiv.textContent = errorData?.message || "입력 양식을 다시 확인해주세요.";

@@ -45,7 +45,7 @@
                         </div>
 
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">이메일 이메일</label>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">이메일</label>
                             <input type="email" id="email" required
                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-colors text-sm placeholder-gray-400" 
                                    placeholder="이메일 주소를 입력해주세요">
@@ -111,12 +111,9 @@
                     });
 
                     if (response.ok) {
-                        const data = await response.json();
-                        // Access Token을 로컬 스토리지에 저장! (refreshToken은 쿠키에서 자동 관리)
-                        localStorage.setItem('accessToken', data.accessToken);
-                        
-                        // 로그인 완료 후 홈 화면 리디렉트
-                        window.location.href = '/';
+                        // accessToken은 서버가 HttpOnly 쿠키로 설정 → localStorage 저장 불필요
+                        // 로그인 완료 후 소개 화면 리디렉트
+                        window.location.href = '/about';
                     } else if (response.status === 401) {
                         errorDiv.textContent = "아이디나 비밀번호가 일치하지 않습니다.";
                         errorDiv.classList.remove('hidden');

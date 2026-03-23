@@ -9,6 +9,7 @@ import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
 import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationResponse;
+import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationWaitingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,14 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final BookHoldRepository bookHoldRepository;
+
+    public List<ReservationWaitingResponse> getWaitingReservations(Long bookId) {
+        return reservationRepository
+                .findByBookHold_BookIdAndStatusOrderByReservedAtAsc(bookId, ReservationStatus.WAITING)
+                .stream()
+                .map(r -> new ReservationWaitingResponse(r.getUserId(), r.getReservedAt()))
+                .toList();
+    }
 
     @Transactional
     public ReservationResponse createReservation(Long bookId, Long userId) {

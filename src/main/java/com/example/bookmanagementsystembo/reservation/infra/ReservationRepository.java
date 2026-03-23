@@ -22,4 +22,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     /** 특정 사용자의 주어진 상태 예약 목록을 조회합니다. */
     List<Reservation> findByUserIdAndStatus(Long userId, ReservationStatus status);
+
+    /** 특정 도서(bookId)의 주어진 상태 예약 목록을 예약일시 오름차순으로 조회합니다. */
+    List<Reservation> findByBookHold_BookIdAndStatusOrderByReservedAtAsc(Long bookId, ReservationStatus status);
 }

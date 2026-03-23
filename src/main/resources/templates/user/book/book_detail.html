@@ -12,6 +12,89 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* ── 공통 카드 ───────────────────────────────────────────── */
+        .detail-card {
+            background: #fff;
+            border-radius: 32px;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / .06);
+            border: 1px solid #f3f4f6;
+            padding: 2rem;
+        }
+
+        /* ── 섹션 제목 ───────────────────────────────────────────── */
+        .section-title {
+            font-size: .875rem;
+            font-weight: 900;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── 메타 행 ─────────────────────────────────────────────── */
+        .meta-row   { display: flex; align-items: center; gap: .5rem; }
+        .meta-label { width: 3.5rem; font-size: .875rem; font-weight: 700; color: #6b7280; flex-shrink: 0; }
+        .meta-value { font-size: .875rem; color: #1f2937; }
+
+        /* ── 상태 뱃지 ───────────────────────────────────────────── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: .15rem .625rem;
+            font-size: .625rem;
+            font-weight: 900;
+            border-radius: 9999px;
+            border: 1px solid transparent;
+        }
+        .badge-green { background: #e6f7ef; color: #005c38; border-color: rgba(0,167,96,.2); }
+        .badge-amber { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+        .badge-red   { background: #fef2f2; color: #ef4444; border-color: #fecaca; }
+        .badge-blue  { background: #eff6ff; color: #3b82f6; border-color: #bfdbfe; }
+        .badge-gray  { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
+
+        /* ── 대출 가능 현황 배너 ─────────────────────────────────── */
+        .avail-bar {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .875rem 1.25rem;
+            border-radius: 1rem;
+            font-size: .9375rem;
+            font-weight: 700;
+            margin-bottom: 1.75rem;
+            border: 1px solid transparent;
+        }
+        .avail-bar strong { font-size: 1.25rem; font-weight: 900; margin: 0 .125rem; }
+        .avail-bar-ok   { background: #e6f7ef; color: #005c38; border-color: rgba(0,167,96,.18); }
+        .avail-bar-none { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+
+        /* ── 액션 버튼 ───────────────────────────────────────────── */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .875rem 2.5rem;
+            border-radius: 1rem;
+            font-weight: 900;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / .08);
+            transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+        }
+        .action-btn:hover          { transform: translateY(-2px); box-shadow: 0 6px 16px 0 rgb(0 0 0 / .12); }
+        .action-btn-primary        { background: #00A760; color: #fff; }
+        .action-btn-primary:hover  { background: #008a4f; }
+        .action-btn-reserve        { background: #f59e0b; color: #fff; }
+        .action-btn-reserve:hover  { background: #d97706; }
+        .action-btn-return         { background: #6b7280; color: #fff; }
+        .action-btn-return:hover   { background: #374151; }
+
+        /* ── 테이블 헤더 셀 ──────────────────────────────────────── */
+        .tbl-th { padding-bottom: .75rem; text-align: left; font-weight: 700; color: #6b7280; padding-right: 1rem; font-size: .875rem; }
+
+        /* ── 도서 소개 clamp ─────────────────────────────────────── */
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </th:block>
@@ -26,7 +109,8 @@
     </div>
 
     <!-- ── 스켈레톤 로딩 ──────────────────────────────────────────── -->
-    <div id="skeleton" class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 animate-pulse">
+    <div id="skeleton" class="detail-card animate-pulse">
+        <div class="h-12 bg-gray-100 rounded-xl w-1/3 mb-6"></div>
         <div class="flex flex-col md:flex-row gap-8">
             <div class="w-full md:w-44 flex-shrink-0">
                 <div class="w-44 h-64 bg-gray-100 rounded-2xl mx-auto"></div>
@@ -36,7 +120,6 @@
                 <div class="h-4 bg-gray-100 rounded-full w-1/2"></div>
                 <div class="h-4 bg-gray-100 rounded-full w-1/3"></div>
                 <div class="h-4 bg-gray-100 rounded-full w-2/5"></div>
-                <div class="h-4 bg-gray-100 rounded-full w-1/4"></div>
                 <div class="mt-6 h-12 bg-gray-100 rounded-2xl w-48"></div>
             </div>
         </div>
@@ -46,7 +129,14 @@
     <div id="detailCard" class="hidden">
 
         <!-- 도서 기본 정보 카드 -->
-        <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+        <div class="detail-card">
+
+            <!-- ① 대출 가능 현황 배너 -->
+            <div id="availabilityBar" class="avail-bar">
+                <i id="availabilityIcon" class="fas fa-circle-check text-xl flex-shrink-0"></i>
+                <span id="availabilityText">현재 대출 가능 <strong id="availableCount">-</strong>권</span>
+            </div>
+
             <div class="flex flex-col lg:flex-row gap-8">
 
                 <!-- 왼쪽: 썸네일 -->
@@ -59,55 +149,54 @@
                 <!-- 오른쪽: 메타 정보 + 버튼 -->
                 <div class="flex-1 flex flex-col">
 
-                    <!-- 제목 + 재고 뱃지 -->
-                    <div class="flex flex-wrap items-start gap-3 mb-4">
-                        <h1 id="bookTitle" class="text-2xl font-black text-gray-900 leading-snug flex-1">-</h1>
-                        <span id="stockBadge" class="flex-shrink-0 px-3 py-1 text-xs font-black rounded-full"></span>
-                    </div>
+                    <!-- 제목 -->
+                    <h1 id="bookTitle" class="text-2xl font-black text-gray-900 leading-snug mb-5">-</h1>
 
                     <!-- 메타 정보 -->
-                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm mb-6">
-                        <div class="flex items-center gap-2">
-                            <dt class="w-14 font-bold text-gray-500 flex-shrink-0">저자</dt>
-                            <dd id="bookAuthors" class="text-gray-800">-</dd>
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mb-6">
+                        <div class="meta-row">
+                            <dt class="meta-label">저자</dt>
+                            <dd id="bookAuthors" class="meta-value">-</dd>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <dt class="w-14 font-bold text-gray-500 flex-shrink-0">출판사</dt>
-                            <dd id="bookPublisher" class="text-gray-800">-</dd>
+                        <div class="meta-row">
+                            <dt class="meta-label">출판사</dt>
+                            <dd id="bookPublisher" class="meta-value">-</dd>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <dt class="w-14 font-bold text-gray-500 flex-shrink-0">출판일</dt>
-                            <dd id="bookPublishedAt" class="text-gray-800">-</dd>
+                        <div class="meta-row">
+                            <dt class="meta-label">출판일</dt>
+                            <dd id="bookPublishedAt" class="meta-value">-</dd>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <dt class="w-14 font-bold text-gray-500 flex-shrink-0">ISBN</dt>
-                            <dd id="bookIsbn" class="text-gray-800 font-mono text-xs">-</dd>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <dt class="w-14 font-bold text-gray-500 flex-shrink-0">총 재고</dt>
-                            <dd id="bookStock" class="text-gray-800">-</dd>
+                        <div class="meta-row">
+                            <dt class="meta-label">ISBN</dt>
+                            <dd id="bookIsbn" class="meta-value font-mono text-xs">-</dd>
                         </div>
                     </dl>
 
                     <!-- 대출하기 / 예약하기 버튼 -->
                     <div class="mt-auto">
-                        <button id="mainActionBtn" class="hidden px-8 py-3.5 rounded-2xl font-black text-base transition-all hover-lift shadow-sm">-</button>
+                        <button id="mainActionBtn" class="hidden action-btn">-</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 도서 소개 (구분선 아래) -->
-            <div id="descriptionSection" class="hidden mt-8 pt-6 border-t border-gray-100">
-                <h2 class="text-base font-black text-gray-700 mb-3 flex items-center gap-2">
-                    <i class="fas fa-align-left text-boogie-main text-sm"></i> 도서 소개
-                </h2>
-                <p id="bookContents" class="text-sm text-gray-600 leading-relaxed whitespace-pre-line">-</p>
+        <!-- ── 도서 소개 카드 ────────────────────────────────────── -->
+        <div id="descriptionCard" class="hidden detail-card mt-4">
+            <h2 class="section-title">
+                <i class="fas fa-book-open text-boogie-main text-sm"></i> 도서 소개
+            </h2>
+            <div class="relative">
+                <p id="bookContents" class="text-sm text-gray-600 leading-loose whitespace-pre-line line-clamp-3 transition-all duration-300"></p>
+                <div id="contentOverlay" class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
             </div>
+            <button id="expandContentsBtn" class="mt-2 text-boogie-main font-bold text-sm hidden items-center justify-center w-full gap-1 p-2 hover:bg-boogie-light rounded-xl transition-colors">
+                <span>더보기</span> <i class="fas fa-chevron-down text-xs"></i>
+            </button>
         </div>
 
         <!-- ── 소장 정보 카드 ────────────────────────────────────── -->
-        <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 mt-4">
-            <h2 class="text-base font-black text-gray-700 mb-5 flex items-center gap-2">
+        <div class="detail-card mt-4">
+            <h2 class="section-title">
                 <i class="fas fa-layer-group text-boogie-main text-sm"></i>
                 소장 정보
                 <span id="holdCountBadge" class="ml-1 px-2 py-0.5 text-xs font-bold bg-boogie-light text-boogie-dark rounded-full"></span>
@@ -116,10 +205,10 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b-2 border-boogie-main">
-                            <th class="pb-3 text-left font-bold text-gray-500 pr-4">등록번호</th>
-                            <th class="pb-3 text-left font-bold text-gray-500 pr-4">상태</th>
-                            <th class="pb-3 text-left font-bold text-gray-500 pr-4">위치</th>
-                            <th class="pb-3 text-left font-bold text-gray-500">반납예정일</th>
+                            <th class="tbl-th">등록번호</th>
+                            <th class="tbl-th">상태</th>
+                            <th class="tbl-th">위치</th>
+                            <th class="tbl-th" style="padding-right:0">반납예정일</th>
                         </tr>
                     </thead>
                     <tbody id="holdsTbody" class="divide-y divide-gray-50"></tbody>
@@ -128,8 +217,8 @@
         </div>
 
         <!-- ── 예약 대기 현황 카드 ───────────────────────────────── -->
-        <div id="reservationCard" class="hidden bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 mt-4">
-            <h2 class="text-base font-black text-gray-700 mb-5 flex items-center gap-2">
+        <div id="reservationCard" class="hidden detail-card mt-4">
+            <h2 class="section-title">
                 <i class="fas fa-clock text-amber-500 text-sm"></i>
                 예약 대기 현황
                 <span id="reservationCountBadge" class="ml-1 px-2 py-0.5 text-xs font-bold bg-amber-50 text-amber-600 rounded-full"></span>
@@ -138,9 +227,9 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b-2 border-amber-300">
-                            <th class="pb-3 text-left font-bold text-gray-500 pr-4">순위</th>
-                            <th class="pb-3 text-left font-bold text-gray-500 pr-4">예약자</th>
-                            <th class="pb-3 text-left font-bold text-gray-500">예약일시</th>
+                            <th class="tbl-th">순위</th>
+                            <th class="tbl-th">예약자</th>
+                            <th class="tbl-th" style="padding-right:0">예약일시</th>
                         </tr>
                     </thead>
                     <tbody id="reservationTbody" class="divide-y divide-gray-50"></tbody>
@@ -172,7 +261,8 @@
     const bookId = document.getElementById('bookIdInput').value;
 
     /* ── 모듈 상태 ───────────────────────────────────────────────── */
-    let currentHolds = [];
+    let currentHolds  = [];
+    let myBorrowId    = null;
 
     /* ── 진입점 ──────────────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', () => {
@@ -182,17 +272,24 @@
     /* ── 데이터 로드 ─────────────────────────────────────────────── */
     async function loadDetail() {
         try {
-            const [bookRes, holdsRes, reservationsRes] = await Promise.all([
+            const [bookRes, holdsRes, reservationsRes, myBorrowRes] = await Promise.all([
                 window.api.fetch(`/api/v1/books/${bookId}`),
                 window.api.fetch(`/api/books/${bookId}/holds`),
-                window.api.fetch(`/api/v1/reservations?bookId=${bookId}`)
+                window.api.fetch(`/api/v1/reservations?bookId=${bookId}`),
+                window.api.fetch(`/api/v1/borrows/me?bookId=${bookId}`)
             ]);
 
             if (!bookRes || !bookRes.ok) throw new Error(bookRes?.status);
 
             const book         = await bookRes.json();
-            currentHolds       = holdsRes?.ok        ? await holdsRes.json()        : [];
-            const reservations = reservationsRes?.ok  ? await reservationsRes.json() : [];
+            currentHolds       = holdsRes?.ok       ? await holdsRes.json()        : [];
+            const reservations = reservationsRes?.ok ? await reservationsRes.json() : [];
+
+            myBorrowId = null;
+            if (myBorrowRes?.status === 200) {
+                const myBorrow = await myBorrowRes.json();
+                myBorrowId = myBorrow?.borrowId ?? null;
+            }
 
             renderDetail(book, currentHolds, reservations);
         } catch (e) {
@@ -213,42 +310,51 @@
         }
 
         // 기본 정보
-        document.getElementById('bookTitle').textContent        = book.title        || '제목 없음';
-        document.getElementById('bookAuthors').textContent      = Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || '저자 미상');
-        document.getElementById('bookPublisher').textContent    = book.publisher    || '-';
-        document.getElementById('bookPublishedAt').textContent  = book.publishedAt  ? book.publishedAt.substring(0, 10) : '-';
-        document.getElementById('bookIsbn').textContent         = book.isbn         || '-';
-        document.getElementById('bookStock').textContent        = `전체 ${book.totalStock ?? '-'}권 / 대출가능 ${book.availableStock ?? 0}권`;
+        document.getElementById('bookTitle').textContent       = book.title       || '제목 없음';
+        document.getElementById('bookAuthors').textContent     = Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || '저자 미상');
+        document.getElementById('bookPublisher').textContent   = book.publisher   || '-';
+        document.getElementById('bookPublishedAt').textContent = book.publishedAt ? book.publishedAt.substring(0, 10) : '-';
+        document.getElementById('bookIsbn').textContent        = book.isbn        || '-';
 
-        // 재고 뱃지
-        const isAvailable = (book.availableStock ?? 0) > 0;
-        const stockBadge  = document.getElementById('stockBadge');
+        // 대출 가능 현황 배너
+        const availableStock = book.availableStock ?? 0;
+        const isAvailable    = availableStock > 0;
+        const availBar  = document.getElementById('availabilityBar');
+        const availIcon = document.getElementById('availabilityIcon');
+        const availText = document.getElementById('availabilityText');
+
         if (isAvailable) {
-            stockBadge.textContent = `대출가능 (${book.availableStock}권)`;
-            stockBadge.className = 'flex-shrink-0 px-3 py-1 text-xs font-black rounded-full bg-boogie-light text-boogie-dark border border-boogie-main border-opacity-20';
+            availBar.className  = 'avail-bar avail-bar-ok';
+            availIcon.className = 'fas fa-circle-check text-xl flex-shrink-0';
+            availText.innerHTML = `현재 대출 가능 <strong>${availableStock}</strong>권`;
         } else {
-            stockBadge.textContent = '예약만 가능';
-            stockBadge.className = 'flex-shrink-0 px-3 py-1 text-xs font-black rounded-full bg-amber-50 text-amber-600 border border-amber-200';
+            availBar.className  = 'avail-bar avail-bar-none';
+            availIcon.className = 'fas fa-circle-xmark text-xl flex-shrink-0';
+            availText.innerHTML = '현재 대출 가능한 재고가 없습니다.';
         }
 
-        // 도서 소개
+        // 도서 소개 카드
         const contents = book.contents || '';
         if (contents.trim()) {
             document.getElementById('bookContents').textContent = contents;
-            document.getElementById('descriptionSection').classList.remove('hidden');
+            document.getElementById('descriptionCard').classList.remove('hidden');
         }
 
-        // 액션 버튼
+        // 액션 버튼 (반납하기 > 대출하기 > 예약하기 우선순위)
         const btn = document.getElementById('mainActionBtn');
         btn.classList.remove('hidden');
-        if (isAvailable) {
-            btn.textContent  = '대출하기';
-            btn.className    = 'px-8 py-3.5 rounded-2xl font-black text-base transition-all hover-lift shadow-sm bg-boogie-main text-white hover:bg-boogie-dark';
-            btn.onclick      = () => handleBorrow(book);
+        if (myBorrowId) {
+            btn.innerHTML = '<i class="fas fa-rotate-left"></i> 반납하기';
+            btn.className = 'action-btn action-btn-return';
+            btn.onclick   = () => handleReturn(book);
+        } else if (isAvailable) {
+            btn.innerHTML = '<i class="fas fa-book-open"></i> 대출하기';
+            btn.className = 'action-btn action-btn-primary';
+            btn.onclick   = () => handleBorrow(book);
         } else {
-            btn.textContent  = '예약하기';
-            btn.className    = 'px-8 py-3.5 rounded-2xl font-black text-base transition-all hover-lift shadow-sm bg-amber-400 text-white hover:bg-amber-500';
-            btn.onclick      = () => handleReserve(book);
+            btn.innerHTML = '<i class="fas fa-clock"></i> 예약하기';
+            btn.className = 'action-btn action-btn-reserve';
+            btn.onclick   = () => handleReserve(book);
         }
 
         // 소장 정보 테이블
@@ -260,6 +366,26 @@
         // 표시
         document.getElementById('skeleton').classList.add('hidden');
         document.getElementById('detailCard').classList.remove('hidden');
+
+        // 도서 소개 더보기 처리 (렌더링 된 이후에 계산)
+        if (contents.trim()) {
+            setTimeout(() => {
+                const contentsEl = document.getElementById('bookContents');
+                if (contentsEl.scrollHeight > contentsEl.clientHeight) {
+                    const expandBtn = document.getElementById('expandContentsBtn');
+                    const overlay   = document.getElementById('contentOverlay');
+                    expandBtn.classList.remove('hidden');
+                    expandBtn.classList.add('flex');
+                    expandBtn.onclick = () => {
+                        contentsEl.classList.remove('line-clamp-3');
+                        overlay.classList.add('hidden');
+                        expandBtn.classList.add('hidden');
+                    };
+                } else {
+                    document.getElementById('contentOverlay').classList.add('hidden');
+                }
+            }, 50);
+        }
     }
 
     /* ── 소장 정보 테이블 ────────────────────────────────────────── */
@@ -284,15 +410,14 @@
 
     function holdStatusBadge(status) {
         const map = {
-            'AVAILABLE': ['bg-boogie-light text-boogie-dark', '대출가능'],
-            'BORROWED':  ['bg-amber-50 text-amber-600',       '대출중'],
-            'OVERDUE':   ['bg-red-50 text-red-500',           '연체중'],
-            'RESERVED':  ['bg-blue-50 text-blue-500',         '예약중'],
-            'LOST':      ['bg-gray-100 text-gray-400',        '분실'],
-            'DISCARD':   ['bg-gray-100 text-gray-400',        '폐기'],
+            'AVAILABLE':    ['badge badge-green', '대출가능'],
+            'BORROWED':     ['badge badge-amber', '대출중'],
+            'RESERVE_HOLD': ['badge badge-blue',  '예약대기'],
+            'LOST':         ['badge badge-gray',  '분실'],
+            'DISCARDED':    ['badge badge-gray',  '폐기'],
         };
-        const [cls, label] = map[status] || ['bg-gray-100 text-gray-500', status || '-'];
-        return `<span class="px-2.5 py-1 text-[10px] font-black rounded-full ${cls}">${escapeHtml(label)}</span>`;
+        const [cls, label] = map[status] || ['badge badge-gray', status || '-'];
+        return `<span class="${cls}">${escapeHtml(label)}</span>`;
     }
 
     /* ── 예약 대기 현황 테이블 ───────────────────────────────────── */
@@ -354,6 +479,41 @@
             } else {
                 const err = await res?.json().catch(() => ({}));
                 Swal.fire({ title: '대출 실패', text: err.message || '대출 처리 중 오류가 발생했습니다.', icon: 'error', confirmButtonColor: '#00A760' });
+            }
+        } catch (e) {
+            Swal.fire({ title: '오류', text: '네트워크 오류가 발생했습니다.', icon: 'error', confirmButtonColor: '#00A760' });
+        }
+    }
+
+    /* ── 반납 처리 ───────────────────────────────────────────────── */
+    async function handleReturn(book) {
+        const title   = book.title || '이 도서';
+        const confirm = await Swal.fire({
+            title: '도서 반납',
+            html: `<span class="font-bold text-gray-700">${escapeHtml(title)}</span><br>을 반납하시겠습니까?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#6b7280',
+            cancelButtonColor:  '#9CA3AF',
+            confirmButtonText:  '반납하기',
+            cancelButtonText:   '취소'
+        });
+        if (!confirm.isConfirmed) return;
+
+        try {
+            const res = await window.api.fetch(`/api/v1/borrows/${myBorrowId}/return`, {
+                method: 'POST'
+            });
+            if (res && res.ok) {
+                await Swal.fire({
+                    title: '반납 완료!',
+                    html: '도서 반납이 완료되었습니다.',
+                    icon: 'success', confirmButtonColor: '#00A760', confirmButtonText: '확인'
+                });
+                loadDetail();
+            } else {
+                const err = await res?.json().catch(() => ({}));
+                Swal.fire({ title: '반납 실패', text: err.message || '반납 처리 중 오류가 발생했습니다.', icon: 'error', confirmButtonColor: '#00A760' });
             }
         } catch (e) {
             Swal.fire({ title: '오류', text: '네트워크 오류가 발생했습니다.', icon: 'error', confirmButtonColor: '#00A760' });

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -114,6 +115,12 @@ public class BookBorrowService {
         } else {
             bookHold.updateStatus(BookHoldStatus.AVAILABLE);
         }
+    }
+
+    public Optional<Long> findMyActiveBorrowId(Long bookId, Long userId) {
+        return bookBorrowRepository
+                .findMyActiveBorrow(userId, bookId, List.of("BORROWED", "OVERDUE"))
+                .map(BookBorrow::getBookBorrowId);
     }
 
     public Page<AdminBorrowSummaryResponse> findAllForAdmin(BorrowStatus status, Pageable pageable) {

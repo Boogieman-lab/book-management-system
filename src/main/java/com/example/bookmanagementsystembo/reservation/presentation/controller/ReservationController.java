@@ -4,10 +4,13 @@ import com.example.bookmanagementsystembo.common.SecurityUtils;
 import com.example.bookmanagementsystembo.reservation.domain.service.ReservationService;
 import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationCreateRequest;
 import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationResponse;
+import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationWaitingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,6 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationController {
 
     private final ReservationService reservationService;
+
+    /** 특정 도서의 대기 예약 목록 조회 */
+    @GetMapping
+    public ResponseEntity<List<ReservationWaitingResponse>> getWaitingReservations(@RequestParam Long bookId) {
+        return ResponseEntity.ok(reservationService.getWaitingReservations(bookId));
+    }
 
     /** 예약 등록 */
     @PostMapping

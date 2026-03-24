@@ -13,8 +13,6 @@ spring:
     cache: false
   thymeleaf:
     cache: false
-
-
   jpa:
     hibernate:
       ddl-auto: validate
@@ -31,6 +29,10 @@ spring:
     baseline-on-migrate: true
     baseline-version: 0
 
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
 
 jwt:
   secret: DUGJPydQDibKa/c4X/q/60S8xNQw1SD08GVLZJAJyC3X1Sd3IRNlW+vb5EWIkTQWgHykiKpW0T3upDUNLCROow==

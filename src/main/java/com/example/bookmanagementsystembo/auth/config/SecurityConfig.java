@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // ── 정적 리소스 (Thymeleaf 레이아웃용) ──────────────────────────
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/", "/about", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
 
                         // ── Swagger / OpenAPI ──────────────────────────────────────────
                         .requestMatchers(

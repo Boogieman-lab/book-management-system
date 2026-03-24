@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>부기맨 소개</title>
+    <style>
+        /* 거북이 기어가는 모션 (좌우 이동) */
+        .turtle-track {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            overflow: hidden;
+            pointer-events: none; /* 클릭 방해 금지 */
+            z-index: 10;
+        }
+
+        .crawling-turtle {
+            position: absolute;
+            bottom: 20px;
+            right: -150px;
+            animation: move-left 20s linear infinite;
+        }
+
+        /* 엉금엉금 걷는 디테일 (위아래 바운스 및 각도 회전) */
+        .wobble-turtle {
+            animation: wobble 1.5s ease-in-out infinite;
+            transform-origin: center bottom;
+        }
+
+        @keyframes move-left {
+            0% { right: -150px; }
+            100% { right: 100%; }
+        }
+
+        @keyframes wobble {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(4deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(-8px) rotate(-4deg); }
+        }
+
+        /* 배경 그라데이션 장식 */
+        .bg-wave {
+            background: linear-gradient(to bottom, #f4f7f5 0%, #E1F7EF 100%);
+        }
+    </style>
+</head>
+<body>
+    <th:block layout:fragment="content">
+        
+        <!-- Hero Section -->
+        <section class="relative bg-wave rounded-[40px] px-8 py-20 md:py-32 mb-16 overflow-hidden border border-boogie-light shadow-sm">
+            <div class="relative z-20 max-w-3xl mx-auto text-center">
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-white text-boogie-main font-bold text-sm shadow-sm border border-green-100 mb-6 hover-lift">
+                    🌿 Eco-Friendly Library System
+                </div>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-pretendard font-black text-gray-900 mb-6 tracking-tight leading-tight">
+                    지식의 숲을 가꾸는<br>성실한 거북이, <span class="text-boogie-main">부기맨</span>
+                </h1>
+                <p class="text-lg md:text-xl text-gray-600 font-medium leading-relaxed mb-10 text-balance">
+                    부기맨(Boogieman)은 사내 구성원 누구나 쉽고 빠르게<br class="hidden md:block">희망 도서를 신청하고 대출 현황을 관리할 수 있는 도서 관리 시스템입니다.
+                </p>
+                
+                <div class="flex justify-center gap-4">
+                    <a href="/books" class="px-8 py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-colors shadow-lg hover-lift">
+                        도서 검색하기
+                    </a>
+                    <a href="/user/auth/signup" class="px-8 py-4 bg-white text-boogie-dark font-bold rounded-2xl border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm hover-lift">
+                        부기맨 가입하기
+                    </a>
+                </div>
+            </div>
+
+            <!-- 기어가는 거북이 애니메이션 래퍼 -->
+            <div class="turtle-track">
+                <div class="crawling-turtle">
+                    <div class="wobble-turtle">
+                        <!-- 부기맨 거북이 SVG -->
+                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                            <ellipse cx="50" cy="85" rx="30" ry="5" fill="#C8E6D8"/>
+                            <rect x="30" y="75" width="12" height="10" rx="5" fill="#00A760" opacity="0.3"/>
+                            <rect x="60" y="75" width="12" height="10" rx="5" fill="#00A760" opacity="0.3"/>
+                            <g class="turtle-head">
+                                <path d="M15 45C15 36.7157 21.7157 30 30 30H40V60H30C21.7157 60 15 53.2843 15 45Z" fill="#00A760"/>
+                                <circle cx="28" cy="42" r="3.5" fill="#FFD700"/>
+                                <circle cx="25" cy="50" r="3" fill="#FF7B9C" opacity="0.6"/>
+                            </g>
+                            <rect x="35" y="20" width="50" height="60" rx="8" fill="#00A760"/>
+                            <path d="M75 20V35L80 30L85 35V20H75Z" fill="#FFD700"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 장식용 데코레이션 잎사귀 등 구름 -->
+            <div class="absolute top-10 right-10 w-64 h-64 bg-white opacity-40 rounded-full blur-3xl z-0"></div>
+            <div class="absolute bottom-10 left-10 w-48 h-48 bg-[#a7e5c9] opacity-30 rounded-full blur-3xl z-0"></div>
+        </section>
+
+        <!-- Main Content Area -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20 max-w-5xl mx-auto">
+            
+            <!-- 기획 배경 -->
+            <section class="bg-white p-10 rounded-[32px] shadow-sm border border-gray-100 hover-lift transition-all">
+                <div class="w-14 h-14 bg-red-50 text-boogie-blush rounded-2xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-pretendard font-bold text-gray-900 mb-4">왜 부기맨이 필요한가요?</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    기존의 사내 복지 제도는 엑셀이나 수기로 관리되어 여러 불편함이 발생하고 있었습니다.
+                </p>
+                <ul class="space-y-3">
+                    <li class="flex items-start text-sm text-gray-500 font-medium">
+                        <span class="text-boogie-blush mr-2">✓</span> 이미 보유한 도서를 다시 신청하는 예산 낭비 중복 발생
+                    </li>
+                    <li class="flex items-start text-sm text-gray-500 font-medium">
+                        <span class="text-boogie-blush mr-2">✓</span> 현재 책이 어디 있는지, 누가 대출 중인지 추적 불가
+                    </li>
+                    <li class="flex items-start text-sm text-gray-500 font-medium">
+                        <span class="text-boogie-blush mr-2">✓</span> 도서 신청 및 반납 독촉 등 운영 관리의 극한 비효율성
+                    </li>
+                </ul>
+            </section>
+
+            <!-- 부기맨 이름의 의미 -->
+            <section class="bg-[#0D1B15] p-10 rounded-[32px] shadow-sm border border-gray-800 hover-lift transition-all text-white">
+                <div class="w-14 h-14 bg-[#1E3A2F] text-boogie-gold rounded-2xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-pretendard font-bold mb-4">책을 지키는 존재,<br>"Boogieman"</h3>
+                <p class="text-gray-400 leading-relaxed text-sm mb-4">
+                    원래 영어의 'Bogeyman'은 벽장 속에 숨어 아이들을 겁주는 상상의 괴물을 뜻합니다.
+                </p>
+                <p class="text-gray-300 leading-relaxed font-medium">
+                    하지만 본 프로젝트에서는 이를 <span class="text-boogie-gold font-bold">책(Book)</span>에서 착안하여 재밌게 비틀었습니다. 이제 부기맨은 무서운 괴물이 아닌, 책을 안전하게 보호하는 두꺼운 등껍질을 가진 <strong>사내 도서관 관리자</strong>입니다! 🐢📖
+                </p>
+            </section>
+            
+        </div>
+
+        <!-- 핵심 기능 영역 -->
+        <section class="bg-white rounded-[40px] p-12 shadow-sm border border-gray-100 max-w-5xl mx-auto mb-16 relative overflow-hidden">
+            <h2 class="text-3xl font-pretendard font-black text-center text-gray-900 mb-12">부기맨 핵심 기능 소개</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center relative z-10">
+                <div class="p-6">
+                    <div class="w-16 h-16 mx-auto bg-boogie-light rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-boogie-main" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">희망 도서 탐색 및 신청</h4>
+                    <p class="text-sm text-gray-500">카카오 API가 연동된 강력한 검색 엔진으로 원하는 책을 찾고 1초만에 구매 요청을 보냅니다.</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 mx-auto bg-boogie-light rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-boogie-main" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">실시간 대출 및 반납</h4>
+                    <p class="text-sm text-gray-500">도서 실물 재고를 실시간으로 추적하고, 동시성 락 방어를 통해 안전한 대출/반납을 지원합니다.</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 mx-auto bg-boogie-light rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-boogie-main" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">예약 대기열 및 알림</h4>
+                    <p class="text-sm text-gray-500">모두 대출된 도서도 걱정 마세요. 대기 신청을 해두면 반납되는 즉시 인앱 알림을 드립니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 팀원 정보 바텀 -->
+        <div class="text-center pb-8 border-t border-gray-200 py-10 max-w-5xl mx-auto">
+            <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Developers</h4>
+            <div class="flex justify-center items-center gap-8">
+                <a href="https://github.com/kim-soohyeon" target="_blank" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden group-hover:ring-2 ring-boogie-main transition-all">
+                        <img src="https://github.com/kim-soohyeon.png" alt="김수현" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-bold text-gray-800 group-hover:text-boogie-main">김수현</p>
+                        <p class="text-xs text-gray-500">Backend / Frontend</p>
+                    </div>
+                </a>
+                <a href="https://github.com/seungwontech" target="_blank" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden group-hover:ring-2 ring-boogie-main transition-all">
+                        <img src="https://github.com/seungwontech.png" alt="이승원" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-bold text-gray-800 group-hover:text-boogie-main">이승원</p>
+                        <p class="text-xs text-gray-500">Backend / Infra</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+    </th:block>
+</body>
+</html>

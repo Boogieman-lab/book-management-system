@@ -46,7 +46,7 @@ public class KakaoRestController {
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         return ResponseEntity.status(HttpStatus.FOUND) // 302 상태 코드
-                .location(URI.create("/user/book/bookList"))
+                .location(URI.create("/about"))
                 .build();
     }
 }

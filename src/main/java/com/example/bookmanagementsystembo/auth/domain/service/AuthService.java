@@ -22,6 +22,11 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
+    /**
+     * 회원가입을 처리합니다.
+     * 이미 존재하는 이메일이면 예외를 발생시킵니다.
+     * 비밀번호는 BCrypt로 인코딩되어 저장됩니다.
+     */
     @Transactional
     public void signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -40,6 +45,14 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    /**
+     * 이메일/비밀번호로 로그인합니다.
+     * <ul>
+     *   <li>계정이 잠긴 경우 예외를 발생시킵니다.</li>
+     *   <li>비밀번호가 틀리면 실패 횟수를 증가시키며, 5회 실패 시 계정이 잠깁니다.</li>
+     *   <li>로그인 성공 시 실패 횟수를 초기화하고 AccessToken/RefreshToken을 발급합니다.</li>
+     * </ul>
+     */
     @Transactional
     public LoginResponse login(LoginRequest request) {
         Users user = userRepository.findByEmail(request.email())

@@ -30,6 +30,10 @@ public class TokenService {
 
     private final UserRepository userRepository;
 
+    /**
+     * 사용자에게 AccessToken과 RefreshToken을 발급합니다.
+     * RefreshToken은 Redis에 저장되며, 만료 시간은 {@code jwt.refresh-sec} 설정을 따릅니다.
+     */
     @Transactional
     public TokenResponse issue(Users user) {
         String userEmail = user.getEmail();
@@ -44,6 +48,11 @@ public class TokenService {
         return TokenResponse.of(accessToken, refreshToken);
     }
 
+    /**
+     * RefreshToken을 검증하고 새 AccessToken/RefreshToken을 재발급합니다 (RTR 방식).
+     * 토큰이 유효하지 않거나, Redis에 저장된 토큰과 불일치하면 예외를 발생시킵니다.
+     * 불일치 시 탈취로 간주하여 저장된 토큰을 삭제합니다.
+     */
     @Transactional
     public TokenResponse reissue(String clientRefreshToken) {
         if (!jwtTokenProvider.isValid(clientRefreshToken)) {
@@ -68,6 +77,11 @@ public class TokenService {
         return TokenResponse.of(newAccessToken, newRefreshToken);
     }
 
+    /**
+     * 로그아웃 처리합니다.
+     * Redis에서 RefreshToken을 삭제하고, AccessToken의 남은 유효 시간 동안 블랙리스트에 등록합니다.
+     * 토큰이 이미 만료됐거나 JTI가 없으면 블랙리스트 등록을 생략합니다.
+     */
     public void logout(String userEmail, String accessToken) {
         tokenRepository.deleteById(userEmail);
 

@@ -39,6 +39,7 @@ public class UserService {
     private final BookRequestRepository bookRequestRepository;
     private final JPAQueryFactory queryFactory;
 
+    /** 사용자 ID로 기본 사용자 정보(이름, 이메일, 부서명)를 조회합니다. */
     public UserResponse read(Long userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
@@ -48,6 +49,7 @@ public class UserService {
         return UserResponse.of(user.getName(), user.getEmail(), department.departmentName());
     }
 
+    /** 내 프로필 상세 정보(이름, 이메일, 부서, 프로필 이미지, 역할)를 조회합니다. */
     public UserProfileResponse getMyProfile(Long userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
@@ -57,6 +59,7 @@ public class UserService {
         return UserProfileResponse.of(user, departmentName);
     }
 
+    /** 내 프로필(이름, 프로필 이미지)을 수정합니다. */
     @Transactional
     public UserProfileResponse updateMyProfile(Long userId, UserUpdateRequest request) {
         Users user = userRepository.findById(userId)
@@ -69,6 +72,7 @@ public class UserService {
         return UserProfileResponse.of(user, departmentName);
     }
 
+    /** 내 대출 이력을 페이지네이션으로 조회합니다. status가 null이면 전체 조회. */
     public UserBorrowPageResponse getMyBorrows(Long userId, int page, int size, BorrowStatus status) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<UserBorrowResponse> result = bookBorrowRepository.findByUserId(userId, status, pageable);
@@ -82,11 +86,13 @@ public class UserService {
         );
     }
 
+    /** 내 희망 도서 신청 이력을 페이지네이션으로 조회합니다. */
     public Page<BookRequest> getMyRequests(Long userId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return bookRequestRepository.findAllByCondition(userId, null, pageable);
     }
 
+    /** 내 WAITING 상태 예약 목록을 QueryDSL로 도서명과 함께 조회합니다. */
     public List<UserReservationResponse> getMyReservations(Long userId) {
         QReservation reservation = QReservation.reservation;
         QBookHold bookHold = QBookHold.bookHold;

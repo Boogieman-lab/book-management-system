@@ -170,6 +170,10 @@
                             <dt class="meta-label">ISBN</dt>
                             <dd id="bookIsbn" class="meta-value font-mono text-xs">-</dd>
                         </div>
+                        <div id="categoryRow" class="meta-row hidden sm:col-span-2">
+                            <dt class="meta-label">분야</dt>
+                            <dd id="bookCategory" class="meta-value text-xs text-gray-500">-</dd>
+                        </div>
                     </dl>
 
                     <!-- 대출하기 / 예약하기 버튼 -->
@@ -192,6 +196,14 @@
             <button id="expandContentsBtn" class="mt-2 text-boogie-main font-bold text-sm hidden items-center justify-center w-full gap-1 p-2 hover:bg-boogie-light rounded-xl transition-colors">
                 <span>더보기</span> <i class="fas fa-chevron-down text-xs"></i>
             </button>
+        </div>
+
+        <!-- ── 목차 카드 ──────────────────────────────────────────── -->
+        <div id="tocCard" class="hidden detail-card mt-4">
+            <h2 class="section-title">
+                <i class="fas fa-list-ul text-boogie-main text-sm"></i> 목차
+            </h2>
+            <p id="bookToc" class="text-sm text-gray-600 leading-loose whitespace-pre-line"></p>
         </div>
 
         <!-- ── 소장 정보 카드 ────────────────────────────────────── -->
@@ -300,21 +312,21 @@
 
     /* ── 렌더링 ──────────────────────────────────────────────────── */
     function renderDetail(book, holds, reservations) {
-        // 썸네일
+        // 표지 이미지 (coverUrl)
         const thumbWrap = document.getElementById('thumbnailWrap');
-        if (book.thumbnail && book.thumbnail.trim()) {
-            thumbWrap.innerHTML = `<img src="${escapeHtml(book.thumbnail)}" alt="${escapeHtml(book.title)}"
+        if (book.coverUrl && book.coverUrl.trim()) {
+            thumbWrap.innerHTML = `<img src="${escapeHtml(book.coverUrl)}" alt="${escapeHtml(book.title)}"
                 class="w-full h-full object-cover"
                 onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-200\\'><i class=\\'fas fa-book text-5xl\\'></i></div>'"
             >`;
         }
 
         // 기본 정보
-        document.getElementById('bookTitle').textContent       = book.title       || '제목 없음';
-        document.getElementById('bookAuthors').textContent     = Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || '저자 미상');
-        document.getElementById('bookPublisher').textContent   = book.publisher   || '-';
-        document.getElementById('bookPublishedAt').textContent = book.publishedAt ? book.publishedAt.substring(0, 10) : '-';
-        document.getElementById('bookIsbn').textContent        = book.isbn        || '-';
+        document.getElementById('bookTitle').textContent       = book.title     || '제목 없음';
+        document.getElementById('bookAuthors').textContent     = book.author    || '저자 미상';
+        document.getElementById('bookPublisher').textContent   = book.publisher || '-';
+        document.getElementById('bookPublishedAt').textContent = book.pubDate   ? book.pubDate.substring(0, 10) : '-';
+        document.getElementById('bookIsbn').textContent        = book.isbn13    || '-';
 
         // 대출 가능 현황 배너
         const availableStock = book.availableStock ?? 0;
@@ -333,10 +345,16 @@
             availText.innerHTML = '현재 대출 가능한 재고가 없습니다.';
         }
 
-        // 도서 소개 카드
-        const contents = book.contents || '';
-        if (contents.trim()) {
-            document.getElementById('bookContents').textContent = contents;
+        // 분야 (categoryName)
+        if (book.categoryName) {
+            document.getElementById('bookCategory').textContent = book.categoryName;
+            document.getElementById('categoryRow').classList.remove('hidden');
+        }
+
+        // 도서 소개 카드 (description)
+        const descText = (book.description || '').trim();
+        if (descText) {
+            document.getElementById('bookContents').textContent = descText;
             document.getElementById('descriptionCard').classList.remove('hidden');
         }
 
@@ -368,7 +386,7 @@
         document.getElementById('detailCard').classList.remove('hidden');
 
         // 도서 소개 더보기 처리 (렌더링 된 이후에 계산)
-        if (contents.trim()) {
+        if (descText) {
             setTimeout(() => {
                 const contentsEl = document.getElementById('bookContents');
                 if (contentsEl.scrollHeight > contentsEl.clientHeight) {

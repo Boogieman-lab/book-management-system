@@ -142,7 +142,7 @@
 
     /* ── 카드 HTML 생성 ───────────────────────────────────────────────── */
     function createBookCard(book) {
-        const authors     = Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || '저자 미상');
+        // const authors     = Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || '저자 미상');
         const isAvailable = (book.availableStock ?? 0) > 0;
         const stock       = book.availableStock ?? 0;
 
@@ -151,11 +151,11 @@
                    대출가능 <span class="opacity-70">(${stock})</span>
                </span>`
             : `<span class="absolute top-3 right-3 px-2.5 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full border border-amber-200 shadow-sm">
-                   예약만 가능
+                   예약가능
                </span>`;
 
-        const thumb = (book.thumbnail && book.thumbnail.trim())
-            ? `<img src="${book.thumbnail}" alt="${escapeHtml(book.title)}"
+        const thumb = (book.coverUrl && book.coverUrl.trim())
+            ? `<img src="${book.coverUrl}" alt="${escapeHtml(book.title)}"
                     class="w-full h-full object-cover"
                     onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-300\\'><i class=\\'fas fa-book text-4xl\\'></i></div>'">`
             : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-book text-4xl"></i></div>`;
@@ -173,8 +173,9 @@
                     <h3 class="text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-1 group-hover:text-boogie-main transition-colors">
                         ${escapeHtml(book.title || '제목 없음')}
                     </h3>
-                    <p class="text-xs text-gray-500 line-clamp-1">${escapeHtml(authors)}</p>
+                    <p class="text-xs text-gray-500 line-clamp-1">${escapeHtml(book.author)}</p>
                     <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">${escapeHtml(book.publisher || '')}</p>
+                    ${book.categoryName ? `<p class="text-[10px] text-boogie-dark bg-boogie-light px-2 py-0.5 rounded-full mt-1.5 line-clamp-1 inline-block max-w-full">${escapeHtml(book.categoryName.split('>').pop().trim())}</p>` : ''}
                 </div>
             </div>`;
     }

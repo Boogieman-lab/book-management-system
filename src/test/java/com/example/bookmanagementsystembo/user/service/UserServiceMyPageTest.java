@@ -161,6 +161,9 @@ class UserServiceMyPageTest {
         verify(bookRequestRepository).findAllByCondition(eq(userId), any(), any());
     }
 
+    // getMyReservations는 JPAQueryFactory 체이닝 구조를 직접 사용하므로
+    // 단위 테스트에서 의미 있는 검증이 어렵습니다. 통합 테스트에서 검증합니다.
+
     @Test
     @DisplayName("프로필 조회 - departmentId가 null인 경우")
     void getMyProfile_nullDepartment() {

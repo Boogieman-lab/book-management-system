@@ -1,2 +1,0 @@
-ALTER TABLE users
-    ADD COLUMN is_locked BOOLEAN NOT NULL DEFAULT FALSE COMMENT '계정 잠금 여부';

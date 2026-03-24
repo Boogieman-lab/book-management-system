@@ -1,9 +1,6 @@
 package com.example.bookmanagementsystembo.book.dto;
 
 import com.example.bookmanagementsystembo.book.entity.Book;
-import com.example.bookmanagementsystembo.book.utils.JsonUtils;
-
-import java.util.List;
 
 /**
  * 도서 목록 조회 응답 (요약 정보 + 재고 수량).
@@ -12,10 +9,12 @@ import java.util.List;
 public record BookSummaryResponse(
         Long bookId,
         String title,
-        List<String> authors,
+        String author,
         String publisher,
-        String thumbnail,
-        String isbn,
+        String coverUrl,
+        String isbn13,
+        String categoryName,
+        int priceStandard,
         int availableStock,
         int totalStock
 ) {
@@ -23,10 +22,12 @@ public record BookSummaryResponse(
         return new BookSummaryResponse(
                 book.getBookId(),
                 book.getTitle(),
-                JsonUtils.toList(book.getAuthors()),
+                book.getAuthor(),
                 book.getPublisher(),
-                book.getThumbnail(),
-                book.getIsbn(),
+                book.getCoverUrl(),
+                book.getIsbn13(),
+                book.getCategoryName(),
+                book.getPriceStandard(),
                 availableStock,
                 totalStock
         );

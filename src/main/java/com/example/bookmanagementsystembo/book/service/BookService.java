@@ -2,6 +2,8 @@ package com.example.bookmanagementsystembo.book.service;
 
 import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
 import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
+import com.example.bookmanagementsystembo.book.dto.BookHoldCountDto;
+import com.example.bookmanagementsystembo.book.dto.BookIsbnCheckResponse;
 import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
 import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.book.dto.BookUpdateRequest;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -41,18 +44,31 @@ public class BookService {
      * 각 도서의 전체 재고 수량과 대출 가능 수량을 함께 반환합니다.
      */
     public Page<BookSummaryResponse> searchBooksV1(BookSearchCond cond, Pageable pageable) {
-        return bookQueryRepository.searchBooks(cond, pageable)
-                .map(book -> {
-                    int total     = bookHoldRepository.countByBookId(book.getBookId());
-                    int available = bookHoldRepository.countByBookIdAndStatus(
-                            book.getBookId(), BookHoldStatus.AVAILABLE);
-                    return BookSummaryResponse.of(book, available, total);
-                });
+        Page<Book> books = bookQueryRepository.searchBooks(cond, pageable);
+
+        List<Long> bookIds = books.stream().map(Book::getBookId).toList();
+        Map<Long, BookHoldCountDto> holdCounts = bookQueryRepository.countHoldsByBookIds(bookIds);
+
+        return books.map(book -> {
+            BookHoldCountDto counts = holdCounts.getOrDefault(book.getBookId(), BookHoldCountDto.EMPTY);
+            return BookSummaryResponse.of(book, (int) counts.available(), (int) counts.total());
+        });
     }
 
     /**
-     * 도서 상세 조회 — 전체 메타 정보 + 실재고 수량 반환.
+     * ISBN13으로 보유 여부 및 총 실물 수량을 조회합니다.
+     * 희망 도서 신청 시 기보유 여부 사전 안내에 사용됩니다.
      */
+    public BookIsbnCheckResponse checkIsbn(String isbn) {
+        return bookRepository.findByIsbn13(isbn)
+                .map(book -> {
+                    int total = bookHoldRepository.countByBookId(book.getBookId());
+                    return new BookIsbnCheckResponse(true, total);
+                })
+                .orElse(new BookIsbnCheckResponse(false, 0));
+    }
+
+    /** 도서 상세 조회 — 전체 메타 정보 + 가용/총 재고 수량을 반환합니다. */
     public BookDetailResponse getBookDetail(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, bookId));
@@ -65,16 +81,21 @@ public class BookService {
     // 기존 API (GET /api/books)
     // ──────────────────────────────────────────────────────────────
 
+    /** bookId로 도서 단건을 조회합니다 (레거시 API). */
     public BookResponse read(Long bookId) {
         Book book =  bookRepository.findById(bookId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_FOUND, bookId));
         return BookResponse.from(book);
     }
 
+    /**
+     * 도서를 등록하고 BookHold를 1개 추가합니다.
+     * ISBN13 중복 시 기존 도서에 BookHold만 추가합니다.
+     */
     @Transactional
     public BookResponse create(BookCreateRequest request) {
 
-        Book book = bookRepository.findByIsbn(request.isbn())
+        Book book = bookRepository.findByIsbn13(request.isbn13())
                 .orElseGet(() -> bookRepository.save(Book.create(request)));
 
         bookHoldRepository.save(BookHold.create(book.getBookId()));
@@ -82,6 +103,7 @@ public class BookService {
         return BookResponse.from(book);
     }
 
+    /** 도서 메타 정보(제목, 저자, 출판사, 설명 등)를 수정합니다. */
     @Transactional
     public BookResponse update(Long bookId, BookUpdateRequest request) {
         Book book = bookRepository.findById(bookId)
@@ -91,6 +113,7 @@ public class BookService {
         return BookResponse.from(book);
     }
 
+    /** 도서를 삭제하고 연관된 모든 BookHold를 함께 삭제합니다. */
     @Transactional
     public void delete(Long bookId) {
         Book book = bookRepository.findById(bookId)
@@ -100,6 +123,7 @@ public class BookService {
         bookHoldRepository.deleteByBookId(bookId);
     }
 
+    /** 검색 필드(TITLE/AUTHOR/ISBN/PUBLISHER)와 검색어로 도서 목록을 반환합니다 (레거시 API). */
     public List<BookResponse> searchBooks(BookSearchField field, String query) {
         return switch (field) {
             case AUTHOR -> getBooksByAuthor(query);
@@ -118,7 +142,7 @@ public class BookService {
 
 
     private List<BookResponse> getBooksByIsbn(String query) {
-        return bookRepository.findByIsbn(query)
+        return bookRepository.findByIsbn13(query)
                 .stream()
                 .map(BookResponse::from)
                 .toList();
@@ -132,7 +156,7 @@ public class BookService {
     }
 
     private List<BookResponse> getBooksByAuthor(String query) {
-        return bookRepository.findByAuthorsContaining(query)
+        return bookRepository.findByAuthorContaining(query)
                 .stream()
                 .map(BookResponse::from)
                 .toList();

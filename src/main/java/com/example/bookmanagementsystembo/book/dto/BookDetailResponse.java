@@ -1,10 +1,8 @@
 package com.example.bookmanagementsystembo.book.dto;
 
 import com.example.bookmanagementsystembo.book.entity.Book;
-import com.example.bookmanagementsystembo.book.utils.JsonUtils;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 /**
  * 도서 상세 조회 응답 (전체 필드 + 재고 수량).
@@ -12,34 +10,48 @@ import java.util.List;
  */
 public record BookDetailResponse(
         Long bookId,
+        String isbn13,
+        String isbn10,
         String title,
-        String contents,
-        String url,
-        String isbn,
-        LocalDateTime publishedAt,
-        List<String> authors,
-        List<String> translators,
+        String author,
         String publisher,
-        int price,
-        int salePrice,
-        String thumbnail,
+        LocalDate pubDate,
+        String description,
+        String coverUrl,
+        Integer categoryId,
+        String categoryName,
+        int priceStandard,
+        int priceSales,
+        String stockStatus,
+        int customerReviewRank,
+        Integer seriesId,
+        String seriesName,
+        String mallType,
+        String adultYn,
         int availableStock,
         int totalStock
 ) {
     public static BookDetailResponse of(Book book, int availableStock, int totalStock) {
         return new BookDetailResponse(
                 book.getBookId(),
+                book.getIsbn13(),
+                book.getIsbn10(),
                 book.getTitle(),
-                book.getContents(),
-                book.getUrl(),
-                book.getIsbn(),
-                book.getPublishedAt(),
-                JsonUtils.toList(book.getAuthors()),
-                JsonUtils.toList(book.getTranslators()),
+                book.getAuthor(),
                 book.getPublisher(),
-                book.getPrice(),
-                book.getSalePrice(),
-                book.getThumbnail(),
+                book.getPubDate(),
+                book.getDescription(),
+                book.getCoverUrl(),
+                book.getCategoryId(),
+                book.getCategoryName(),
+                book.getPriceStandard(),
+                book.getPriceSales(),
+                book.getStockStatus(),
+                book.getCustomerReviewRank(),
+                book.getSeriesId(),
+                book.getSeriesName(),
+                book.getMallType(),
+                book.getAdultYn(),
                 availableStock,
                 totalStock
         );

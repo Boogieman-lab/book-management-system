@@ -38,6 +38,10 @@ public class BookBorrow extends BaseEntity {
     @Comment("도서 보유 ID")
     private Long bookHoldId;
 
+    @Column(name = "book_id", nullable = false)
+    @Comment("도서 ID")
+    private Long bookId;
+
     @Column(name = "user_id", nullable = false)
     @Comment("사용자 ID")
     private Long userId;
@@ -67,9 +71,9 @@ public class BookBorrow extends BaseEntity {
     @Comment("반납일시")
     private LocalDateTime returnDate;
 
-    public static BookBorrow create(Long bookHoldId, Long userId, String reason) {
+    public static BookBorrow create(Long bookHoldId, Long bookId, Long userId, String reason) {
         LocalDateTime now = LocalDateTime.now();
-        return new BookBorrow(null, bookHoldId, userId, reason, BorrowStatus.BORROWED,
+        return new BookBorrow(null, bookHoldId, bookId, userId, reason, BorrowStatus.BORROWED,
                 now, now.plusDays(14), null);
     }
 

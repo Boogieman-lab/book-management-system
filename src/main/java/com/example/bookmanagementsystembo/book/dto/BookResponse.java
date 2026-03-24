@@ -1,69 +1,45 @@
 package com.example.bookmanagementsystembo.book.dto;
 
 import com.example.bookmanagementsystembo.book.entity.Book;
-import com.example.bookmanagementsystembo.book.utils.JsonUtils;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public record BookResponse(
         Long bookId,
+        String isbn13,
+        String isbn10,
         String title,
-        String contents,
-        String url,
-        String isbn,
-        LocalDateTime publishedAt,
-        List<String> authors,
-        List<String> translators,
+        String author,
         String publisher,
-        int price,
-        int salePrice,
-        String thumbnail
+        LocalDate pubDate,
+        String description,
+        String coverUrl,
+        int priceStandard,
+        int priceSales,
+        String stockStatus
 ) {
 
     public static BookResponse from(Book entity) {
         return new BookResponse(
                 entity.getBookId(),
+                entity.getIsbn13(),
+                entity.getIsbn10(),
                 entity.getTitle(),
-                entity.getContents(),
-                entity.getUrl(),
-                entity.getIsbn(),
-                entity.getPublishedAt(),
-                JsonUtils.toList(entity.getAuthors()),
-                JsonUtils.toList(entity.getTranslators()),
+                entity.getAuthor(),
                 entity.getPublisher(),
-                entity.getPrice(),
-                entity.getSalePrice(),
-                entity.getThumbnail()
+                entity.getPubDate(),
+                entity.getDescription(),
+                entity.getCoverUrl(),
+                entity.getPriceStandard(),
+                entity.getPriceSales(),
+                entity.getStockStatus()
         );
     }
 
-    //
-//    public static BookResponse fromKakao(KakaoBookDocumentDto dto) {
-//        return new BookResponse(
-//                dto.title(),
-//                dto.authors(),
-//                dto.translators(),
-//                dto.contents(),
-//                dto.datetime(),
-//                dto.isbn(),
-//                dto.price(),
-//                dto.publisher(),
-//                dto.salePrice(),
-//                dto.status(),
-//                dto.thumbnail(),
-//                dto.url()
-//        );
-//    }
-    // 리스트 변환
-    public static List<BookResponse> from(List<Book> dtos) {
-        return dtos.stream()
+    public static List<BookResponse> from(List<Book> books) {
+        return books.stream()
                 .map(BookResponse::from)
                 .toList();
     }
-//
-//    public static List<BookResponse> fromKakao(List<KakaoBookDocumentDto> dtos) {
-//        return dtos.stream().map(BookResponse::fromKakao).toList();
-//    }
-
 }

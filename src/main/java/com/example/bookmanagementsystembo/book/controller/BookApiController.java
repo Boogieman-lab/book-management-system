@@ -1,6 +1,7 @@
 package com.example.bookmanagementsystembo.book.controller;
 
 import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
+import com.example.bookmanagementsystembo.book.dto.BookIsbnCheckResponse;
 import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
 import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.book.enums.BookSearchField;
@@ -50,6 +51,16 @@ public class BookApiController {
      *
      * @param bookId 도서 ID
      */
+    /**
+     * ISBN 보유 여부 확인.
+     * book 테이블 exact-match 조회 후 book_hold 테이블의 실물 수량을 반환합니다.
+     * 희망 도서 신청 전 중복 보유 안내에 사용됩니다.
+     */
+    @GetMapping("/isbn-check")
+    public ResponseEntity<BookIsbnCheckResponse> checkIsbn(@RequestParam String isbn) {
+        return ResponseEntity.ok(bookService.checkIsbn(isbn));
+    }
+
     @GetMapping("/{bookId}")
     public ResponseEntity<BookDetailResponse> getBookDetail(@PathVariable Long bookId) {
         return ResponseEntity.ok(bookService.getBookDetail(bookId));

@@ -74,27 +74,27 @@
 
 ## 📊 부기맨 프론트엔드 화면 목록 및 상태 관리보드 (Screen List Board)
 
-| 화면 ID | 분류(Depth 1) | 화면명(Depth 2) | 추정 URL (Route)              | 연동 API Endpoint (Method) | 진행 상태 | QA 상태 |
-| :--- | :--- | :--- |:----------------------------| :--- | :---: | :---: |
-| **UI-COM-001** | **공통** | 메인 레이아웃 및 헤더/푸터 | `(All)`                     | ❌ API 없음 (Spring Security `sec:authorize` 기반 서버사이드 메뉴 렌더링) | `Done` | `Pending` |
-| **UI-AUT-001** | **인증** | 로그인 메인 화면 | `/user/auth/login`          | `POST /api/v1/auth/login`<br>`GET /api/v1/auth/oauth/kakao` | `Done` | `Pending` |
-| **UI-AUT-002** | **인증** | 신규 회원가입 폼 | `/user/auth/signup`         | `POST /api/v1/auth/signup` | `Done` | `Pending` |
-| **UI-BKS-001** | **도서** | 도서 통합 검색 및 전체 목록 | `/books`                    | `GET /api/v1/books?q=&category=&page=&size=` | `Not Started` | `-` |
-| **UI-BKS-002** | **도서** | 도서 상세 조회 및 대출/예약 창 | `/books/{bookId}`q          | `GET /api/v1/books/{bookId}`<br>`POST /api/v1/borrows`<br>`POST /api/v1/reservations` | `Not Started` | `-` |
-| **UI-REQ-001** | **신청** | 희망 도서 외부 검색 모달 | `팝업(Modal)`                 | `GET /api/v1/books/search?source=external&q=` | `Not Started` | `-` |
-| **UI-REQ-002** | **신청** | 외부 도서 반입(희망) 신청 폼 | `/book-requests`            | `POST /api/v1/book-requests` | `Not Started` | `-` |
-| **UI-MYP-001** | **마이페이지** | 개인 프로필 통합 홈 & 수정 | `/user/mypage`              | `GET /api/v1/users/me`<br>`PATCH /api/v1/users/me` | `Not Started` | `-` |
-| **UI-MYP-002** | **마이페이지** | 대출/반납 이력 탭 | `/user/mypage?tab=borrows`  | `GET /api/v1/users/me/borrows`<br>`PATCH /api/v1/borrows/{id}` + `{"status":"RETURNED"}`<br>`POST /api/v1/borrows/{id}/extensions` | `Not Started` | `-` |
-| **UI-MYP-003** | **마이페이지** | 현재 예약 및 대기열 탭 | `/user/mypage?tab=reserv`   | `GET /api/v1/users/me/reservations`<br>`DELETE /api/v1/reservations/{id}` | `Not Started` | `-` |
-| **UI-MYP-004** | **마이페이지** | 내가 쓴 희망 도서 신청 진행 탭 | `/user/mypage?tab=requests` | `GET /api/v1/users/me/book-requests` | `Not Started` | `-` |
-| **UI-MYP-005** | **마이페이지** | 인앱 수신 알림함 탭 | `/user/mypage?tab=noti`     | `GET /api/v1/notifications`<br>`PATCH /api/v1/notifications/{id}` + `{"isRead":true}` | `Not Started` | `-` |
-| **UI-INF-001** | **정보** | About 프로젝트 소개 (정적) | `/about`                    | ❌ API 없음 | `Done` | `-` |
-| **UI-INF-002** | **정보** | 이용안내 및 시스템 공지사항 | `/notices`                  | `GET /api/v1/notices?page=&size=`<br>`GET /api/v1/notices/{id}` | `Not Started` | `-` |
-| **UI-ADM-001** | **관리자** | 어드민 대시보드 (통계 메인) | `/admin/dashboard`          | `GET /api/v1/admin/stats/overview` | `Not Started` | `-` |
+| 화면 ID          | 분류(Depth 1) | 화면명(Depth 2)          | 추정 URL (Route)              | 연동 API Endpoint (Method) | 진행 상태 | QA 상태 |
+|:---------------| :--- |:----------------------|:----------------------------| :--- | :---: | :---: |
+| **UI-COM-001** | **공통** | 메인 레이아웃 및 헤더/푸터       | `(All)`                     | ❌ API 없음 (Spring Security `sec:authorize` 기반 서버사이드 메뉴 렌더링) | `Done` | `Pending` |
+| **UI-AUT-001** | **인증** | 로그인 메인 화면             | `/user/auth/login`          | `POST /api/v1/auth/login`<br>`GET /api/v1/auth/oauth/kakao` | `Done` | `Pending` |
+| **UI-AUT-002** | **인증** | 신규 회원가입 폼             | `/user/auth/signup`         | `POST /api/v1/auth/signup` | `Done` | `Pending` |
+| **UI-BKS-001** | **도서** | 도서 통합 검색 및 전체 목록      | `/books`                    | `GET /api/v1/books?q=&category=&page=&size=` | `Done` | `Pending` |
+| **UI-BKS-002** | **도서** | 도서 상세 조회 및 대출/예약 창    | `/books/{bookId}`q          | `GET /api/v1/books/{bookId}`<br>`POST /api/v1/borrows`<br>`POST /api/v1/reservations` | `Done` | `Pending` |
+| **UI-REQ-001** | **신청** | 희망 도서 외부 검색 모달        | `팝업(Modal)`                 | `GET /api/v1/books/search?source=external&q=` | `Done` | `Pending` |
+| **UI-REQ-002** | **신청** | 외부 도서 반입(희망) 신청 폼     | `/book-requests`            | `POST /api/v1/book-requests` | `Done` | `Pending` |
+| **UI-REQ-003** | **신청** | 희망 도서 신청 내역           | `/book-requests`            | `GET /api/v1/book-requests` | `Not Started` | `-` |
+| **UI-MYP-001** | **마이페이지** | 개인 프로필 통합 홈 & 수정      | `/user/mypage`              | `GET /api/v1/users/me`<br>`PATCH /api/v1/users/me` | `Not Started` | `-` |
+| **UI-MYP-002** | **마이페이지** | 대출/반납 이력 탭            | `/user/mypage?tab=borrows`  | `GET /api/v1/users/me/borrows`<br>`PATCH /api/v1/borrows/{id}` + `{"status":"RETURNED"}`<br>`POST /api/v1/borrows/{id}/extensions` | `Not Started` | `-` |
+| **UI-MYP-003** | **마이페이지** | 현재 예약 및 대기열 탭         | `/user/mypage?tab=reserv`   | `GET /api/v1/users/me/reservations`<br>`DELETE /api/v1/reservations/{id}` | `Not Started` | `-` |
+| **UI-MYP-005** | **마이페이지** | 인앱 수신 알림함 탭           | `/user/mypage?tab=noti`     | `GET /api/v1/notifications`<br>`PATCH /api/v1/notifications/{id}` + `{"isRead":true}` | `Not Started` | `-` |
+| **UI-INF-001** | **정보** | About 프로젝트 소개 (정적)    | `/about`                    | ❌ API 없음 | `Done` | `-` |
+| **UI-INF-002** | **정보** | 이용안내 및 시스템 공지사항       | `/notices`                  | `GET /api/v1/notices?page=&size=`<br>`GET /api/v1/notices/{id}` | `Not Started` | `-` |
+| **UI-ADM-001** | **관리자** | 어드민 대시보드 (통계 메인)      | `/admin/dashboard`          | `GET /api/v1/admin/stats/overview` | `Not Started` | `-` |
 | **UI-ADM-002** | **관리자** | 도서 센터 (신규 등록 및 실물 추가) | `/admin/books`              | `POST /api/v1/admin/books`<br>`POST /api/v1/admin/books/{bookId}/copies` | `Not Started` | `-` |
-| **UI-ADM-003** | **관리자** | 대출망 통제 (연체자 현황) | `/admin/borrows`            | `GET /api/v1/admin/borrows?status=&page=&size=` | `Not Started` | `-` |
-| **UI-ADM-004** | **관리자** | 부기맨 임직원 권한 롤 관리 | `/admin/users`              | `GET /api/v1/admin/users?page=&size=`<br>`PATCH /api/v1/admin/users/{id}` + `{"role":"ADMIN"}` 또는 `{"status":"LOCKED"}` | `Not Started` | `-` |
-| **UI-ADM-005** | **관리자** | 희망 도서 결재함 (승인/거절) | `/admin/requests`           | `GET /api/v1/admin/book-requests?status=&page=`<br>`PATCH /api/v1/admin/book-requests/{id}` + `{"status":"APPROVED"}` | `Not Started` | `-` |
+| **UI-ADM-003** | **관리자** | 대출망 통제 (연체자 현황)       | `/admin/borrows`            | `GET /api/v1/admin/borrows?status=&page=&size=` | `Not Started` | `-` |
+| **UI-ADM-004** | **관리자** | 부기맨 임직원 권한 롤 관리       | `/admin/users`              | `GET /api/v1/admin/users?page=&size=`<br>`PATCH /api/v1/admin/users/{id}` + `{"role":"ADMIN"}` 또는 `{"status":"LOCKED"}` | `Not Started` | `-` |
+| **UI-ADM-005** | **관리자** | 희망 도서 결재함 (승인/거절)     | `/admin/requests`           | `GET /api/v1/admin/book-requests?status=&page=`<br>`PATCH /api/v1/admin/book-requests/{id}` + `{"status":"APPROVED"}` | `Not Started` | `-` |
 
 ---
 

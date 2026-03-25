@@ -36,8 +36,12 @@ logging:
 
 jwt:
   secret: DUGJPydQDibKa/c4X/q/60S8xNQw1SD08GVLZJAJyC3X1Sd3IRNlW+vb5EWIkTQWgHykiKpW0T3upDUNLCROow==
-  access-sec: 180
-  refresh-sec: 300
+  access-sec: 1800
+  refresh-sec: 604800
+
+aladin:
+  api:
+    key: ttbrlatngus16912321001
 
 kakao:
   api:

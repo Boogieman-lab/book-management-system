@@ -10,10 +10,55 @@
 
 <th:block layout:fragment="head">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .modal-scroll::-webkit-scrollbar { width: 5px; }
         .modal-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+        /* ── 거절 사유 툴팁 ─────────────────────────────────── */
+        .reject-badge { position: relative; cursor: help; }
+        .reject-badge::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: #fff;
+            font-size: .7rem;
+            font-weight: 500;
+            padding: .375rem .625rem;
+            border-radius: .5rem;
+            white-space: normal;
+            width: max-content;
+            max-width: 200px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s ease;
+            z-index: 20;
+            line-height: 1.4;
+        }
+        .reject-badge::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 1px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1f2937;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s ease;
+            z-index: 20;
+        }
+        .reject-badge:hover::after,
+        .reject-badge:hover::before { opacity: 1; }
+
+        /* ── 상태 필터 버튼 ──────────────────────────────────── */
+        .filter-btn { transition: all .15s ease; }
+        .filter-btn.active { background: #00A760; color: #fff; border-color: #00A760; }
     </style>
 </th:block>
 
@@ -119,21 +164,46 @@
 
     <!-- ── 신청 내역 패널 ───────────────────────────────────────────────── -->
     <div id="panel-history" class="hidden">
+
+        <!-- 툴바: 필터 + 새로고침 -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <!-- 상태 필터 -->
+            <div class="flex flex-wrap gap-2">
+                <button class="filter-btn active px-4 py-1.5 text-xs font-bold border border-gray-200 rounded-full text-gray-500"
+                        data-filter="ALL">전체</button>
+                <button class="filter-btn px-4 py-1.5 text-xs font-bold border border-gray-200 rounded-full text-gray-500"
+                        data-filter="PENDING">검토중</button>
+                <button class="filter-btn px-4 py-1.5 text-xs font-bold border border-gray-200 rounded-full text-gray-500"
+                        data-filter="APPROVED">승인됨</button>
+                <button class="filter-btn px-4 py-1.5 text-xs font-bold border border-gray-200 rounded-full text-gray-500"
+                        data-filter="REJECTED">거절됨</button>
+            </div>
+            <!-- 새로고침 -->
+            <button id="historyRefreshBtn"
+                    class="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-gray-500 border border-gray-200 rounded-full hover:bg-gray-50 transition-colors">
+                <i class="fas fa-rotate-right"></i> 새로고침
+            </button>
+        </div>
+
         <!-- 스켈레톤 -->
         <div id="historySkeleton" class="space-y-3">
             <div class="h-14 bg-gray-100 rounded-xl animate-pulse"></div>
             <div class="h-14 bg-gray-100 rounded-xl animate-pulse"></div>
             <div class="h-14 bg-gray-100 rounded-xl animate-pulse"></div>
         </div>
+
         <!-- 테이블 래퍼 -->
-        <div id="historyTable" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div id="historyTable" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="bg-gray-50 border-b border-gray-100">
-                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">신청일</th>
-                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">도서명</th>
-                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">저자</th>
-                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">상태</th>
+                        <th class="px-4 py-3.5 text-left font-bold text-gray-600 whitespace-nowrap">신청번호</th>
+                        <th class="px-4 py-3.5 text-left font-bold text-gray-600 whitespace-nowrap">신청일</th>
+                        <th class="px-4 py-3.5 text-left font-bold text-gray-600">도서명</th>
+                        <th class="px-4 py-3.5 text-left font-bold text-gray-600">저자</th>
+                        <th class="px-4 py-3.5 text-left font-bold text-gray-600 whitespace-nowrap">ISBN</th>
+                        <th class="px-4 py-3.5 text-left font-bold text-gray-600">상태</th>
+                        <th class="px-4 py-3.5 text-left font-bold text-gray-600">관리</th>
                     </tr>
                 </thead>
                 <tbody id="historyBody"></tbody>
@@ -269,9 +339,35 @@
     tabRequest.addEventListener('click', () => setTab('request'));
     tabHistory.addEventListener('click',  () => setTab('history'));
 
-    // ── 신청 내역 로드 ────────────────────────────────────────────────────
-    let historyLoaded = false;
+    // ── 유틸 ──────────────────────────────────────────────────────────────
+    function escHtml(s) {
+        return (s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 
+    // ── 신청 내역 상태 ────────────────────────────────────────────────────
+    let historyLoaded  = false;
+    let allHistoryItems = [];
+    let activeFilter   = 'ALL';
+
+    // ── 필터 버튼 이벤트 ──────────────────────────────────────────────────
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.dataset.filter;
+            renderHistoryTable();
+        });
+    });
+
+    // ── 새로고침 버튼 ─────────────────────────────────────────────────────
+    document.getElementById('historyRefreshBtn').addEventListener('click', () => {
+        const icon = document.querySelector('#historyRefreshBtn i');
+        icon.classList.add('animate-spin');
+        historyLoaded = false;
+        loadHistory().finally(() => setTimeout(() => icon.classList.remove('animate-spin'), 400));
+    });
+
+    // ── 신청 내역 로드 ────────────────────────────────────────────────────
     async function loadHistory() {
         if (historyLoaded) return;
         historyLoaded = true;
@@ -281,35 +377,113 @@
         const body     = document.getElementById('historyBody');
         const empty    = document.getElementById('historyEmpty');
 
+        skeleton.classList.remove('hidden');
+        table.classList.add('hidden');
+        empty.classList.add('hidden');
+        body.innerHTML = '';
+
         try {
-            const res  = await fetch('/api/v1/users/me/requests');
+            const res = await window.api.fetch('/api/v1/book-requests?page=1&size=100');
             if (!res.ok) throw new Error(res.status);
-            const data  = await res.json();
-            const items = Array.isArray(data) ? data : (data.content ?? []);
+            const data = await res.json();
+            allHistoryItems = data.items ?? data.content ?? (Array.isArray(data) ? data : []);
 
             skeleton.classList.add('hidden');
             table.classList.remove('hidden');
-
-            if (!items.length) { empty.classList.remove('hidden'); return; }
-
-            const badge = {
-                PENDING:  '<span class="px-2.5 py-1 bg-amber-50  text-amber-600  text-xs font-bold rounded-full">검토중</span>',
-                APPROVED: '<span class="px-2.5 py-1 bg-green-50  text-boogie-main text-xs font-bold rounded-full">승인됨</span>',
-                REJECTED: '<span class="px-2.5 py-1 bg-red-50    text-red-500    text-xs font-bold rounded-full">거절됨</span>',
-            };
-
-            body.innerHTML = items.map(item => `
-                <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td class="px-5 py-4 text-gray-400 whitespace-nowrap">${(item.createdAt ?? '').slice(0, 10) || '-'}</td>
-                    <td class="px-5 py-4 font-medium text-gray-800">${item.title ?? '-'}</td>
-                    <td class="px-5 py-4 text-gray-500">${item.authors ?? '-'}</td>
-                    <td class="px-5 py-4">${badge[item.status] ?? item.status ?? '-'}</td>
-                </tr>
-            `).join('');
+            renderHistoryTable();
         } catch {
             skeleton.classList.add('hidden');
             table.classList.remove('hidden');
-            empty.classList.remove('hidden');
+            document.getElementById('historyEmpty').classList.remove('hidden');
+        }
+    }
+
+    // ── 테이블 렌더링 (필터 적용) ─────────────────────────────────────────
+    function renderHistoryTable() {
+        const body  = document.getElementById('historyBody');
+        const empty = document.getElementById('historyEmpty');
+
+        const items = activeFilter === 'ALL'
+            ? allHistoryItems
+            : allHistoryItems.filter(i => i.status === activeFilter);
+
+        empty.classList.toggle('hidden', items.length > 0);
+
+        body.innerHTML = items.map(item => {
+            const statusBadge = buildStatusBadge(item.status, item.rejectReason);
+            const cancelBtn   = item.status === 'PENDING'
+                ? `<button class="cancel-btn px-3 py-1.5 text-xs font-bold text-red-500 border border-red-200 rounded-full hover:bg-red-50 transition-colors"
+                           data-id="${item.bookRequestId}" data-title="${escHtml(item.title)}">
+                       <i class="fas fa-times mr-1"></i>취소
+                   </button>`
+                : '<span class="text-gray-300 text-xs">-</span>';
+
+            return `
+                <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td class="px-4 py-4 text-xs text-gray-400 font-mono whitespace-nowrap">#${item.bookRequestId ?? '-'}</td>
+                    <td class="px-4 py-4 text-xs text-gray-400 whitespace-nowrap">${(item.createdAt ?? '').slice(0, 10) || '-'}</td>
+                    <td class="px-4 py-4 font-medium text-gray-800 max-w-xs">
+                        <span class="line-clamp-2" title="${escHtml(item.title)}">${escHtml(item.title) || '-'}</span>
+                    </td>
+                    <td class="px-4 py-4 text-gray-500 text-xs whitespace-nowrap">${escHtml(item.authors) || '-'}</td>
+                    <td class="px-4 py-4 text-xs text-gray-400 font-mono whitespace-nowrap">${escHtml(item.isbn) || '-'}</td>
+                    <td class="px-4 py-4">${statusBadge}</td>
+                    <td class="px-4 py-4">${cancelBtn}</td>
+                </tr>`;
+        }).join('');
+
+        body.querySelectorAll('.cancel-btn').forEach(btn => {
+            btn.addEventListener('click', () => cancelRequest(Number(btn.dataset.id), btn.dataset.title));
+        });
+    }
+
+    function buildStatusBadge(status, rejectReason) {
+        if (status === 'PENDING') {
+            return '<span class="px-2.5 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-full border border-amber-100">검토중</span>';
+        }
+        if (status === 'APPROVED') {
+            return '<span class="px-2.5 py-1 bg-green-50 text-boogie-main text-xs font-bold rounded-full border border-green-100">승인됨</span>';
+        }
+        if (status === 'REJECTED') {
+            const tooltip = rejectReason ? escHtml(rejectReason) : '거절 사유 없음';
+            return `<span class="reject-badge px-2.5 py-1 bg-red-50 text-red-500 text-xs font-bold rounded-full border border-red-100"
+                         data-tooltip="${tooltip}">거절됨 <i class="fas fa-circle-info text-[10px]"></i></span>`;
+        }
+        return `<span class="text-gray-400 text-xs">${escHtml(status) || '-'}</span>`;
+    }
+
+    // ── 신청 취소 ─────────────────────────────────────────────────────────
+    async function cancelRequest(bookRequestId, title) {
+        const confirmed = await Swal.fire({
+            title: '신청 취소',
+            html: `<span class="font-bold text-gray-700">${escHtml(title)}</span><br>희망 도서 신청을 취소하시겠습니까?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor:  '#9CA3AF',
+            confirmButtonText:  '취소하기',
+            cancelButtonText:   '닫기'
+        });
+        if (!confirmed.isConfirmed) return;
+
+        try {
+            const res = await window.api.fetch(`/api/v1/book-requests/${bookRequestId}`, { method: 'DELETE' });
+            if (res && res.ok) {
+                await Swal.fire({
+                    title: '취소 완료',
+                    text: '희망 도서 신청이 취소되었습니다.',
+                    icon: 'success',
+                    confirmButtonColor: '#00A760',
+                    confirmButtonText: '확인'
+                });
+                historyLoaded = false;
+                loadHistory();
+            } else {
+                const err = await res?.json().catch(() => ({}));
+                Swal.fire({ title: '오류', text: err.message || '취소 처리 중 오류가 발생했습니다.', icon: 'error', confirmButtonColor: '#00A760' });
+            }
+        } catch {
+            Swal.fire({ title: '오류', text: '서버와 통신 중 오류가 발생했습니다.', icon: 'error', confirmButtonColor: '#00A760' });
         }
     }
 

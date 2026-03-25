@@ -1,15 +1,12 @@
 package com.example.bookmanagementsystembo.user.service;
 
-import com.example.bookmanagementsystembo.bookBorrow.enums.BorrowStatus;
 import com.example.bookmanagementsystembo.bookBorrow.repository.BookBorrowRepository;
-import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestStatus;
 import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
 import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
 import com.example.bookmanagementsystembo.department.entity.Department;
 import com.example.bookmanagementsystembo.department.repository.DepartmentRepository;
 import com.example.bookmanagementsystembo.department.service.DepartmentService;
 import com.example.bookmanagementsystembo.exception.CoreException;
-import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.user.dto.*;
 import com.example.bookmanagementsystembo.user.entity.Users;
 import com.example.bookmanagementsystembo.user.enums.Role;

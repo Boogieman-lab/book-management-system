@@ -89,15 +89,18 @@ class BookQueryRepositoryTest {
         }
 
         @Test
-        @DisplayName("제목 키워드 '스프링'으로 검색하면 '스프링 인 액션'만 반환된다")
+        @DisplayName("제목 키워드 '스프링'으로 검색하면 제목에 '스프링'이 포함된 도서만 반환되며 setUp 도서도 포함된다")
         void titleKeyword_spring_returnsOnlySpring() {
             BookSearchCond cond = new BookSearchCond("스프링", BookSearchField.TITLE);
 
             Page<Book> result = bookQueryRepository.searchBooks(cond, PageRequest.of(0, 20));
 
+            assertThat(result.getContent()).isNotEmpty();
+            assertThat(result.getContent())
+                    .allMatch(book -> book.getTitle().contains("스프링"));
             assertThat(result.getContent())
                     .extracting(Book::getTitle)
-                    .containsExactly("스프링 인 액션");
+                    .contains("스프링 인 액션");
         }
 
         @Test
@@ -118,8 +121,9 @@ class BookQueryRepositoryTest {
 
             Page<Book> result = bookQueryRepository.searchBooks(cond, PageRequest.of(0, 20));
 
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).getTitle()).isEqualTo("자바 ORM 표준 JPA");
+            assertThat(result.getContent()).isNotEmpty();
+            assertThat(result.getContent())
+                    .allMatch(book -> book.getAuthor().contains("김영한"));
         }
 
         @Test

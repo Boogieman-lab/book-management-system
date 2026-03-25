@@ -1,6 +1,7 @@
 package com.example.bookmanagementsystembo.bookRequest.dto;
 
 import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.enums.BookRequestStatus;
 
 import java.time.LocalDateTime;
 

@@ -1,6 +1,6 @@
 package com.example.bookmanagementsystembo.bookRequest.repository;
 
-import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestStatus;
+import com.example.bookmanagementsystembo.bookRequest.enums.BookRequestStatus;
 import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
 import com.example.bookmanagementsystembo.bookRequest.entity.QBookRequest;
 import com.querydsl.core.types.dsl.BooleanExpression;

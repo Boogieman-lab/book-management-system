@@ -2,6 +2,7 @@ package com.example.bookmanagementsystembo.bookRequest.service;
 
 import com.example.bookmanagementsystembo.bookRequest.dto.*;
 import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.enums.BookRequestStatus;
 import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
 import com.example.bookmanagementsystembo.common.PageLimitCalculator;
 import com.example.bookmanagementsystembo.exception.CoreException;
@@ -99,6 +100,26 @@ public class BookRequestService {
                 .toList();
 
         return BookRequestPageResponse.of(items, result.getTotalElements(), result.getTotalPages(), page, size);
+    }
+
+    /**
+     * 희망 도서 신청을 취소합니다 (V1 API).
+     * PENDING 상태인 본인 신청만 취소 가능합니다.
+     */
+    @Transactional
+    public void cancelV1(Long bookRequestId, Long userId) {
+        BookRequest bookRequest = bookRequestRepository.findById(bookRequestId)
+                .orElseThrow(() -> new CoreException(ErrorType.BOOK_REQUEST_FOUND, bookRequestId));
+
+        if (!bookRequest.getUserId().equals(userId)) {
+            throw new CoreException(ErrorType.BOOK_REQUEST_NOT_OWNER, bookRequestId);
+        }
+
+        if (bookRequest.getStatus() != BookRequestStatus.PENDING) {
+            throw new CoreException(ErrorType.BOOK_REQUEST_STATUS_ALREADY_PROCESSED, bookRequestId);
+        }
+
+        bookRequestRepository.deleteById(bookRequestId);
     }
 
     /**

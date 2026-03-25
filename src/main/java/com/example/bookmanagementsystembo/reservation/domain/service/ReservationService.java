@@ -24,6 +24,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final BookHoldRepository bookHoldRepository;
 
+    /** 특정 도서의 WAITING 상태 예약 대기 목록을 예약 순서(오래된 순)로 반환합니다. */
     public List<ReservationWaitingResponse> getWaitingReservations(Long bookId) {
         return reservationRepository
                 .findByBookHold_BookIdAndStatusOrderByReservedAtAsc(bookId, ReservationStatus.WAITING)
@@ -32,6 +33,15 @@ public class ReservationService {
                 .toList();
     }
 
+    /**
+     * 도서 예약을 생성합니다.
+     * <ul>
+     *   <li>AVAILABLE hold가 있으면 예약 불가 (바로 대출 가능).</li>
+     *   <li>동일 도서에 이미 WAITING 예약이 있으면 중복 예약 불가.</li>
+     *   <li>사용자의 WAITING 예약 총 건수가 2건 이상이면 한도 초과.</li>
+     *   <li>모든 hold의 WAITING 예약이 2명 이상이면 예약 불가.</li>
+     * </ul>
+     */
     @Transactional
     public ReservationResponse createReservation(Long bookId, Long userId) {
         List<BookHold> bookHolds = bookHoldRepository.findByBookId(bookId);
@@ -76,6 +86,11 @@ public class ReservationService {
         return new ReservationResponse(reservation.getReservationId(), reservation.getStatus());
     }
 
+    /**
+     * 예약을 취소합니다 (EXPIRED 상태로 변경).
+     * IDOR 검증 — 본인의 예약만 취소 가능합니다.
+     * 이미 EXPIRED 상태인 예약은 예외를 발생시킵니다.
+     */
     @Transactional
     public void cancelReservation(Long reservationId, Long userId) {
         Reservation reservation = reservationRepository.findById(reservationId)

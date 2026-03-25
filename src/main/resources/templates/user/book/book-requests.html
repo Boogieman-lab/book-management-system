@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>희망 도서 신청</title>
+</head>
+<body>
+
+<th:block layout:fragment="head">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .modal-scroll::-webkit-scrollbar { width: 5px; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    </style>
+</th:block>
+
+<th:block layout:fragment="content">
+
+    <!-- 페이지 헤더 -->
+    <div class="mb-8">
+        <p class="text-sm text-gray-400 mb-1">
+            <a href="/books" class="hover:text-boogie-main transition-colors">도서 검색</a>
+            <span class="mx-1.5">›</span>
+            <span class="text-gray-700 font-medium">희망 도서 신청</span>
+        </p>
+        <h1 class="text-2xl font-black text-gray-900">희망 도서 신청</h1>
+        <p class="text-sm text-gray-500 mt-1">도서를 신청하면 관리자 검토 후 구매를 결정합니다.</p>
+    </div>
+
+    <!-- 탭 -->
+    <div class="flex gap-1 border-b border-gray-200 mb-8">
+        <button id="tab-request"
+                class="px-5 py-3 text-sm font-bold text-boogie-main border-b-2 border-boogie-main -mb-px transition-colors">
+            신청하기
+        </button>
+        <button id="tab-history"
+                class="px-5 py-3 text-sm font-bold text-gray-400 border-b-2 border-transparent -mb-px hover:text-gray-600 transition-colors">
+            신청 내역
+        </button>
+    </div>
+
+    <!-- ── 신청하기 패널 ────────────────────────────────────────────────── -->
+    <div id="panel-request">
+        <div class="max-w-2xl">
+
+            <!-- 주의 배너 -->
+            <!--<div class="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl mb-6 text-sm text-amber-700">
+                <i class="fas fa-exclamation-circle mt-0.5 flex-shrink-0"></i>
+                <span>신청 전 <a href="/books" class="font-bold underline hover:text-amber-900">도서 목록</a>에서 중복 여부를 먼저 확인해주세요.</span>
+            </div>-->
+
+            <!-- 신청 폼 카드 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+
+                <!-- 도서 정보 헤더 + 검색 버튼 -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-base font-bold text-gray-800">도서 정보</h2>
+                    <button id="openSearchModal"
+                            class="flex items-center gap-2 px-4 py-2 bg-boogie-main text-white text-sm font-bold rounded-full hover:bg-boogie-dark transition-colors shadow-sm hover-lift">
+                        <i class="fas fa-search text-xs"></i>
+                        도서 검색
+                    </button>
+                </div>
+
+                <form id="requestForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">
+                            도서명 <span class="text-red-500">*</span>
+                        </label>
+                        <input id="bookTitle" type="text" required
+                               placeholder="도서 검색 버튼으로 자동 입력됩니다"
+                               class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-all bg-gray-50 placeholder-gray-300">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">
+                            저자 <span class="text-red-500">*</span>
+                        </label>
+                        <input id="author" type="text" required
+                               placeholder="도서 검색 버튼으로 자동 입력됩니다"
+                               class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-all bg-gray-50 placeholder-gray-300">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">ISBN</label>
+                        <input id="isbn" type="text"
+                               placeholder="도서 검색 버튼으로 자동 입력됩니다"
+                               class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-all bg-gray-50 placeholder-gray-300">
+                    </div>
+
+                    <hr class="border-gray-100">
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1.5">
+                            신청 사유 <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="reason" required rows="4"
+                                  placeholder="이 도서가 필요한 이유를 간략히 작성해주세요. (예: 업무 관련 기술 학습, 팀 스터디 활용 등)"
+                                  class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-all resize-none placeholder-gray-300"></textarea>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="submit"
+                                class="flex-1 py-3 bg-boogie-main text-white text-sm font-bold rounded-full hover:bg-boogie-dark transition-colors shadow-sm hover-lift">
+                            최종 신청
+                        </button>
+                        <button type="reset"
+                                class="px-6 py-3 bg-gray-100 text-gray-500 text-sm font-bold rounded-full hover:bg-gray-200 transition-colors">
+                            초기화
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 신청 내역 패널 ───────────────────────────────────────────────── -->
+    <div id="panel-history" class="hidden">
+        <!-- 스켈레톤 -->
+        <div id="historySkeleton" class="space-y-3">
+            <div class="h-14 bg-gray-100 rounded-xl animate-pulse"></div>
+            <div class="h-14 bg-gray-100 rounded-xl animate-pulse"></div>
+            <div class="h-14 bg-gray-100 rounded-xl animate-pulse"></div>
+        </div>
+        <!-- 테이블 래퍼 -->
+        <div id="historyTable" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-100">
+                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">신청일</th>
+                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">도서명</th>
+                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">저자</th>
+                        <th class="px-5 py-3.5 text-left font-bold text-gray-600">상태</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+            <div id="historyEmpty" class="hidden py-16 text-center">
+                <i class="fas fa-inbox text-3xl text-gray-300 mb-3"></i>
+                <p class="text-sm text-gray-400 font-medium">신청 내역이 없습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 도서 검색 모달 ──────────────────────────────────────────────── -->
+    <div id="searchModal" class="fixed inset-0 z-50 hidden">
+        <!-- 배경 오버레이 -->
+        <div id="modalBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+        <!-- 모달 카드 -->
+        <div class="relative flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl flex flex-col" style="max-height: 80vh;">
+
+                <!-- 헤더 -->
+                <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 flex-shrink-0">
+                    <div>
+                        <h3 class="text-base font-black text-gray-900">도서 검색</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">알라딘 도서 DB 기반 · 도서명 또는 저자로 검색</p>
+                    </div>
+                    <button id="closeModal"
+                            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- 검색창 -->
+                <div class="px-6 py-4 border-b border-gray-100 flex-shrink-0">
+                    <div class="flex bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-boogie-light focus-within:border-boogie-main transition-all">
+                        <input id="modalSearchInput" type="text"
+                               placeholder="검색어를 입력하고 엔터를 누르세요"
+                               class="flex-1 px-4 py-3 text-sm bg-transparent focus:outline-none placeholder-gray-300">
+                        <button id="modalSearchBtn"
+                                class="px-4 py-3 text-boogie-main hover:text-boogie-dark transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 결과 영역 (스크롤) -->
+                <div class="flex-1 overflow-y-auto modal-scroll">
+
+                    <!-- 초기 안내 -->
+                    <div id="modalGuide" class="flex flex-col items-center justify-center py-16 text-center">
+                        <i class="fas fa-book-open text-4xl text-gray-200 mb-3"></i>
+                        <p class="text-sm text-gray-400">검색어를 입력하세요</p>
+                    </div>
+
+                    <!-- 로딩 스켈레톤 -->
+                    <div id="modalLoading" class="hidden space-y-1 p-4">
+                        <div class="flex gap-3 p-2 animate-pulse">
+                            <div class="w-14 h-20 bg-gray-100 rounded-lg flex-shrink-0"></div>
+                            <div class="flex-1 space-y-2 py-2">
+                                <div class="h-3 bg-gray-100 rounded w-3/4"></div>
+                                <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                                <div class="h-3 bg-gray-100 rounded w-1/3"></div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 p-2 animate-pulse">
+                            <div class="w-14 h-20 bg-gray-100 rounded-lg flex-shrink-0"></div>
+                            <div class="flex-1 space-y-2 py-2">
+                                <div class="h-3 bg-gray-100 rounded w-3/4"></div>
+                                <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                                <div class="h-3 bg-gray-100 rounded w-1/3"></div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 p-2 animate-pulse">
+                            <div class="w-14 h-20 bg-gray-100 rounded-lg flex-shrink-0"></div>
+                            <div class="flex-1 space-y-2 py-2">
+                                <div class="h-3 bg-gray-100 rounded w-3/4"></div>
+                                <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                                <div class="h-3 bg-gray-100 rounded w-1/3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 결과 없음 -->
+                    <div id="modalEmpty" class="hidden flex flex-col items-center justify-center py-16 text-center">
+                        <i class="fas fa-search text-3xl text-gray-200 mb-3"></i>
+                        <p class="text-sm text-gray-400">검색 결과가 없습니다.</p>
+                        <p class="text-xs text-gray-300 mt-1">다른 검색어로 시도해 보세요</p>
+                    </div>
+
+                    <!-- 결과 리스트 -->
+                    <ul id="modalResults" class="hidden px-2 py-2 divide-y divide-gray-50"></ul>
+                </div>
+
+                <!-- 페이징 바 (결과 2페이지 이상일 때만 표시) -->
+                <div id="modalPagination" class="hidden flex-shrink-0 border-t border-gray-100">
+                    <div class="flex items-center justify-between px-6 py-3">
+                        <button id="modalPrevBtn"
+                                class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-500 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                            <i class="fas fa-chevron-left text-[10px]"></i> 이전
+                        </button>
+                        <span id="modalPageInfo" class="text-xs text-gray-400"></span>
+                        <button id="modalNextBtn"
+                                class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-500 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                            다음 <i class="fas fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="script">
+<script>
+(function () {
+
+    // ── 탭 전환 ────────────────────────────────────────────────────────────
+    const tabRequest  = document.getElementById('tab-request');
+    const tabHistory  = document.getElementById('tab-history');
+    const panelReq    = document.getElementById('panel-request');
+    const panelHist   = document.getElementById('panel-history');
+
+    function setTab(active) {
+        const isReq = active === 'request';
+        tabRequest.className = `px-5 py-3 text-sm font-bold border-b-2 -mb-px transition-colors ${isReq ? 'text-boogie-main border-boogie-main' : 'text-gray-400 border-transparent hover:text-gray-600'}`;
+        tabHistory.className = `px-5 py-3 text-sm font-bold border-b-2 -mb-px transition-colors ${!isReq ? 'text-boogie-main border-boogie-main' : 'text-gray-400 border-transparent hover:text-gray-600'}`;
+        panelReq.classList.toggle('hidden', !isReq);
+        panelHist.classList.toggle('hidden', isReq);
+        if (!isReq) loadHistory();
+    }
+
+    tabRequest.addEventListener('click', () => setTab('request'));
+    tabHistory.addEventListener('click',  () => setTab('history'));
+
+    // ── 신청 내역 로드 ────────────────────────────────────────────────────
+    let historyLoaded = false;
+
+    async function loadHistory() {
+        if (historyLoaded) return;
+        historyLoaded = true;
+
+        const skeleton = document.getElementById('historySkeleton');
+        const table    = document.getElementById('historyTable');
+        const body     = document.getElementById('historyBody');
+        const empty    = document.getElementById('historyEmpty');
+
+        try {
+            const res  = await fetch('/api/v1/users/me/requests');
+            if (!res.ok) throw new Error(res.status);
+            const data  = await res.json();
+            const items = Array.isArray(data) ? data : (data.content ?? []);
+
+            skeleton.classList.add('hidden');
+            table.classList.remove('hidden');
+
+            if (!items.length) { empty.classList.remove('hidden'); return; }
+
+            const badge = {
+                PENDING:  '<span class="px-2.5 py-1 bg-amber-50  text-amber-600  text-xs font-bold rounded-full">검토중</span>',
+                APPROVED: '<span class="px-2.5 py-1 bg-green-50  text-boogie-main text-xs font-bold rounded-full">승인됨</span>',
+                REJECTED: '<span class="px-2.5 py-1 bg-red-50    text-red-500    text-xs font-bold rounded-full">거절됨</span>',
+            };
+
+            body.innerHTML = items.map(item => `
+                <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td class="px-5 py-4 text-gray-400 whitespace-nowrap">${(item.createdAt ?? '').slice(0, 10) || '-'}</td>
+                    <td class="px-5 py-4 font-medium text-gray-800">${item.title ?? '-'}</td>
+                    <td class="px-5 py-4 text-gray-500">${item.authors ?? '-'}</td>
+                    <td class="px-5 py-4">${badge[item.status] ?? item.status ?? '-'}</td>
+                </tr>
+            `).join('');
+        } catch {
+            skeleton.classList.add('hidden');
+            table.classList.remove('hidden');
+            empty.classList.remove('hidden');
+        }
+    }
+
+    // ── 모달 열기/닫기 ────────────────────────────────────────────────────
+    const modal = document.getElementById('searchModal');
+
+    function openModal()  { modal.classList.remove('hidden'); document.getElementById('modalSearchInput').focus(); }
+    function closeModal() { modal.classList.add('hidden'); }
+
+    document.getElementById('openSearchModal').addEventListener('click', openModal);
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // ── 알라딘 도서 검색 ──────────────────────────────────────────────────
+    const elGuide      = document.getElementById('modalGuide');
+    const elLoading    = document.getElementById('modalLoading');
+    const elEmpty      = document.getElementById('modalEmpty');
+    const elResults    = document.getElementById('modalResults');
+    const elPagination = document.getElementById('modalPagination');
+    const elPageInfo   = document.getElementById('modalPageInfo');
+    const elPrevBtn    = document.getElementById('modalPrevBtn');
+    const elNextBtn    = document.getElementById('modalNextBtn');
+
+    const PAGE_SIZE = 10;
+    let allDocs     = [];
+    let currentPage = 0;
+
+    function showState(id) {
+        [elGuide, elLoading, elEmpty, elResults].forEach(el => el.classList.add('hidden'));
+        elPagination.classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function escAttr(s) {
+        return (s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function buildItem(book) {
+        const isbn13  = (book.isbn ?? '').split(' ').find(s => s.length === 13) ?? book.isbn ?? '';
+        const authors = (book.authors ?? []).join(', ');
+        const year    = book.datetime ? book.datetime.slice(0, 4) : '';
+        const thumb   = book.thumbnail
+            ? `<img src="${escAttr(book.thumbnail)}" alt="표지" class="w-14 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-100">`
+            : `<div class="w-14 h-20 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center"><i class="fas fa-book text-gray-300"></i></div>`;
+        return `
+        <li class="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-xl transition-colors">
+            ${thumb}
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <p class="text-sm font-bold text-gray-800 leading-snug line-clamp-2">${book.title ?? ''}</p>
+                    ${isbn13 ? `<span id="badge-${escAttr(isbn13)}" class="hidden px-1.5 py-0.5 bg-red-50 text-red-500 text-xs font-bold rounded-full flex-shrink-0">보유중</span>` : ''}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">${authors}</p>
+                <p class="text-xs text-gray-400 mt-0.5">${book.publisher ?? ''}${year ? ' · ' + year : ''}</p>
+                ${isbn13 ? `<p class="text-xs text-gray-300 mt-0.5">ISBN ${isbn13}</p>` : ''}
+            </div>
+            <button type="button"
+                    class="select-btn flex-shrink-0 mt-1 px-3 py-1.5 text-xs font-bold text-boogie-main border border-boogie-main rounded-full hover:bg-boogie-main hover:text-white transition-colors whitespace-nowrap"
+                    data-title="${escAttr(book.title)}"
+                    data-authors="${escAttr(authors)}"
+                    data-isbn="${escAttr(isbn13)}">
+                선택
+            </button>
+        </li>`;
+    }
+
+    function renderPage(page) {
+        const totalPages = Math.ceil(allDocs.length / PAGE_SIZE);
+        currentPage = Math.max(0, Math.min(page, totalPages - 1));
+        const slice = allDocs.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+
+        elResults.innerHTML = slice.map(buildItem).join('');
+        elResults.scrollTop = 0;
+
+        elPageInfo.textContent = `${currentPage + 1} / ${totalPages} (총 ${allDocs.length}건)`;
+        elPrevBtn.disabled = currentPage === 0;
+        elNextBtn.disabled = currentPage >= totalPages - 1;
+
+        showState('modalResults');
+        if (totalPages > 1) elPagination.classList.remove('hidden');
+        checkHeldBooks(slice);
+    }
+
+    function checkHeldBooks(slice) {
+        slice.forEach(async book => {
+            const isbn13 = (book.isbn ?? '').split(' ').find(s => s.length === 13) ?? '';
+            if (!isbn13) return;
+            try {
+                const res = await fetch(`/api/v1/books/isbn-check?isbn=${encodeURIComponent(isbn13)}`);
+                if (!res.ok) return;
+                const { exists } = await res.json();
+                if (exists) {
+                    const badge = document.getElementById(`badge-${isbn13}`);
+                    if (badge) badge.classList.remove('hidden');
+                }
+            } catch {}
+        });
+    }
+
+    async function fetchAllDocs(query) {
+        const collected = [];
+        let kakaoPage   = 1;
+        while (true) {
+            const res = await fetch(`/api/v1/external/aladin/books?target=title&query=${encodeURIComponent(query)}&size=50&page=${kakaoPage}`);
+            if (!res.ok) throw new Error(res.status);
+            const data = await res.json();
+            collected.push(...(data.documents ?? []));
+            if (data.meta?.is_end !== false) break;
+            kakaoPage++;
+        }
+        return collected;
+    }
+
+    async function searchBooks(query) {
+        if (!query.trim()) return;
+        showState('modalLoading');
+        allDocs     = [];
+        currentPage = 0;
+
+        try {
+            allDocs = await fetchAllDocs(query);
+            if (!allDocs.length) { showState('modalEmpty'); return; }
+            renderPage(0);
+        } catch {
+            showState('modalEmpty');
+        }
+    }
+
+    elPrevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+    elNextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+
+    const searchInput = document.getElementById('modalSearchInput');
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') searchBooks(searchInput.value); });
+    document.getElementById('modalSearchBtn').addEventListener('click', () => searchBooks(searchInput.value));
+
+    // ── 도서 선택 → 폼 자동 완성 + readonly 잠금 ────────────────────────
+    elResults.addEventListener('click', e => {
+        const btn = e.target.closest('.select-btn');
+        if (!btn) return;
+
+        const fields = ['bookTitle', 'author', 'isbn'];
+        const values = [btn.dataset.title, btn.dataset.authors, btn.dataset.isbn];
+
+        fields.forEach((id, i) => {
+            const el = document.getElementById(id);
+            el.value    = values[i] ?? '';
+            el.readOnly = true;
+            el.classList.remove('bg-gray-50', 'bg-white');
+            el.classList.add('bg-gray-100', 'cursor-not-allowed');
+        });
+
+        closeModal();
+        document.getElementById('reason').focus();
+    });
+
+    // ── 초기화 버튼: readonly 해제 + 배경색 원복 ─────────────────────────
+    document.getElementById('requestForm').addEventListener('reset', () => {
+        ['bookTitle', 'author', 'isbn'].forEach(id => {
+            const el = document.getElementById(id);
+            el.readOnly = false;
+            el.classList.remove('bg-gray-100', 'cursor-not-allowed', 'bg-white');
+            el.classList.add('bg-gray-50');
+        });
+    });
+
+    // ── 최종 신청 제출 ────────────────────────────────────────────────────
+    document.getElementById('requestForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const title   = document.getElementById('bookTitle').value.trim();
+        const authors = document.getElementById('author').value.trim();
+        const isbn    = document.getElementById('isbn').value.trim();
+        const reason  = document.getElementById('reason').value.trim();
+
+        if (!title || !authors || !reason) {
+            alert('도서명, 저자, 신청 사유는 필수 입력 항목입니다.');
+            return;
+        }
+
+        const submitBtn = this.querySelector('[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '신청 중...';
+
+        try {
+            const res = await fetch('/api/v1/book-requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, authors, isbn, reason }),
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                alert(err.message ?? '희망 도서 신청 중 오류가 발생했습니다.');
+                return;
+            }
+
+            alert('희망 도서 신청이 완료되었습니다.\n관리자 검토 후 결과를 알려드립니다.');
+            this.reset();
+        } catch {
+            alert('서버와 통신 중 오류가 발생했습니다.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '최종 신청';
+        }
+    });
+
+})();
+</script>
+</th:block>
+
+</body>
+</html>

@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +34,83 @@ class BookHoldAdminServiceTest {
 
     @InjectMocks
     private BookHoldService bookHoldService;
+
+    // ──────────────────────────────────────────────────────────────
+    // readAll / read
+    // ──────────────────────────────────────────────────────────────
+    @Nested
+    @DisplayName("readAll - 도서별 hold 목록 조회")
+    class ReadAllTest {
+
+        @Test
+        @DisplayName("성공 - bookId에 속한 hold 목록을 반환한다")
+        void readAll_success() {
+            // Given
+            Long bookId = 1L;
+            BookHold hold1 = BookHold.createWithLocation(bookId, "A-101");
+            BookHold hold2 = BookHold.createWithLocation(bookId, "A-102");
+            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of(hold1, hold2));
+
+            // When
+            List<BookHoldResponse> result = bookHoldService.readAll(bookId);
+
+            // Then
+            assertThat(result).hasSize(2);
+            verify(bookHoldRepository).findByBookId(bookId);
+        }
+
+        @Test
+        @DisplayName("성공 - hold가 없으면 빈 리스트를 반환한다")
+        void readAll_empty() {
+            // Given
+            Long bookId = 99L;
+            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of());
+
+            // When
+            List<BookHoldResponse> result = bookHoldService.readAll(bookId);
+
+            // Then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("read - 단건 hold 조회")
+    class ReadTest {
+
+        @Test
+        @DisplayName("성공 - bookId와 holdId가 일치하는 hold를 반환한다")
+        void read_success() {
+            // Given
+            Long bookId = 1L;
+            Long holdId = 10L;
+            BookHold hold = BookHold.createWithLocation(bookId, "B-201");
+            when(bookHoldRepository.findByBookHoldIdAndBookId(holdId, bookId)).thenReturn(Optional.of(hold));
+
+            // When
+            BookHoldResponse result = bookHoldService.read(bookId, holdId);
+
+            // Then
+            assertThat(result).isNotNull();
+            assertThat(result.bookHoldStatus()).isEqualTo(BookHoldStatus.AVAILABLE);
+            verify(bookHoldRepository).findByBookHoldIdAndBookId(holdId, bookId);
+        }
+
+        @Test
+        @DisplayName("실패 - 존재하지 않는 holdId면 BOOK_HOLD_NOT_FOUND 예외 발생")
+        void read_notFound() {
+            // Given
+            Long bookId = 1L;
+            Long holdId = 999L;
+            when(bookHoldRepository.findByBookHoldIdAndBookId(holdId, bookId)).thenReturn(Optional.empty());
+
+            // When & Then
+            assertThatThrownBy(() -> bookHoldService.read(bookId, holdId))
+                    .isInstanceOf(CoreException.class)
+                    .satisfies(ex -> assertThat(((CoreException) ex).getErrorType())
+                            .isEqualTo(ErrorType.BOOK_HOLD_NOT_FOUND));
+        }
+    }
 
     // ──────────────────────────────────────────────────────────────
     // addHold

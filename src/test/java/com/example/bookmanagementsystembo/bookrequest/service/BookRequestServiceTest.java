@@ -1,6 +1,5 @@
 package com.example.bookmanagementsystembo.bookRequest.service;
 
-import com.example.bookmanagementsystembo.book.repository.BookRepository;
 import com.example.bookmanagementsystembo.bookRequest.dto.*;
 import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
 import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
@@ -34,9 +33,6 @@ class BookRequestServiceTest {
     @Mock
     private BookRequestRepository bookRequestRepository;
 
-    @Mock
-    private BookRepository bookRepository;
-
     @Test
     @DisplayName("희망 도서 신청 성공")
     void createV1_success() {
@@ -45,7 +41,6 @@ class BookRequestServiceTest {
         BookRequestCreateRequest request = new BookRequestCreateRequest("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
         BookRequest saved = BookRequest.create(userId, request.title(), request.authors(), request.publisher(), request.isbn(), request.reason());
 
-        when(bookRepository.existsByIsbn(request.isbn())).thenReturn(false);
         when(bookRequestRepository.existsByIsbnAndStatus(request.isbn(), BookRequestStatus.PENDING)).thenReturn(false);
         when(bookRequestRepository.save(any(BookRequest.class))).thenReturn(saved);
 
@@ -56,24 +51,8 @@ class BookRequestServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.title()).isEqualTo("이펙티브 자바");
         assertThat(result.status()).isEqualTo(BookRequestStatus.PENDING);
-        verify(bookRepository).existsByIsbn(request.isbn());
         verify(bookRequestRepository).existsByIsbnAndStatus(request.isbn(), BookRequestStatus.PENDING);
         verify(bookRequestRepository).save(any(BookRequest.class));
-    }
-
-    @Test
-    @DisplayName("희망 도서 신청 실패 - ISBN이 Book 테이블에 이미 존재")
-    void createV1_fail_bookAlreadyExists() {
-        // Given
-        Long userId = 1L;
-        BookRequestCreateRequest request = new BookRequestCreateRequest("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
-
-        when(bookRepository.existsByIsbn(request.isbn())).thenReturn(true);
-
-        // When & Then
-        CoreException ex = assertThrows(CoreException.class, () -> bookRequestService.createV1(userId, request));
-        assertEquals(ErrorType.BOOK_REQUEST_ALREADY_EXISTS, ex.getErrorType());
-        verify(bookRequestRepository, never()).save(any());
     }
 
     @Test
@@ -83,7 +62,6 @@ class BookRequestServiceTest {
         Long userId = 1L;
         BookRequestCreateRequest request = new BookRequestCreateRequest("이펙티브 자바", "조슈아 블로크", "인사이트", "9788966261549", "업무에 필요");
 
-        when(bookRepository.existsByIsbn(request.isbn())).thenReturn(false);
         when(bookRequestRepository.existsByIsbnAndStatus(request.isbn(), BookRequestStatus.PENDING)).thenReturn(true);
 
         // When & Then
@@ -107,7 +85,6 @@ class BookRequestServiceTest {
 
         // Then
         assertThat(result).isNotNull();
-        verify(bookRepository, never()).existsByIsbn(any());
         verify(bookRequestRepository, never()).existsByIsbnAndStatus(any(), any());
     }
 

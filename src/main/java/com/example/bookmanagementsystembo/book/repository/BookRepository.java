@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
-    Optional<Book> findByIsbn(String isbn);
-    void deleteByBookId(Book book);
+    Optional<Book> findByIsbn13(String isbn13);
     List<Book> findByTitleContaining(String title);
     List<Book> findByPublisherContaining(String query);
-    List<Book> findByAuthorsContaining(String query);
-    boolean existsByIsbn(String isbn);
+    List<Book> findByAuthorContaining(String query);
+    boolean existsByIsbn13(String isbn13);
 }

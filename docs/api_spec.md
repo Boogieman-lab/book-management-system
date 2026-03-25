@@ -29,6 +29,7 @@
 |---|---|---|---|---|
 | GET | `/books` | 전체 서비스 도서 조회 (페이지네이션/가나다 정렬/도서명 필터 텍스트 파라미터 적용) | User | ✅ |
 | GET | `/books/{bookId}` | 식별된 책의 전체 ISBN, 저술가, 이미지 주소 등 포함 자원 | User | ✅ |
+| GET | `/books/isbn-check` | ISBN13으로 내부 book 테이블 조회 → 보유 여부 및 book_hold 재고 수량 반환 (희망 도서 신청 중복 안내용) | User | ✅ |
 | POST | `/admin/books` | [관리자용] 회사 구매 신간의 식별 메타 인덱스 신규 업로드 | Admin | ✅ |
 | PUT | `/admin/books/{bookId}` | [관리자용] 기등록된 도서 오류(저술가, 표지, 내용누락) 등 강제 갱신 | Admin | ✅ |
 | DELETE | `/admin/books/{bookId}`| [관리자용]기등록된 도서 정보 삭제/비활성화 (R2) | Admin | ⬜ |
@@ -40,7 +41,7 @@
 ### 🌐 외부 연동 (External APIs)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
 |---|---|---|---|---|
-| GET | `/external/kakao/books` | [Proxy] 카카오 API 기반 도서 검색 (희망 도서 신청 및 신규 등록 시 메타데이터 획득용) | User | ✅ |
+| GET | `/external/aladin/books` | [Proxy] 알라딘 ItemSearch API 기반 도서 검색 (희망 도서 신청 및 신규 등록 시 메타데이터 획득용). query, target(title/author/publisher/keyword), page, size 파라미터 지원. 표지 고해상도(/cover500/) 자동 적용. | User | ✅ |
 
 ### 📖 책 빌리기 및 반납 / 대출 자원 (Borrows)
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
@@ -94,42 +95,36 @@
 
 ---
 
-## 📌 상세 API 명세: 외부 연동 도서 검색 (Kakao API Proxy)
+## 📌 상세 API 명세: 외부 연동 도서 검색 (Aladin API Proxy)
 
-### `GET /api/v1/external/kakao/books`
-사용자의 희망 도서 신청이나 관리자의 신규 도서 등록 시, 정확한 도서 정보(ISBN, 표지, 저자 등)를 자동 완성하기 위해 제공되는 검색 API입니다. (백엔드에서 Kakao Open API를 대리 호출하여 결과를 반환합니다.)
+### `GET /api/v1/external/aladin/books`
+사용자의 희망 도서 신청이나 관리자의 신규 도서 등록 시, 정확한 도서 정보(ISBN13, 표지, 저자 등)를 자동 완성하기 위해 제공되는 검색 API입니다. (백엔드에서 알라딘 Open API(ItemSearch)를 대리 호출하여 정규화된 결과를 반환합니다.)
 
 #### Request Parameters (Query String)
 | 파라미터명 | 타입 | 필수여부 | 설명 | 기본값 |
 |---|---|---|---|---|
-| `query` | String | **O** | 검색을 원하는 질의어 (도서명, ISBN 등) | - |
-| `sort` | String | X | 정렬 방식: `accuracy`(정확도순), `latest`(발간일순) | `accuracy` |
-| `page` | Integer | X | 결과 페이지 번호 (1~50) | `1` |
+| `query` | String | **O** | 검색을 원하는 질의어 (도서명, 저자 등) | - |
+| `target` | String | X | 검색 필드 제한: `title`(제목), `author`(저자), `publisher`(출판사), `keyword`(통합) | `keyword` |
+| `page` | Integer | X | 결과 페이지 번호 1-based (알라딘 총 200건 제한) | `1` |
 | `size` | Integer | X | 한 페이지에 보여질 문서 수 (1~50) | `10` |
-| `target` | String | X | 검색 필드 제한 (`title`, `isbn`, `publisher`, `person`) | - |
 
 #### Response Format (HTTP 200 OK)
 ```json
 {
-  "meta": {
-    "total_count": 10,
-    "pageable_count": 9,
-    "is_end": true
-  },
   "documents": [
     {
       "title": "미움받을 용기",
-      "contents": "인간은 변할 수 있고, 누구나 행복해 질 수 있다...",
-      "url": "[https://search.daum.net/search](https://search.daum.net/search)?...",
-      "isbn": "8996991341 9788996991342",
-      "datetime": "2014-11-17T00:00:00.000+09:00",
       "authors": ["기시미 이치로", "고가 후미타케"],
       "publisher": "인플루엔셜",
-      "translators": ["전경아"],
-      "price": 14900,
-      "sale_price": 13410,
-      "thumbnail": "[https://search1.kakaocdn.net/thumb/](https://search1.kakaocdn.net/thumb/)...",
-      "status": "정상판매"
+      "datetime": "20141117",
+      "thumbnail": "https://image.aladin.co.kr/product/.../cover500/....jpg",
+      "isbn": "9788996991342",
+      "contents": "인간은 변할 수 있고, 누구나 행복해 질 수 있다...",
+      "category": "국내도서>자기계발>인간관계/처세"
     }
-  ]
+  ],
+  "meta": {
+    "is_end": true,
+    "totalResults": 1
+  }
 }

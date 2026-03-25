@@ -21,6 +21,10 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationQueryRepository notificationQueryRepository;
 
+    /**
+     * 내 알림 목록을 페이지네이션으로 조회합니다.
+     * @param unreadOnly true이면 읽지 않은 알림만 반환합니다.
+     */
     public NotificationPageResponse getMyNotifications(Long userId, int page, int size, boolean unreadOnly) {
         long offset = (long) (page - 1) * size;
 
@@ -34,6 +38,11 @@ public class NotificationService {
         return NotificationPageResponse.of(items, totalElements, page, size);
     }
 
+    /**
+     * 알림을 읽음 처리합니다.
+     * IDOR 검증 — 본인의 알림만 읽음 처리 가능합니다.
+     * 이미 읽은 알림에 대해서는 멱등하게 동작합니다.
+     */
     @Transactional
     public void markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findById(notificationId)

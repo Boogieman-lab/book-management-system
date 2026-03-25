@@ -1,6 +1,8 @@
 package com.example.bookmanagementsystembo.book.service;
 
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
 import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
+import com.example.bookmanagementsystembo.book.dto.BookHoldCountDto;
 import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
 import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.book.entity.Book;
@@ -26,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,8 +75,8 @@ class BookSearchServiceTest {
             Page<Book> bookPage = new PageImpl<>(List.of(sampleBook), pageable, 1);
 
             when(bookQueryRepository.searchBooks(cond, pageable)).thenReturn(bookPage);
-            when(bookHoldRepository.countByBookId(1L)).thenReturn(3);
-            when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(2);
+            when(bookQueryRepository.countHoldsByBookIds(List.of(1L)))
+                    .thenReturn(Map.of(1L, new BookHoldCountDto(3, 2)));
 
             Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
@@ -93,8 +96,8 @@ class BookSearchServiceTest {
             Page<Book> bookPage = new PageImpl<>(List.of(sampleBook), pageable, 1);
 
             when(bookQueryRepository.searchBooks(cond, pageable)).thenReturn(bookPage);
-            when(bookHoldRepository.countByBookId(1L)).thenReturn(2);
-            when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(1);
+            when(bookQueryRepository.countHoldsByBookIds(List.of(1L)))
+                    .thenReturn(Map.of(1L, new BookHoldCountDto(2, 1)));
 
             Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
@@ -110,13 +113,13 @@ class BookSearchServiceTest {
             Page<Book> bookPage = new PageImpl<>(List.of(sampleBook), pageable, 1);
 
             when(bookQueryRepository.searchBooks(cond, pageable)).thenReturn(bookPage);
-            when(bookHoldRepository.countByBookId(1L)).thenReturn(1);
-            when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(1);
+            when(bookQueryRepository.countHoldsByBookIds(List.of(1L)))
+                    .thenReturn(Map.of(1L, new BookHoldCountDto(1, 1)));
 
             Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
             assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).isbn()).isEqualTo("9788966262281");
+            assertThat(result.getContent().get(0).isbn13()).isEqualTo("9788966262281");
         }
 
         @Test
@@ -144,10 +147,11 @@ class BookSearchServiceTest {
             Page<Book> bookPage = new PageImpl<>(List.of(sampleBook, book2), pageable, 2);
 
             when(bookQueryRepository.searchBooks(cond, pageable)).thenReturn(bookPage);
-            when(bookHoldRepository.countByBookId(1L)).thenReturn(3);
-            when(bookHoldRepository.countByBookIdAndStatus(1L, BookHoldStatus.AVAILABLE)).thenReturn(2);
-            when(bookHoldRepository.countByBookId(2L)).thenReturn(5);
-            when(bookHoldRepository.countByBookIdAndStatus(2L, BookHoldStatus.AVAILABLE)).thenReturn(4);
+            when(bookQueryRepository.countHoldsByBookIds(List.of(1L, 2L)))
+                    .thenReturn(Map.of(
+                            1L, new BookHoldCountDto(3, 2),
+                            2L, new BookHoldCountDto(5, 4)
+                    ));
 
             Page<BookSummaryResponse> result = bookService.searchBooksV1(cond, pageable);
 
@@ -175,7 +179,7 @@ class BookSearchServiceTest {
 
             assertThat(result.bookId()).isEqualTo(1L);
             assertThat(result.title()).isEqualTo("이펙티브 자바");
-            assertThat(result.isbn()).isEqualTo("9788966262281");
+            assertThat(result.isbn13()).isEqualTo("9788966262281");
             assertThat(result.totalStock()).isEqualTo(5);
             assertThat(result.availableStock()).isEqualTo(3);
         }
@@ -212,8 +216,13 @@ class BookSearchServiceTest {
     // ──────────────────────────────────────────────────────────────
 
     private Book createBook(Long id, String title, String isbn, String authors, String publisher) {
-        Book book = new Book(id, title, "내용", "http://url.com", isbn,
-                null, authors, null, publisher, 30000, 27000, "http://thumb.com", "정상");
+        BookCreateRequest req = new BookCreateRequest(
+                isbn, null, title, authors, publisher,
+                null, null, null, null, null,
+                30000, 27000, "정상", 0, null, null, "BOOK", "N"
+        );
+        Book book = Book.create(req);
+        ReflectionTestUtils.setField(book, "bookId", id);
         return book;
     }
 }

@@ -16,9 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
 import java.util.Optional;
-import java.util.List;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,7 +37,6 @@ class BookServiceTest {
     @Mock
     private BookHoldRepository bookHoldRepository;
 
-
     private BookCreateRequest bookCreateReq;
     private BookUpdateRequest bookUpdateReq;
 
@@ -47,30 +46,35 @@ class BookServiceTest {
     @BeforeEach
     void setUp() {
         bookCreateReq = new BookCreateRequest(
-                "이펙티브 자바",
-                "소프트웨어",
-                "http//example.com/url",
                 "9788966261549",
-                LocalDateTime.of(2025, 9, 24, 10, 0, 0),
-                List.of("조슈아 블로크"),
-                List.of("김중완"),
+                null,
+                "이펙티브 자바",
+                "조슈아 블로크",
                 "인사이트",
+                LocalDate.of(2025, 9, 24),
+                "소프트웨어",
+                "http://example.com/thumbnail",
+                null,
+                null,
                 10000,
                 8000,
-                "http://example.com/thumbnail",
-                "정상"
+                "정상",
+                0,
+                null,
+                null,
+                "BOOK",
+                "N"
         );
 
         bookUpdateReq = new BookUpdateRequest(
                 "이펙티브 자바 3판",
-                "소프트웨어 엔지니어링",
-                "http//example.com/url/new",
-                List.of("조슈아 블로크", "김수현"),
-                List.of("김중완", "이승원"),
+                "조슈아 블로크, 김수현",
                 "인사이트",
+                "소프트웨어 엔지니어링",
+                "http://example.com/thumbnail/new",
                 12000,
                 10000,
-                "http://example.com/thumbnail/new"
+                "정상"
         );
 
         book = Book.create(bookCreateReq);
@@ -111,7 +115,7 @@ class BookServiceTest {
     @DisplayName("책 생성 성공 - 신규 도서")
     void createBook_success_new() {
         // Given
-        when(bookRepository.findByIsbn(bookCreateReq.isbn())).thenReturn(Optional.empty());
+        when(bookRepository.findByIsbn13(bookCreateReq.isbn13())).thenReturn(Optional.empty());
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         when(bookHoldRepository.save(any(BookHold.class))).thenReturn(bookHold);
 
@@ -119,23 +123,25 @@ class BookServiceTest {
         BookResponse result = bookService.create(bookCreateReq);
 
         // Then
-        verify(bookRepository, times(1)).findByIsbn(bookCreateReq.isbn());
+        assertThat(result).isNotNull();
+        verify(bookRepository, times(1)).findByIsbn13(bookCreateReq.isbn13());
         verify(bookRepository, times(1)).save(any(Book.class));
         verify(bookHoldRepository, times(1)).save(any(BookHold.class));
     }
 
     @Test
-    @DisplayName("책 생성 성공 - 기존 도서")
+    @DisplayName("책 생성 성공 - 기존 도서 (ISBN 중복 시 hold만 추가)")
     void createBook_success_existing() {
         // Given
-        when(bookRepository.findByIsbn(bookCreateReq.isbn())).thenReturn(Optional.of(book));
+        when(bookRepository.findByIsbn13(bookCreateReq.isbn13())).thenReturn(Optional.of(book));
         when(bookHoldRepository.save(any(BookHold.class))).thenReturn(bookHold);
 
         // When
         BookResponse result = bookService.create(bookCreateReq);
 
         // Then
-        verify(bookRepository, times(1)).findByIsbn(bookCreateReq.isbn());
+        assertThat(result).isNotNull();
+        verify(bookRepository, times(1)).findByIsbn13(bookCreateReq.isbn13());
         verify(bookRepository, times(0)).save(any(Book.class));
         verify(bookHoldRepository, times(1)).save(any(BookHold.class));
     }
@@ -152,7 +158,7 @@ class BookServiceTest {
 
         // Then
         assertThat(book.getTitle()).isEqualTo(bookUpdateReq.title());
-        assertThat(book.getContents()).isEqualTo(bookUpdateReq.contents());
+        assertThat(book.getDescription()).isEqualTo(bookUpdateReq.description());
         verify(bookRepository, times(1)).findById(bookId);
         verifyNoMoreInteractions(bookRepository);
     }
@@ -184,7 +190,7 @@ class BookServiceTest {
         CoreException ex = assertThrows(CoreException.class, () -> bookService.delete(bookId));
         assertEquals(ErrorType.BOOK_NOT_FOUND, ex.getErrorType());
         verify(bookRepository, times(1)).findById(bookId);
-        verify(bookRepository, times(0)).deleteByBookId(any());
+        verify(bookRepository, times(0)).delete(any());
         verify(bookHoldRepository, times(0)).deleteByBookId(any());
     }
 }

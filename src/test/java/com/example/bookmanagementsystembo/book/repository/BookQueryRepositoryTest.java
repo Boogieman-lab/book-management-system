@@ -19,7 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,7 +108,7 @@ class BookQueryRepositoryTest {
             Page<Book> result = bookQueryRepository.searchBooks(cond, PageRequest.of(0, 20));
 
             assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getContent().get(0).getIsbn()).isEqualTo("9788966262281");
+            assertThat(result.getContent().get(0).getIsbn13()).isEqualTo("9788966262281");
         }
 
         @Test
@@ -223,12 +223,12 @@ class BookQueryRepositoryTest {
         @DisplayName("getBookDetail: 재고 수량이 BookDetailRes에 포함된다")
         void getBookDetail_includesStockInfo() {
             // 이미 setUp에서 등록한 도서를 ISBN으로 찾아 테스트
-            Book book = bookRepository.findByIsbn("9788966262281").orElseThrow();
+            Book book = bookRepository.findByIsbn13("9788966262281").orElseThrow();
 
             BookDetailResponse detail = bookService.getBookDetail(book.getBookId());
 
             assertThat(detail.bookId()).isEqualTo(book.getBookId());
-            assertThat(detail.isbn()).isEqualTo("9788966262281");
+            assertThat(detail.isbn13()).isEqualTo("9788966262281");
             assertThat(detail.totalStock()).isGreaterThanOrEqualTo(1);
             assertThat(detail.availableStock()).isGreaterThanOrEqualTo(1);
         }
@@ -236,7 +236,7 @@ class BookQueryRepositoryTest {
         @Test
         @DisplayName("재고 카운트: countByBookIdAndStatus(AVAILABLE)이 정확하게 반환된다")
         void countByStatus_isAccurate() {
-            Book book = bookRepository.findByIsbn("9791162241769").orElseThrow();
+            Book book = bookRepository.findByIsbn13("9791162241769").orElseThrow();
 
             int total     = bookHoldRepository.countByBookId(book.getBookId());
             int available = bookHoldRepository.countByBookIdAndStatus(
@@ -253,10 +253,9 @@ class BookQueryRepositoryTest {
 
     private BookCreateRequest sampleReq(String title, String isbn, String author, String publisher) {
         return new BookCreateRequest(
-                title, "내용", "https://example.com/book", isbn,
-                LocalDateTime.now(),
-                List.of(author), List.of(),
-                publisher, 30000, 27000, "https://example.com/thumb.jpg", "정상"
+                isbn, null, title, author, publisher,
+                LocalDate.now(), null, null, null, null,
+                30000, 27000, "정상", 0, null, null, "BOOK", "N"
         );
     }
 }

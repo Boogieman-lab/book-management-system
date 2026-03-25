@@ -2,6 +2,7 @@ package com.example.bookmanagementsystembo.bookRequest.controller;
 
 import com.example.bookmanagementsystembo.bookRequest.service.BookRequestService;
 import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestCreateRequest;
+import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestResponse;
 import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryPageResponse;
 import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryResponse;
 import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestUpdateRequest;
@@ -42,6 +43,16 @@ public class BookRequestController {
             @RequestBody BookRequestUpdateRequest request
     ) {
         return ResponseEntity.ok(bookRequestService.update(bookRequestId, request));
+    }
+
+    // ── V1 API ──────────────────────────────────────────────────────────────
+
+    @PostMapping("/v1/book-requests")
+    public ResponseEntity<BookRequestResponse> createV1(
+            @RequestBody BookRequestCreateRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(bookRequestService.createV1(userDetails.getUserId(), request));
     }
 
 }

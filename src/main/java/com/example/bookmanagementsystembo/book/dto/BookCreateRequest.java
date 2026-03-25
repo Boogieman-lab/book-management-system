@@ -1,20 +1,25 @@
 package com.example.bookmanagementsystembo.book.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 public record BookCreateRequest(
+        String isbn13,
+        String isbn10,
         String title,
-        String contents,
-        String url,
-        String isbn,
-        LocalDateTime publishedAt,
-        List<String> authors,
-        List<String> translators,
+        String author,
         String publisher,
-        int price,
-        int salePrice,
-        String thumbnail,
-        String status
+        LocalDate pubDate,
+        String description,
+        String coverUrl,
+        Integer categoryId,
+        String categoryName,
+        int priceStandard,
+        int priceSales,
+        String stockStatus,
+        int customerReviewRank,
+        Integer seriesId,
+        String seriesName,
+        String mallType,
+        String adultYn
 ) {
 }

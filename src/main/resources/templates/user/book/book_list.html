@@ -95,7 +95,33 @@
         fetchBooks(0);
         initSearch();
         initFilterChips();
+        initBookGrid();
     });
+
+    /* ── 카드 클릭 위임 + 이미지 폴백 (이벤트 위임 방식) ──────────────── */
+    function initBookGrid() {
+        const grid = document.getElementById('bookGrid');
+
+        // 카드 클릭: data-book-id 속성을 읽어 페이지 이동 (onclick 인라인 제거)
+        grid.addEventListener('click', function (e) {
+            const card = e.target.closest('[data-book-id]');
+            if (!card) return;
+            const id = Number(card.dataset.bookId);
+            if (Number.isFinite(id) && id > 0) {
+                location.href = '/books/' + id;
+            }
+        });
+
+        // 이미지 로드 실패: onerror 인라인 핸들러 대신 캡처 단계 이벤트 위임
+        grid.addEventListener('error', function (e) {
+            if (e.target.tagName !== 'IMG' || !e.target.classList.contains('book-cover-img')) return;
+            const wrapper = e.target.parentElement;
+            const fallback = document.createElement('div');
+            fallback.className = 'book-cover-fallback w-full h-full flex items-center justify-center text-gray-300';
+            fallback.innerHTML = '<i class="fas fa-book text-4xl"></i>';
+            wrapper.replaceChild(fallback, e.target);
+        }, true);
+    }
 
     /* ── API 호출 ─────────────────────────────────────────────────────── */
     async function fetchBooks(page) {
@@ -146,6 +172,10 @@
         const isAvailable = (book.availableStock ?? 0) > 0;
         const stock       = book.availableStock ?? 0;
 
+        // [SECURITY] bookId는 반드시 정수여야 함 — 비정수 값은 카드 렌더링 스킵
+        const safeId = Number(book.bookId);
+        if (!Number.isFinite(safeId) || safeId <= 0) return '';
+
         const badge = isAvailable
             ? `<span class="absolute top-3 right-3 px-2.5 py-1 bg-boogie-light text-boogie-dark text-[10px] font-black rounded-full border border-boogie-main border-opacity-20 shadow-sm whitespace-nowrap">
                    대출가능 <span class="opacity-70">(${stock})</span>
@@ -154,15 +184,16 @@
                    예약가능
                </span>`;
 
+        // [SECURITY] coverUrl을 escapeHtml로 처리해 속성 탈출(XSS) 방지
+        // [SECURITY] onerror 인라인 핸들러 제거 — 이미지 에러는 이벤트 위임(initImageFallback)으로 처리
         const thumb = (book.coverUrl && book.coverUrl.trim())
-            ? `<img src="${book.coverUrl}" alt="${escapeHtml(book.title)}"
-                    class="w-full h-full object-cover"
-                    onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-300\\'><i class=\\'fas fa-book text-4xl\\'></i></div>'">`
-            : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-book text-4xl"></i></div>`;
+            ? `<img src="${escapeHtml(book.coverUrl)}" alt="${escapeHtml(book.title)}"
+                    class="w-full h-full object-cover book-cover-img">`
+            : `<div class="book-cover-fallback w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-book text-4xl"></i></div>`;
 
         return `
             <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-4 hover-lift cursor-pointer relative group"
-                 onclick="location.href='/books/${book.bookId}'">
+                 data-book-id="${safeId}">
                 ${badge}
                 <!-- 표지 -->
                 <div class="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 mb-3">

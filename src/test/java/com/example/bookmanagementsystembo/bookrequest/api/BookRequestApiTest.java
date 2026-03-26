@@ -4,9 +4,11 @@ import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestCreateReque
 import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryPageResponse;
 import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestSummaryResponse;
 import com.example.bookmanagementsystembo.bookRequest.dto.BookRequestUpdateRequest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 
+@Disabled("실제 서버(localhost:8080) 기동 및 유효한 JWT 토큰이 필요한 수동 통합 테스트")
 public class BookRequestApiTest {
     RestClient restClient = RestClient.create("http://localhost:8080");
 

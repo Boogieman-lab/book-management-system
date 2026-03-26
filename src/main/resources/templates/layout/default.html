@@ -109,24 +109,14 @@
                     <span class="font-pretendard font-black text-2xl tracking-tight text-gray-900 group-hover:text-boogie-main transition-colors duration-300">부기맨</span>
                 </a>
 
-                <!-- 중앙 권한별 메뉴 영역 (서버사이드 렌더링 — sec:authorize) -->
+                <!-- 중앙 사용자 메뉴 (서버사이드 렌더링 — sec:authorize) -->
                 <div class="flex-1 px-8 hidden md:flex items-center justify-center">
-
-                    <!-- 로그인한 사용자 공통 메뉴 (ROLE_USER, ROLE_ADMIN 모두 노출) -->
                     <nav sec:authorize="isAuthenticated()" class="flex space-x-8">
                         <a href="/about" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">소개</a>
                         <a href="/books" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">도서 검색</a>
                         <a href="/book-requests" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">희망 도서 신청</a>
+                        <a href="/notices" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">공지사항</a>
                         <a href="/user/mypage" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">마이페이지</a>
-
-                        <!-- 관리자 전용 메뉴 (ROLE_ADMIN만 렌더링) -->
-                        <th:block sec:authorize="hasRole('ADMIN')">
-                            <a href="/admin/books" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">도서 관리</a>
-                            <a href="/admin/borrows" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">대출/예약 관리</a>
-                            <a href="/admin/requests" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">신청 관리</a>
-                            <a href="/admin/users" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">회원 관리</a>
-                            <a href="/admin/dashboard" class="text-sm font-bold text-gray-700 hover:text-boogie-main transition-colors">통계</a>
-                        </th:block>
                     </nav>
                 </div>
 
@@ -139,12 +129,14 @@
                         <a href="/user/auth/signup" class="hover-lift px-5 py-2.5 text-sm font-bold text-white bg-boogie-main rounded-full shadow-sm hover:bg-boogie-dark">회원가입</a>
                     </div>
 
-                    <!-- 로그인 시: 관리자 배지 + 로그아웃 버튼 -->
+                    <!-- 로그인 시: 관리자 도구 버튼 + 로그아웃 -->
                     <div sec:authorize="isAuthenticated()" class="flex items-center space-x-2">
-                        <!-- 관리자 배지 (ROLE_ADMIN만 노출) -->
-                        <div sec:authorize="hasRole('ADMIN')" class="mr-2">
-                            <span class="px-3 py-1 text-xs font-bold text-white bg-red-500 rounded-full shadow-sm">관리자</span>
-                        </div>
+                        <!-- 관리자 전용 진입 버튼 (ROLE_ADMIN만 노출) -->
+                        <a sec:authorize="hasRole('ADMIN')" href="/admin/dashboard"
+                           class="hover-lift flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white rounded-full shadow-sm transition-colors"
+                           style="background: linear-gradient(135deg, #1f2937 0%, #374151 100%);">
+                            ⚙️ 관리자 도구
+                        </a>
                         <button id="logout-btn" class="px-5 py-2.5 text-sm font-bold text-gray-500 bg-gray-100 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors shadow-sm hover-lift">로그아웃</button>
                     </div>
                 </div>

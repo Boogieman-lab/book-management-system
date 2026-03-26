@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // ── 정적 리소스 (Thymeleaf 레이아웃용) ──────────────────────────
-                        .requestMatchers("/", "/about", "/css/**", "/js/**", "/images/**", "/favicon.svg").permitAll()
+                        .requestMatchers("/", "/about", "/notices", "/css/**", "/js/**", "/images/**", "/favicon.svg").permitAll()
 
                         // ── Swagger / OpenAPI ──────────────────────────────────────────
                         .requestMatchers(
@@ -70,8 +70,8 @@ public class SecurityConfig {
                         // ── Kakao OAuth 콜백 (공개) ────────────────────────────────────
                         .requestMatchers("/api/oauth/**").permitAll()
 
-                        // ── 관리자 전용 API (ROLE_ADMIN 필수) ─────────────────────────
-                        .requestMatchers("/api/v1/admin/**", "/api/admin/**")
+                        // ── 관리자 전용 뷰 및 API (ROLE_ADMIN 필수) ───────────────────
+                        .requestMatchers("/admin/**", "/api/v1/admin/**", "/api/admin/**")
                                 .hasAuthority("ROLE_ADMIN")
 
                         // ── UI 개발 임시 허용 (UI 완성 후 제거 예정) ──────────────────

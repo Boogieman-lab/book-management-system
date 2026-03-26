@@ -107,6 +107,7 @@ public class BookBorrowQueryRepositoryImpl implements BookBorrowQueryRepository 
     public Page<UserBorrowResponse> findByUserId(Long userId, BorrowStatus status, Pageable pageable) {
         List<UserBorrowResponse> content = qf
                 .select(Projections.constructor(UserBorrowResponse.class,
+                        bookBorrow.bookBorrowId,
                         book.title,
                         bookBorrow.bookHoldId,
                         bookBorrow.borrowDate,

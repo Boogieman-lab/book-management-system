@@ -43,11 +43,14 @@
 
 | 이벤트 | 발행 조건 | 알림 대상 |
 |--------|---------|---------|
-| `BORROW_APPROVED` | 희망도서 신청 승인 | 신청한 사용자 |
-| `BORROW_REJECTED` | 희망도서 신청 반려 | 신청한 사용자 |
+| `BOOK_REQUEST_APPROVED` | 희망도서 신청 승인 | 신청한 사용자 |
+| `BOOK_REQUEST_REJECTED` | 희망도서 신청 반려 | 신청한 사용자 |
+| `BOOK_REQUEST_ARRIVED` | 희망도서 실물 입고 완료 (ARRIVED 상태 전환) | 신청한 사용자 |
 | `RESERVATION_ARRIVED` | 예약 도서 반납됨 (차순위자) | 예약 대기 중인 사용자 |
 | `RETURN_DUE_SOON` | 반납 예정일 1일 전 | 대출 중인 사용자 |
 | `OVERDUE_NOTICE` | 연체 발생 | 연체 사용자 |
+
+> ⚠️ **타입명 주의**: `BORROW_APPROVED` / `BORROW_REJECTED` 명칭은 도서 대출(Borrow)과 혼동되므로 `BOOK_REQUEST_*` 접두어로 변경. DB 마이그레이션 및 코드 전체 일괄 수정 필요.
 
 ---
 

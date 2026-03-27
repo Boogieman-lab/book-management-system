@@ -8,18 +8,19 @@
 erDiagram
 
     USERS {
-        BIGINT          user_id          PK "사용자 ID"
-        VARCHAR(255)    email               "사용자 이메일 (UNIQUE, NOT NULL)"
-        VARCHAR(255)    password            "비밀번호"
-        VARCHAR(50)     name                "사용자 이름 (NOT NULL)"
-        BIGINT          department_id       "부서 ID (FK)"
-        VARCHAR(500)    profile_image       "프로필 이미지 URL"
-        VARCHAR(20)     role                "권한 (NOT NULL) - ROLE_USER, ROLE_ADMIN"
-        INT             login_fail_count    "로그인 실패 횟수"
-        BOOLEAN         is_locked           "계정 잠금 여부"
-        BOOLEAN         is_deleted          "소프트 삭제 플래그"
-        DATETIME        created_at          "생성일시"
-        DATETIME        updated_at          "수정일시"
+        BIGINT          user_id             PK "사용자 ID"
+        VARCHAR(255)    email                  "사용자 이메일 (UNIQUE, NOT NULL)"
+        VARCHAR(255)    password               "비밀번호"
+        VARCHAR(50)     name                   "사용자 이름 (NOT NULL)"
+        BIGINT          department_id          "부서 ID (FK)"
+        VARCHAR(500)    profile_image          "프로필 이미지 URL"
+        VARCHAR(20)     role                   "권한 (NOT NULL) - ROLE_USER, ROLE_ADMIN"
+        INT             login_fail_count       "로그인 실패 횟수"
+        BOOLEAN         is_locked              "계정 잠금 여부"
+        DATETIME        restriction_until      "연체 대출 제한 종료일 (overdue_record 캐시 — NULL이면 제한 없음)"
+        BOOLEAN         is_deleted             "소프트 삭제 플래그"
+        DATETIME        created_at             "생성일시"
+        DATETIME        updated_at             "수정일시"
     }
 
     DEPARTMENT {
@@ -102,7 +103,7 @@ erDiagram
         VARCHAR(255) publisher               "신청 출판사"
         VARCHAR(13)  isbn13                  "ISBN13"
         VARCHAR(512) reason                  "신청 사유"
-        VARCHAR(50)  status                  "신청 상태: PENDING, APPROVED, REJECTED"
+        VARCHAR(50)  status                  "신청 상태: PENDING, APPROVED, REJECTED, ARRIVED"
         VARCHAR(512) rejection_reason        "거절 사유"
         BOOLEAN      is_deleted              "소프트 삭제 플래그"
         DATETIME     created_at              "생성일시"
@@ -110,18 +111,19 @@ erDiagram
     }
 
     NOTIFICATION {
-        BIGINT      notification_id     PK  "알림 ID"
-        BIGINT      user_id             FK  "사용자 ID (NOT NULL)"
-        VARCHAR(50) type                    "알림 타입: BORROW_APPROVED, BORROW_REJECTED, RESERVATION_ARRIVED, RETURN_DUE_SOON, OVERDUE_NOTICE"
-        VARCHAR(255) title                  "알림 제목"
-        TEXT        message                 "알림 내용"
-        BIGINT      related_book_id         "관련 도서 ID (선택)"
-        BIGINT      related_borrow_id       "관련 대출 ID (선택)"
-        BIGINT      related_reservation_id  "관련 예약 ID (선택)"
-        BOOLEAN     is_read                 "읽음 여부"
-        DATETIME    read_at                 "읽음 일시"
-        DATETIME    created_at              "생성일시"
-        DATETIME    updated_at              "수정일시"
+        BIGINT      notification_id         PK  "알림 ID"
+        BIGINT      user_id                 FK  "사용자 ID (NOT NULL)"
+        VARCHAR(50) type                        "알림 타입: BOOK_REQUEST_APPROVED, BOOK_REQUEST_REJECTED, BOOK_REQUEST_ARRIVED, RESERVATION_ARRIVED, RETURN_DUE_SOON, OVERDUE_NOTICE"
+        VARCHAR(255) title                      "알림 제목"
+        TEXT        message                     "알림 내용"
+        BIGINT      related_book_id             "관련 도서 ID (선택)"
+        BIGINT      related_borrow_id           "관련 대출 ID (선택)"
+        BIGINT      related_reservation_id      "관련 예약 ID (선택)"
+        BIGINT      related_book_request_id     "관련 희망도서 신청 ID (선택)"
+        BOOLEAN     is_read                     "읽음 여부"
+        DATETIME    read_at                     "읽음 일시"
+        DATETIME    created_at                  "생성일시"
+        DATETIME    updated_at                  "수정일시"
     }
 
     POLICY {
@@ -140,7 +142,8 @@ erDiagram
         BIGINT      book_borrow_id      FK  "대출 ID (NOT NULL)"
         INT         overdue_days            "연체 일수"
         INT         restriction_days        "대출 제한 일수"
-        DATETIME    restriction_until      "제한 종료일"
+        DATETIME    restriction_until       "제한 종료일"
+        BOOLEAN     is_deleted              "소프트 삭제 플래그 (감사 데이터 보호 — 삭제 시 대출 제한 우회 방지)"
         DATETIME    created_at              "생성일시"
         DATETIME    updated_at              "수정일시"
     }
@@ -177,7 +180,8 @@ erDiagram
   - `email`: 회원 식별 기준 (UNIQUE)
   - `role`: ROLE_USER (기본값) 또는 ROLE_ADMIN
   - `login_fail_count`: 5회 이상 실패 시 `is_locked = true`
-  - `is_locked`: 계정 잠금 상태
+  - `is_locked`: 계정 잠금 상태 (관리자가 `PATCH /admin/users/{id}/unlock`으로 해제)
+  - `restriction_until`: 연체로 인한 대출 제한 종료일 캐시. `overdue_record` 생성 시 동기 갱신. `NULL` 또는 현재 시간 이전이면 대출 가능
 - **Soft Delete**: `is_deleted` 플래그로 논리적 삭제
 
 ### BOOK (도서)
@@ -223,19 +227,22 @@ erDiagram
 - **역할**: 사용자의 도서 신청 건
 - **상태**:
   - `PENDING`: 승인 대기 중
-  - `APPROVED`: 관리자 승인 완료
+  - `APPROVED`: 관리자 승인 완료 (구매 진행 중)
   - `REJECTED`: 관리자 거절
+  - `ARRIVED`: 실물 입고 완료 → Book + BookHold 생성됨
 - **목적**: 사내 미보유 도서 구매 신청
+- **알림**: 상태 변경 시 신청자에게 `BOOK_REQUEST_APPROVED` / `BOOK_REQUEST_REJECTED` / `BOOK_REQUEST_ARRIVED` 알림 발송
 
 ### NOTIFICATION (알림)
 - **역할**: 실시간 알림 저장소
 - **타입**:
-  - `BORROW_APPROVED`: 희망도서 신청 승인
-  - `BORROW_REJECTED`: 희망도서 신청 반려
-  - `RESERVATION_ARRIVED`: 예약 도서 도착
-  - `RETURN_DUE_SOON`: 반납 예정일 1일 전
-  - `OVERDUE_NOTICE`: 연체 발생
-- **구현**: DB 저장 + SSE 실시간 전달 (향후)
+  - `BOOK_REQUEST_APPROVED`: 희망도서 신청 승인 (`related_book_request_id` 참조)
+  - `BOOK_REQUEST_REJECTED`: 희망도서 신청 반려 (`related_book_request_id` 참조)
+  - `BOOK_REQUEST_ARRIVED`: 희망도서 실물 입고 완료 (`related_book_request_id`, `related_book_id` 참조)
+  - `RESERVATION_ARRIVED`: 예약 도서 반납됨 — 수령 가능 (`related_reservation_id`, `related_book_id` 참조)
+  - `RETURN_DUE_SOON`: 반납 예정일 1일 전 (`related_borrow_id` 참조)
+  - `OVERDUE_NOTICE`: 연체 발생 (`related_borrow_id` 참조)
+- **구현**: DB 저장 + Redis Pub/Sub + SSE 실시간 전달
 
 ### OVERDUE_RECORD (연체 기록)
 - **역할**: 사용자의 연체 패널티 추적
@@ -279,14 +286,16 @@ erDiagram
 
 다음 엔티티들은 **Hard Delete 금지**, `is_deleted` 플래그 사용:
 
-- USERS
-- BOOK
-- BOOK_HOLD
-- BOOK_BORROW
-- BOOK_REQUEST
-- RESERVATION
-- OVERDUE_RECORD
-- DEPARTMENT
+| 엔티티 | Soft Delete 이유 |
+|--------|----------------|
+| USERS | 탈퇴 후 대출/예약 이력 보존 |
+| BOOK | 폐기 도서의 대출 이력 연결 유지 |
+| BOOK_HOLD | 실물 폐기 후 과거 대출 이력 보존 |
+| BOOK_BORROW | 반납 이력 보존 (통계/감사 목적) |
+| BOOK_REQUEST | 거절/취소된 신청 이력 보존 |
+| RESERVATION | 만료/취소된 예약 이력 보존 |
+| OVERDUE_RECORD | **감사 목적 — Hard Delete 시 대출 제한 우회 가능** |
+| DEPARTMENT | 부서 변경/삭제 후 소속 이력 보존 |
 
 쿼리 시 자동으로 `WHERE is_deleted = false` 조건 추가:
 

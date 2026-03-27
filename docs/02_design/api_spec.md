@@ -44,7 +44,7 @@
 
 | HTTP | URL Endpoint | 기능 설명 요약 | 요구 보호수준 (Auth) | 구현 여부 |
 |---|---|---|---|---|
-| POST | `/borrows` | 보유 재고를 대상으로 신규 '대출 이력' 생성 실행 (1인 제한 방어 필요) | User | ✅ |
+| POST | `/borrows` | 보유 재고를 대상으로 신규 '대출 이력' 생성 실행 (1인 제한 방어 필요). `book_hold.status=RESERVE_HOLD`인 경우 해당 도서의 `NOTIFIED` 예약자 본인만 대출 허용 (`reservationId` 함께 전달) | User | 🔶 |
 | POST | `/borrows/{borrowId}/return` | 도서물 점유를 포기/반납 실행 통지 (본인 IDOR 검증 진행 통과) | User | ✅ |
 | POST | `/borrows/{borrowId}/extend` | 대출 7일 연장 권한 청구 (단 1회, 해당 도서 예약자 없을 시 관리자 승인 후 인정됨) | User | ❌ |
 | GET | `/admin/borrows` | [관리자용] 현재 시스템 대출자 확인 및 미납 명단 조회 | Admin | ✅ |
@@ -79,6 +79,7 @@
 |---|---|---|---|---|
 | GET | `/notifications` | 어플리케이션 안의 내가 받은 (문자제외/플랫폼 내부) 수신 알람 | User | ✅ |
 | PATCH | `/notifications/{notificationId}/read` | 신규 표시 (1 마크) 지우기 및 읽음 강제 지정 처방 | User | ✅ |
+| GET | `/notifications/subscribe` | SSE 구독 엔드포인트 — EventSource 연결 수립, 하트비트 30초 간격 전송 (타임아웃 5분) | User | ❌ |
 
 ---
 
@@ -100,6 +101,7 @@
 |---|---|---|---|---|
 | GET | `/admin/users` | 플랫폼의 전체 사용자(회원) 목록 조회 (R2) | Admin | ❌ |
 | PATCH | `/admin/users/{userId}/role` | 관리자 레벨로 임직원을 진급/격하 권한 적용 (User ↔ Admin) (R2) | Admin | ❌ |
+| PATCH | `/admin/users/{userId}/unlock` | 로그인 5회 실패로 잠긴 계정 해제 — `is_locked=false`, `login_fail_count=0` 초기화 (R1) | Admin | ❌ |
 | PATCH | `/admin/users/{userId}/status` | [관리자용] 사원 비활성화/정보 변경 통합 관리 (R3) | Admin | ❌ |
 | GET | `/admin/stats/borrows` | 월별 대출량 등 통계 리포트 조회 (R2) | Admin | ❌ |
 | GET | `/admin/stats/popular-books` | 사용자 타깃 인기 도서, 최대 대출 통계 순위 조회 (R2) | Admin | ❌ |

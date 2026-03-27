@@ -58,10 +58,28 @@ sequenceDiagram
         Server->>DB: SELECT * FROM book_hold WHERE book_hold_id = ?<br>WITH PESSIMISTIC_WRITE (동시성 제어)
         DB-->>Server: BookHold 레코드 락 획득
 
-        alt 재고 없음 (status != AVAILABLE)
+        alt 재고 없음 (status = LOST or DISCARDED)
             DB->>Server: 락 해제
             Server-->>Client: HTTP 409 (NOT_AVAILABLE)
-        else 재고 있음
+
+        else status = RESERVE_HOLD (예약 보관 중)
+            Server->>DB: SELECT * FROM reservation<br>WHERE book_id = ? AND status = 'NOTIFIED'<br>ORDER BY reservation_order ASC LIMIT 1
+            DB-->>Server: NOTIFIED 예약자 정보
+
+            alt 요청자가 NOTIFIED 예약자 본인이 아님
+                DB->>Server: 락 해제
+                Server-->>Client: HTTP 403 (FORBIDDEN — 예약자 본인만 수령 가능)
+            else 예약자 본인
+                Server->>Server: due_date = now() + 14days
+                Server->>DB: INSERT INTO book_borrow<br>(book_hold_id, user_id, borrow_date, due_date, status='ACTIVE')
+                Server->>DB: UPDATE book_hold SET status='BORROWED'
+                Server->>DB: UPDATE reservation SET status='RESERVED'<br>WHERE reservation_id = ?
+                DB->>Server: 락 해제 (COMMIT)
+                Server-->>Client: HTTP 201 CREATED { borrowId, dueDate }
+                Client-->>User: "예약 도서 대출 완료! 반납 예정일: {dueDate}"
+            end
+
+        else status = AVAILABLE (일반 대출)
             Server->>Server: due_date = now() + 14days (대출 기간)
             Server->>DB: INSERT INTO book_borrow<br>(book_hold_id, user_id, borrow_date, due_date, status='ACTIVE')
             DB-->>Server: borrow_id 반환
@@ -71,7 +89,7 @@ sequenceDiagram
 
             DB->>Server: 락 해제 (COMMIT)
 
-            Server->>Event: publish(BorrowCreatedEvent)<br>기존 예약자가 있는 경우 처리
+            Server->>Event: publish(BorrowCreatedEvent)
 
             Server-->>Client: HTTP 201 CREATED { borrowId, dueDate }
             Client-->>User: "대출 완료! 반납 예정일: {dueDate}" 알림

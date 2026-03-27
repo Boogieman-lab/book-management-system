@@ -78,6 +78,28 @@ sequenceDiagram
             Server->>DB: UPDATE reservation<br>SET status='CANCELLED', updated_at=now()
             DB-->>Server: 완료
 
+            Note over Server,DB: 취소한 예약이 1순위(NOTIFIED)이고<br>book_hold가 RESERVE_HOLD 상태인 경우 즉시 승계
+
+            Server->>DB: SELECT * FROM book_hold<br>WHERE book_id = ? AND status = 'RESERVE_HOLD'
+            DB-->>Server: 보관 중인 도서 정보
+
+            alt RESERVE_HOLD 도서 존재 (1순위가 NOTIFIED 상태였던 경우)
+                Server->>DB: SELECT * FROM reservation<br>WHERE book_id = ? AND status = 'WAITING'<br>ORDER BY reservation_order ASC LIMIT 1
+                DB-->>Server: 다음 대기자 (없으면 null)
+
+                alt 다음 대기자 존재 (2순위 → 1순위 승계)
+                    Server->>DB: UPDATE reservation<br>SET status='NOTIFIED', notified_at=now()<br>WHERE reservation_id = ?
+                    DB-->>Server: 승계 완료
+
+                    Server->>Event: publish(ReservationArrivedEvent)<br>{ userId: 승계된_user_id }
+                    Note over Event: 비동기 알림: "예약 도서가 도착했습니다. 4일 이내 수령해주세요"
+
+                else 대기자 없음 → 도서 AVAILABLE 전환
+                    Server->>DB: UPDATE book_hold SET status='AVAILABLE'
+                    DB-->>Server: 완료
+                end
+            end
+
             Server-->>Client: HTTP 204 NO CONTENT
             Client-->>User: "예약이 취소되었습니다"
         end

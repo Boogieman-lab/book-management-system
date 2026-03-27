@@ -32,7 +32,7 @@ sequenceDiagram
         Event->>DB: INSERT INTO notification<br>(user_id, type='BORROW_APPROVED', message='...')
         DB-->>Event: 알림 저장
 
-        Event->>Redis: PUBLISH channel:user:{userId} { type: 'BORROW_APPROVED', ... }
+        Event->>Redis: PUBLISH channel:user:{userId} { type: 'BOOK_REQUEST_APPROVED', ... }
         Redis-->>Event: 발행 완료
     end
 ```
@@ -155,7 +155,7 @@ sequenceDiagram
     participant Client as 사용자 브라우저
 
     Admin->>Event: 희망도서 [승인]
-    Event->>Redis: PUBLISH channel:user:5<br>{ type: 'BORROW_APPROVED',<br>title: '자바의 정석',<br>message: '승인되었습니다' }
+    Event->>Redis: PUBLISH channel:user:5<br>{ type: 'BOOK_REQUEST_APPROVED',<br>title: '자바의 정석',<br>message: '승인되었습니다' }
     Event->>DB: INSERT notification
 
     Redis-->>Client: SSE 실시간 전달
@@ -324,8 +324,9 @@ function markAsRead(notificationId) {
 
 | 타입 | 트리거 | 발행자 | 수신자 | 구현 상태 |
 |------|--------|--------|--------|---------|
-| `BORROW_APPROVED` | 희망도서 신청 승인 | EventListener | 신청 사용자 | ✅ 완료 (UI 전달 대기) |
-| `BORROW_REJECTED` | 희망도서 신청 거절 | EventListener | 신청 사용자 | ✅ 완료 (UI 전달 대기) |
+| `BOOK_REQUEST_APPROVED` | 희망도서 신청 승인 | EventListener | 신청 사용자 | ✅ 완료 (UI 전달 대기) |
+| `BOOK_REQUEST_REJECTED` | 희망도서 신청 거절 | EventListener | 신청 사용자 | ✅ 완료 (UI 전달 대기) |
+| `BOOK_REQUEST_ARRIVED` | 희망도서 실물 입고 완료 | EventListener | 신청 사용자 | ❌ 미구현 |
 | `RESERVATION_ARRIVED` | 예약 도서 반납 (1순위) | EventListener | 예약 사용자 | ❌ 미구현 (EventListener 등록 필요) |
 | `RETURN_DUE_SOON` | 반납 예정일 1일 전 | @Scheduled | 대출 사용자 | ❌ 미구현 (배치 작업 필요) |
 | `OVERDUE_NOTICE` | 연체 발생 | EventListener | 연체 사용자 | ❌ 미구현 (배치 작업 필요) |

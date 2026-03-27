@@ -99,11 +99,19 @@ public class AladinBookSearchService {
                 item.title(),
                 parseAuthors(item.author()),
                 item.publisher(),
-                item.pubdate(),
+                item.pubDate(),
                 enhanceCover(item.cover()),
                 normalizeIsbn(item.isbn13(), item.isbn()),
                 item.description(),
-                item.categoryName()
+                item.categoryName(),
+                item.isbn(),
+                item.categoryId(),
+                item.priceStandard(),
+                item.priceSales(),
+                item.mallType(),
+                item.stockStatus(),
+                item.adult() ? "Y" : "N",
+                item.customerReviewRank()
         );
     }
 

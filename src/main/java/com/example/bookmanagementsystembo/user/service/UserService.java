@@ -156,6 +156,17 @@ public class UserService {
         user.updateRole(role);
     }
 
+    /**
+     * 잠긴 계정을 해제합니다 (관리자 전용).
+     * 로그인 실패 횟수를 초기화하고 잠금을 해제합니다.
+     */
+    @Transactional
+    public void unlockUser(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
+        user.resetLoginFailCount();
+    }
+
     private String resolveDepartmentName(Long departmentId) {
         if (departmentId == null) {
             return null;

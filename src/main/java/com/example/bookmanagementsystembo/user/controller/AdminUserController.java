@@ -43,4 +43,11 @@ public class AdminUserController {
         userService.updateRole(userId, request.role());
         return ResponseEntity.ok().build();
     }
+
+    /** 잠긴 계정 해제 */
+    @PatchMapping("/{userId}/unlock")
+    public ResponseEntity<Void> unlockUser(@PathVariable Long userId) {
+        userService.unlockUser(userId);
+        return ResponseEntity.ok().build();
+    }
 }

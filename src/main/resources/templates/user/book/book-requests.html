@@ -237,7 +237,14 @@
                 </div>
 
                 <!-- 검색창 -->
-                <div class="px-6 py-4 border-b border-gray-100 flex-shrink-0">
+                <div class="px-6 py-4 border-b border-gray-100 flex-shrink-0 space-y-2">
+                    <select id="modalSearchTarget"
+                            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-boogie-light focus:border-boogie-main transition-all">
+                        <option value="keyword">제목+저자</option>
+                        <option value="title">제목</option>
+                        <option value="author">저자</option>
+                        <option value="publisher">출판사</option>
+                    </select>
                     <div class="flex bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-boogie-light focus-within:border-boogie-main transition-all">
                         <input id="modalSearchInput" type="text"
                                placeholder="검색어를 입력하고 엔터를 누르세요"
@@ -584,11 +591,11 @@
         });
     }
 
-    async function fetchAllDocs(query) {
+    async function fetchAllDocs(query, target) {
         const collected = [];
         let kakaoPage   = 1;
         while (true) {
-            const res = await fetch(`/api/v1/external/aladin/books?target=title&query=${encodeURIComponent(query)}&size=50&page=${kakaoPage}`);
+            const res = await fetch(`/api/v1/external/aladin/books?target=${encodeURIComponent(target)}&query=${encodeURIComponent(query)}&size=50&page=${kakaoPage}`);
             if (!res.ok) throw new Error(res.status);
             const data = await res.json();
             collected.push(...(data.documents ?? []));
@@ -604,8 +611,9 @@
         allDocs     = [];
         currentPage = 0;
 
+        const target = document.getElementById('modalSearchTarget').value;
         try {
-            allDocs = await fetchAllDocs(query);
+            allDocs = await fetchAllDocs(query, target);
             if (!allDocs.length) { showState('modalEmpty'); return; }
             renderPage(0);
         } catch {

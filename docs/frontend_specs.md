@@ -83,11 +83,11 @@
 | **UI-BKS-002** | **도서** | 도서 상세 조회 및 대출/예약 창    | `/books/{bookId}`q          | `GET /api/v1/books/{bookId}`<br>`POST /api/v1/borrows`<br>`POST /api/v1/reservations` | `Done` | `Pending` |
 | **UI-REQ-001** | **신청** | 희망 도서 외부 검색 모달        | `팝업(Modal)`                 | `GET /api/v1/books/search?source=external&q=` | `Done` | `Pending` |
 | **UI-REQ-002** | **신청** | 외부 도서 반입(희망) 신청 폼     | `/book-requests`            | `POST /api/v1/book-requests` | `Done` | `Pending` |
-| **UI-REQ-003** | **신청** | 희망 도서 신청 내역           | `/book-requests`            | `GET /api/v1/book-requests` | `Not Started` | `-` |
-| **UI-MYP-001** | **마이페이지** | 개인 프로필 통합 홈 & 수정      | `/user/mypage`              | `GET /api/v1/users/me`<br>`PATCH /api/v1/users/me` | `Not Started` | `-` |
-| **UI-MYP-002** | **마이페이지** | 대출/반납 이력 탭            | `/user/mypage?tab=borrows`  | `GET /api/v1/users/me/borrows`<br>`PATCH /api/v1/borrows/{id}` + `{"status":"RETURNED"}`<br>`POST /api/v1/borrows/{id}/extensions` | `Not Started` | `-` |
-| **UI-MYP-003** | **마이페이지** | 현재 예약 및 대기열 탭         | `/user/mypage?tab=reserv`   | `GET /api/v1/users/me/reservations`<br>`DELETE /api/v1/reservations/{id}` | `Not Started` | `-` |
-| **UI-MYP-005** | **마이페이지** | 인앱 수신 알림함 탭           | `/user/mypage?tab=noti`     | `GET /api/v1/notifications`<br>`PATCH /api/v1/notifications/{id}` + `{"isRead":true}` | `Not Started` | `-` |
+| **UI-REQ-003** | **신청** | 희망 도서 신청 내역           | `/book-requests`            | `GET /api/v1/book-requests` | `Done` | `Pending` |
+| **UI-MYP-001** | **마이페이지** | 개인 프로필 통합 홈 & 수정      | `/user/mypage`              | `GET /api/v1/users/me`<br>`PATCH /api/v1/users/me` | `Done` | `Pending` |
+| **UI-MYP-002** | **마이페이지** | 대출/반납 이력 탭            | `/user/mypage?tab=borrows`  | `GET /api/v1/users/me/borrows`<br>`PATCH /api/v1/borrows/{id}` + `{"status":"RETURNED"}`<br>`POST /api/v1/borrows/{id}/extensions` | `Done` | `Pending` |
+| **UI-MYP-003** | **마이페이지** | 현재 예약 및 대기열 탭         | `/user/mypage?tab=reserv`   | `GET /api/v1/users/me/reservations`<br>`DELETE /api/v1/reservations/{id}` | `Done` | `Pending` |
+| **UI-MYP-005** | **마이페이지** | 인앱 수신 알림함 탭           | `/user/mypage?tab=noti`     | `GET /api/v1/notifications`<br>`PATCH /api/v1/notifications/{id}` + `{"isRead":true}` | `Done` | `Pending` |
 | **UI-INF-001** | **정보** | About 프로젝트 소개 (정적)    | `/about`                    | ❌ API 없음 | `Done` | `-` |
 | **UI-INF-002** | **정보** | 이용안내 및 시스템 공지사항       | `/notices`                  | `GET /api/v1/notices?page=&size=`<br>`GET /api/v1/notices/{id}` | `Not Started` | `-` |
 | **UI-ADM-001** | **관리자** | 어드민 대시보드 (통계 메인)      | `/admin/dashboard`          | `GET /api/v1/admin/stats/overview` | `Not Started` | `-` |

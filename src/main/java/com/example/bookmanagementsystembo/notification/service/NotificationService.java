@@ -54,4 +54,15 @@ public class NotificationService {
 
         notification.markAsRead();
     }
+
+    /**
+     * 현재 사용자의 미읽음 알림을 전체 읽음 처리합니다.
+     * 단일 UPDATE 쿼리로 N+1 없이 일괄 처리합니다.
+     *
+     * @param userId 현재 로그인 사용자 ID
+     */
+    @Transactional
+    public void markAllAsRead(Long userId) {
+        notificationRepository.markAllAsReadByUserId(userId);
+    }
 }

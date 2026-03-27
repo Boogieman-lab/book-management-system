@@ -87,7 +87,7 @@ public class Users extends BaseEntity {
             this.name = name;
         }
         if (profileImage != null) {
-            this.profileImage = profileImage;
+            this.profileImage = profileImage.isBlank() ? null : profileImage;
         }
     }
 

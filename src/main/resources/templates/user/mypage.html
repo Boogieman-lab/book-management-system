@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>마이페이지</title>
+</head>
+<body>
+
+<th:block layout:fragment="head">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* ── 탭 버튼 ──────────────────────────────────────────── */
+        .tab-btn {
+            transition: all .2s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            color: #00A760;
+            border-bottom-color: #00A760;
+            font-weight: 700;
+        }
+
+        /* ── 상태 필터 버튼 ──────────────────────────────────── */
+        .filter-btn { transition: all .15s ease; }
+        .filter-btn.active { background: #00A760; color: #fff; border-color: #00A760; }
+
+        /* ── 탭 패널 ──────────────────────────────────────────── */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── 상태 뱃지 공통 ──────────────────────────────────── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 99px;
+            font-size: .72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* ── 프로필 아바타 ───────────────────────────────────── */
+        .avatar-ring {
+            border: 3px solid #00A760;
+            padding: 2px;
+            border-radius: 50%;
+        }
+
+        /* ── 알림 읽음/미읽음 ────────────────────────────────── */
+        .noti-unread { background: #E1F7EF; }
+        .noti-dot { width: 8px; height: 8px; background: #00A760; border-radius: 50%; flex-shrink: 0; }
+
+        /* ── 스크롤바 ────────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    </style>
+</th:block>
+
+<th:block layout:fragment="content">
+
+    <!-- ────────────────────────────────────────────────────────
+         페이지 헤더
+    ──────────────────────────────────────────────────────────── -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-black text-gray-900">마이페이지</h1>
+        <p class="text-sm text-gray-500 mt-1">내 계정 정보와 대출·예약·알림 내역을 확인하세요.</p>
+    </div>
+
+    <!-- ────────────────────────────────────────────────────────
+         탭 네비게이션
+    ──────────────────────────────────────────────────────────── -->
+    <div class="flex gap-1 border-b border-gray-200 mb-8 overflow-x-auto">
+        <button class="tab-btn px-5 py-3 text-sm text-gray-500 whitespace-nowrap" data-tab="profile">
+            <i class="fa-regular fa-user mr-1.5"></i>프로필
+        </button>
+        <button class="tab-btn px-5 py-3 text-sm text-gray-500 whitespace-nowrap" data-tab="borrows">
+            <i class="fa-solid fa-book-open mr-1.5"></i>대출 내역
+        </button>
+        <button class="tab-btn px-5 py-3 text-sm text-gray-500 whitespace-nowrap" data-tab="reserv">
+            <i class="fa-regular fa-bookmark mr-1.5"></i>예약 현황
+        </button>
+        <button class="tab-btn px-5 py-3 text-sm text-gray-500 whitespace-nowrap" data-tab="noti">
+            <i class="fa-regular fa-bell mr-1.5"></i>알림함
+            <span id="noti-unread-badge" class="ml-1.5 hidden px-1.5 py-0.5 text-[10px] font-bold text-white rounded-full"
+                  style="background: linear-gradient(135deg, #00A760 0%, #10B981 100%);">0</span>
+        </button>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         [탭 1] 프로필 (UI-MYP-001)
+    ════════════════════════════════════════════════════════════ -->
+    <div id="panel-profile" class="tab-panel">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- 프로필 카드 -->
+            <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50 flex flex-col items-center text-center hover-lift">
+                <!-- 아바타 -->
+                <div class="avatar-ring mb-4">
+                    <div id="profile-avatar-wrap" class="w-20 h-20 rounded-full overflow-hidden bg-boogie-light flex items-center justify-center">
+                        <i class="fa-solid fa-user text-3xl text-boogie-main"></i>
+                    </div>
+                </div>
+                <p id="profile-name" class="text-xl font-black text-gray-900">-</p>
+                <p id="profile-email" class="text-sm text-gray-500 mt-1">-</p>
+                <div class="flex items-center gap-2 mt-3">
+                    <span id="profile-dept" class="px-3 py-1 text-xs font-bold text-boogie-main bg-boogie-light rounded-full">-</span>
+                    <span id="profile-role" class="px-3 py-1 text-xs font-bold text-white rounded-full"
+                          style="background: linear-gradient(135deg, #00A760 0%, #10B981 100%);">USER</span>
+                </div>
+                <p id="profile-joined" class="text-xs text-gray-400 mt-4">가입일: -</p>
+            </div>
+
+            <!-- 프로필 수정 폼 -->
+            <div class="lg:col-span-2 bg-white rounded-[32px] p-8 shadow-sm border border-gray-50">
+                <h2 class="text-lg font-black text-gray-900 mb-6">프로필 수정</h2>
+
+                <form id="profile-form" novalidate>
+                    <!-- 이름 -->
+                    <div class="mb-5">
+                        <label for="input-name" class="block text-sm font-bold text-gray-700 mb-1.5">이름</label>
+                        <input id="input-name" type="text" name="name"
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main/30 focus:border-boogie-main transition"
+                               placeholder="변경할 이름을 입력하세요"
+                               maxlength="30" required>
+                        <p id="name-error" class="hidden mt-1 text-xs text-red-500">이름은 1자 이상 30자 이하로 입력하세요.</p>
+                    </div>
+
+                    <!-- 프로필 이미지 URL -->
+                    <div class="mb-5">
+                        <label for="input-profile-image" class="block text-sm font-bold text-gray-700 mb-1.5">프로필 이미지 URL</label>
+                        <input id="input-profile-image" type="url" name="profileImage"
+                               class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main/30 focus:border-boogie-main transition"
+                               placeholder="https://example.com/avatar.png">
+                        <p id="image-error" class="hidden mt-1 text-xs text-red-500">올바른 URL 형식을 입력하세요.</p>
+                    </div>
+
+                    <button type="submit"
+                            class="hover-lift w-full py-3 text-sm font-bold text-white rounded-2xl transition-colors"
+                            style="background: linear-gradient(135deg, #00A760 0%, #10B981 100%);">
+                        <i class="fa-solid fa-floppy-disk mr-1.5"></i>저장하기
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         [탭 2] 대출 내역 (UI-MYP-002)
+    ════════════════════════════════════════════════════════════ -->
+    <div id="panel-borrows" class="tab-panel">
+        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <h2 class="text-lg font-black text-gray-900">대출 / 반납 이력</h2>
+                <!-- 상태 필터 -->
+                <div class="flex flex-wrap gap-2" id="borrow-filters">
+                    <button class="filter-btn active px-4 py-1.5 text-xs font-bold rounded-full border border-gray-200 text-gray-600" data-status="">전체</button>
+                    <button class="filter-btn px-4 py-1.5 text-xs font-bold rounded-full border border-gray-200 text-gray-600" data-status="BORROWED">대출중</button>
+                    <button class="filter-btn px-4 py-1.5 text-xs font-bold rounded-full border border-gray-200 text-gray-600" data-status="RETURNED">반납완료</button>
+                    <button class="filter-btn px-4 py-1.5 text-xs font-bold rounded-full border border-gray-200 text-gray-600" data-status="OVERDUE">연체</button>
+                </div>
+            </div>
+
+            <!-- 대출 목록 -->
+            <div id="borrow-list" class="space-y-3">
+                <!-- JS로 렌더링 -->
+                <div class="text-center py-12 text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i>
+                    <p class="text-sm">불러오는 중...</p>
+                </div>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div id="borrow-pagination" class="flex justify-center gap-2 mt-6"></div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         [탭 3] 예약 현황 (UI-MYP-003)
+    ════════════════════════════════════════════════════════════ -->
+    <div id="panel-reserv" class="tab-panel">
+        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50">
+            <h2 class="text-lg font-black text-gray-900 mb-6">현재 예약 및 대기열</h2>
+
+            <div id="reserv-list" class="space-y-3">
+                <div class="text-center py-12 text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i>
+                    <p class="text-sm">불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         [탭 4] 알림함 (UI-MYP-005)
+    ════════════════════════════════════════════════════════════ -->
+    <div id="panel-noti" class="tab-panel">
+        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-black text-gray-900">인앱 알림함</h2>
+                <button id="mark-all-read-btn"
+                        class="px-4 py-1.5 text-xs font-bold text-boogie-main bg-boogie-light rounded-full hover:bg-green-100 transition-colors">
+                    <i class="fa-solid fa-check-double mr-1"></i>전체 읽음
+                </button>
+            </div>
+
+            <div id="noti-list" class="space-y-2">
+                <div class="text-center py-12 text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i>
+                    <p class="text-sm">불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<!-- ════════════════════════════════════════════════════════════
+     스크립트
+════════════════════════════════════════════════════════════════ -->
+<th:block layout:fragment="script">
+<script>
+/* ═══════════════════════════════════════════════════════════
+   유틸 함수
+═══════════════════════════════════════════════════════════ */
+const escHtml = (s) => {
+    const d = document.createElement('div');
+    d.textContent = s ?? '';
+    return d.innerHTML;
+};
+
+const fmtDate = (iso) => {
+    if (!iso) return '-';
+    return new Date(iso).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+};
+
+const borrowStatusLabel = (s) => ({
+    BORROWED: { text: '대출중',   cls: 'bg-blue-100 text-blue-700' },
+    RETURNED: { text: '반납완료', cls: 'bg-gray-100 text-gray-500' },
+    OVERDUE:  { text: '연체',     cls: 'bg-red-100 text-red-600' },
+}[s] ?? { text: s, cls: 'bg-gray-100 text-gray-500' });
+
+const reservStatusLabel = (s) => ({
+    WAITING: { text: '대기중', cls: 'bg-yellow-100 text-yellow-700' },
+    EXPIRED: { text: '만료됨', cls: 'bg-red-100 text-red-400' },
+}[s] ?? { text: s, cls: 'bg-gray-100 text-gray-500' });
+
+const notiTypeIcon = (t) => ({
+    BORROW_DUE_SOON:       'fa-clock text-yellow-500',
+    BORROW_OVERDUE:        'fa-triangle-exclamation text-red-500',
+    RESERVATION_ARRIVED:   'fa-bookmark text-boogie-main',
+    RESERVATION_EXPIRED:   'fa-bookmark text-gray-400',
+    BOOK_REQUEST_APPROVED: 'fa-circle-check text-boogie-main',
+    BOOK_REQUEST_REJECTED: 'fa-circle-xmark text-red-400',
+}[t] ?? 'fa-bell text-gray-400');
+
+/* ═══════════════════════════════════════════════════════════
+   API 호출 헬퍼
+═══════════════════════════════════════════════════════════ */
+const apiFetch = (url, opts = {}) =>
+    fetch(url, { headers: { 'Content-Type': 'application/json' }, credentials: 'include', ...opts })
+        .then(r => {
+            const hasBody = r.status !== 204 && (r.headers.get('content-type') ?? '').includes('application/json');
+            if (r.ok) return hasBody ? r.json() : null;
+            return hasBody ? r.json().then(e => Promise.reject(e)) : Promise.reject({ message: '오류가 발생했습니다.' });
+        });
+
+/* ═══════════════════════════════════════════════════════════
+   탭 시스템
+═══════════════════════════════════════════════════════════ */
+const TAB_LOADERS = {};
+const loadedTabs  = new Set();
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tabName}`));
+
+    const url = new URL(location);
+    url.searchParams.set('tab', tabName);
+    history.replaceState(null, '', url);
+
+    if (!loadedTabs.has(tabName) && TAB_LOADERS[tabName]) {
+        TAB_LOADERS[tabName]();
+        loadedTabs.add(tabName);
+    }
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+/* ═══════════════════════════════════════════════════════════
+   [탭 1] 프로필
+═══════════════════════════════════════════════════════════ */
+TAB_LOADERS.profile = async () => {
+    try {
+        const p = await apiFetch('/api/v1/users/me');
+        document.getElementById('profile-name').textContent  = p.name  ?? '-';
+        document.getElementById('profile-email').textContent = p.email ?? '-';
+        document.getElementById('profile-dept').textContent  = p.departmentName ?? '소속 없음';
+        document.getElementById('profile-joined').textContent = `가입일: ${fmtDate(p.createdAt)}`;
+        document.getElementById('profile-role').textContent  = p.role === 'ROLE_ADMIN' ? '관리자' : '일반회원';
+        document.getElementById('input-name').value          = p.name ?? '';
+        document.getElementById('input-profile-image').value = p.profileImage ?? '';
+
+        if (p.profileImage) {
+            const img = document.createElement('img');
+            img.src = p.profileImage;
+            img.alt = '프로필 이미지';
+            img.className = 'w-full h-full object-cover';
+            const wrap = document.getElementById('profile-avatar-wrap');
+            wrap.innerHTML = '';
+            wrap.appendChild(img);
+        }
+        if (p.role === 'ROLE_ADMIN') {
+            document.getElementById('profile-role').style.background = 'linear-gradient(135deg,#ef4444 0%,#f97316 100%)';
+        }
+    } catch (e) {
+        Swal.fire({ icon: 'error', title: '프로필 로드 실패', text: '잠시 후 다시 시도해주세요.', confirmButtonColor: '#00A760' });
+    }
+};
+
+/* 프로필 수정 폼 유효성 검사 & 제출 */
+document.getElementById('profile-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name         = document.getElementById('input-name').value.trim();
+    const profileImage = document.getElementById('input-profile-image').value.trim();
+    let valid = true;
+
+    // 이름 검증
+    const nameErr = document.getElementById('name-error');
+    if (!name || name.length > 30) {
+        nameErr.classList.remove('hidden');
+        valid = false;
+    } else {
+        nameErr.classList.add('hidden');
+    }
+
+    // 이미지 URL 검증 (비어있으면 허용)
+    const imageErr = document.getElementById('image-error');
+    if (profileImage && !/^https?:\/\/.+/.test(profileImage)) {
+        imageErr.classList.remove('hidden');
+        valid = false;
+    } else {
+        imageErr.classList.add('hidden');
+    }
+
+    if (!valid) return;
+
+    try {
+        await apiFetch('/api/v1/users/me', {
+            method: 'PATCH',
+            body: JSON.stringify({ name, profileImage: profileImage || null })
+        });
+        loadedTabs.delete('profile');
+        TAB_LOADERS.profile(); Swal.fire({ icon: 'success', title: '저장 완료', text: '프로필이 업데이트되었습니다.', confirmButtonColor: '#00A760', timer: 1800, showConfirmButton: false });
+
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: '저장 실패', text: err?.message ?? '오류가 발생했습니다.', confirmButtonColor: '#00A760' });
+    }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   [탭 2] 대출 내역
+═══════════════════════════════════════════════════════════ */
+let borrowPage   = 1;
+let borrowStatus = '';
+
+const renderBorrows = async (page = 1, status = '') => {
+    borrowPage   = page;
+    borrowStatus = status;
+
+    const list = document.getElementById('borrow-list');
+    list.innerHTML = `<div class="text-center py-12 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></div>`;
+
+    try {
+        let url = `/api/v1/users/me/borrows?page=${page}&size=10`;
+        if (status) url += `&status=${status}`;
+
+        const data = await apiFetch(url);
+        const items = data.items ?? data.content ?? [];
+
+        if (!items.length) {
+            list.innerHTML = `
+                <div class="text-center py-16 text-gray-400">
+                    <i class="fa-solid fa-book-open text-4xl mb-3 opacity-30"></i>
+                    <p class="text-sm font-medium">대출 내역이 없습니다.</p>
+                </div>`;
+            document.getElementById('borrow-pagination').innerHTML = '';
+            return;
+        }
+
+        list.innerHTML = items.map(b => {
+            const s = borrowStatusLabel(b.status);
+            const isActive = b.status === 'BORROWED' || b.status === 'OVERDUE';
+            return `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors">
+                <div class="flex items-start gap-3 min-w-0">
+                    <div class="mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 bg-boogie-light">
+                        <i class="fa-solid fa-book text-sm text-boogie-main"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-bold text-gray-900 text-sm truncate">${escHtml(b.bookTitle) || '알 수 없는 도서'}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">
+                            대출: ${fmtDate(b.borrowDate)} &nbsp;·&nbsp; 반납기한: ${fmtDate(b.dueDate)}
+                            ${b.returnDate ? `&nbsp;·&nbsp; 반납일: ${fmtDate(b.returnDate)}` : ''}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <span class="status-badge ${s.cls}">${s.text}</span>
+                    ${isActive ? `
+                    <button onclick="returnBook(${b.borrowId})"
+                            class="px-4 py-1.5 text-xs font-bold text-white rounded-xl transition-colors hover:opacity-90"
+                            style="background:linear-gradient(135deg,#00A760 0%,#10B981 100%)">
+                        반납하기
+                    </button>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        /* 페이지네이션 */
+        const totalPages = data.totalPages ?? 1;
+        renderBorrowPagination(totalPages);
+
+    } catch (err) {
+        list.innerHTML = `<p class="text-center text-sm text-red-500 py-8">데이터 로드에 실패했습니다.</p>`;
+    }
+};
+
+const renderBorrowPagination = (total) => {
+    const pg = document.getElementById('borrow-pagination');
+    if (total <= 1) { pg.innerHTML = ''; return; }
+    pg.innerHTML = Array.from({ length: total }, (_, i) => `
+        <button onclick="renderBorrows(${i+1},'${borrowStatus}')"
+                class="w-8 h-8 rounded-full text-xs font-bold transition-colors ${borrowPage === i+1 ? 'bg-boogie-main text-white' : 'bg-gray-100 text-gray-600 hover:bg-boogie-light'}">
+            ${i+1}
+        </button>`).join('');
+};
+
+TAB_LOADERS.borrows = () => renderBorrows(1, '');
+
+/* 상태 필터 이벤트 */
+document.getElementById('borrow-filters').addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('#borrow-filters .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBorrows(1, btn.dataset.status);
+});
+
+/* 반납 처리 */
+const returnBook = async (bookBorrowId) => {
+    const confirm = await Swal.fire({
+        title: '도서를 반납하시겠습니까?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#00A760',
+        cancelButtonColor: '#d1d5db',
+        confirmButtonText: '반납하기',
+        cancelButtonText: '취소'
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+        await apiFetch(`/api/v1/borrows/${bookBorrowId}/return`, { method: 'POST' });
+        Swal.fire({ icon: 'success', title: '반납 완료!', text: '도서가 성공적으로 반납되었습니다.', confirmButtonColor: '#00A760', timer: 1800, showConfirmButton: false });
+        renderBorrows(borrowPage, borrowStatus);
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: '반납 실패', text: err?.message ?? '오류가 발생했습니다.', confirmButtonColor: '#00A760' });
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   [탭 3] 예약 현황
+═══════════════════════════════════════════════════════════ */
+TAB_LOADERS.reserv = async () => {
+    const list = document.getElementById('reserv-list');
+    try {
+        const items = await apiFetch('/api/v1/users/me/reservations');
+
+        if (!items.length) {
+            list.innerHTML = `
+                <div class="text-center py-16 text-gray-400">
+                    <i class="fa-regular fa-bookmark text-4xl mb-3 opacity-30"></i>
+                    <p class="text-sm font-medium">예약 중인 도서가 없습니다.</p>
+                </div>`;
+            return;
+        }
+
+        list.innerHTML = items.map(r => {
+            const s = reservStatusLabel(r.status);
+            const canCancel = r.status === 'WAITING';
+            return `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors">
+                <div class="flex items-start gap-3 min-w-0">
+                    <div class="mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 bg-boogie-light">
+                        <i class="fa-regular fa-bookmark text-sm text-boogie-main"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-bold text-gray-900 text-sm truncate">${escHtml(r.bookTitle) || '알 수 없는 도서'}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">
+                            예약일: ${fmtDate(r.reservedAt)}
+                            ${r.expireAt ? `&nbsp;·&nbsp; 만료일: ${fmtDate(r.expireAt)}` : ''}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <span class="status-badge ${s.cls}">${s.text}</span>
+                    ${canCancel ? `
+                    <button onclick="cancelReservation(${r.reservationId})"
+                            class="px-4 py-1.5 text-xs font-bold text-red-500 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+                        예약 취소
+                    </button>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+    } catch (err) {
+        list.innerHTML = `<p class="text-center text-sm text-red-500 py-8">데이터 로드에 실패했습니다.</p>`;
+    }
+};
+
+/* 예약 취소 */
+const cancelReservation = async (reservationId) => {
+    const confirm = await Swal.fire({
+        title: '예약을 취소하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#d1d5db',
+        confirmButtonText: '취소하기',
+        cancelButtonText: '돌아가기'
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+        await apiFetch(`/api/v1/reservations/${reservationId}`, { method: 'DELETE' });
+        Swal.fire({ icon: 'success', title: '예약 취소 완료', confirmButtonColor: '#00A760', timer: 1500, showConfirmButton: false });
+        loadedTabs.delete('reserv');
+        TAB_LOADERS.reserv();
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: '취소 실패', text: err?.message ?? '오류가 발생했습니다.', confirmButtonColor: '#00A760' });
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   [탭 4] 알림함
+═══════════════════════════════════════════════════════════ */
+TAB_LOADERS.noti = async () => {
+    const list = document.getElementById('noti-list');
+    try {
+        const data = await apiFetch('/api/v1/notifications');
+        const items = Array.isArray(data) ? data : (data.items ?? data.content ?? []);
+
+        /* 미읽음 뱃지 */
+        const unread = items.filter(n => !n.isRead).length;
+        const badge = document.getElementById('noti-unread-badge');
+        if (unread > 0) {
+            badge.textContent = unread;
+            badge.classList.remove('hidden');
+        }
+
+        if (!items.length) {
+            list.innerHTML = `
+                <div class="text-center py-16 text-gray-400">
+                    <i class="fa-regular fa-bell text-4xl mb-3 opacity-30"></i>
+                    <p class="text-sm font-medium">알림이 없습니다.</p>
+                </div>`;
+            return;
+        }
+
+        list.innerHTML = items.map(n => `
+            <div id="noti-${n.notificationId}"
+                 class="flex items-start gap-3 px-5 py-4 rounded-2xl transition-colors cursor-pointer ${n.isRead ? 'hover:bg-gray-50' : 'noti-unread hover:bg-green-50'}"
+                 onclick="readNoti(${n.notificationId}, this)">
+                <div class="mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 bg-white border border-gray-100">
+                    <i class="fa-solid ${notiTypeIcon(n.type)} text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-${n.isRead ? 'medium text-gray-600' : 'bold text-gray-900'}">${escHtml(n.message)}</p>
+                    <p class="text-xs text-gray-400 mt-0.5">${fmtDate(n.createdAt)}</p>
+                </div>
+                ${!n.isRead ? '<div class="noti-dot mt-2"></div>' : ''}
+            </div>`).join('');
+
+    } catch (err) {
+        list.innerHTML = `<p class="text-center text-sm text-red-500 py-8">데이터 로드에 실패했습니다.</p>`;
+    }
+};
+
+/* 알림 읽음 처리 */
+const readNoti = async (id, el) => {
+    if (el.classList.contains('noti-unread')) {
+        try {
+            await apiFetch(`/api/v1/notifications/${id}/read`, { method: 'PATCH' });
+            el.classList.remove('noti-unread', 'hover:bg-green-50');
+            el.classList.add('hover:bg-gray-50');
+            el.querySelector('.noti-dot')?.remove();
+            el.querySelector('p')?.classList.replace('font-bold', 'font-medium');
+            el.querySelector('p')?.classList.replace('text-gray-900', 'text-gray-600');
+
+            /* 뱃지 업데이트 */
+            const badge = document.getElementById('noti-unread-badge');
+            const cnt = parseInt(badge.textContent) - 1;
+            if (cnt <= 0) badge.classList.add('hidden');
+            else badge.textContent = cnt;
+        } catch (_) { /* 무시 */ }
+    }
+};
+
+/* 전체 읽음 */
+document.getElementById('mark-all-read-btn').addEventListener('click', async () => {
+    const unreads = document.querySelectorAll('#noti-list .noti-unread');
+    if (!unreads.length) return;
+    try {
+        await apiFetch('/api/v1/notifications/read-all', { method: 'PATCH' });
+        loadedTabs.delete('noti');
+        TAB_LOADERS.noti();
+    } catch (_) {
+        Swal.fire({ icon: 'error', title: '오류', text: '전체 읽음 처리에 실패했습니다.', confirmButtonColor: '#00A760' });
+    }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   초기화: URL 쿼리 파라미터 기반 탭 활성화
+═══════════════════════════════════════════════════════════ */
+(() => {
+    const validTabs = ['profile', 'borrows', 'reserv', 'noti'];
+    const param = new URLSearchParams(location.search).get('tab');
+    switchTab(validTabs.includes(param) ? param : 'profile');
+})();
+</script>
+</th:block>
+
+</body>
+</html>

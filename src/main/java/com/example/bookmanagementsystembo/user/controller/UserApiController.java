@@ -8,6 +8,7 @@ import com.example.bookmanagementsystembo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +26,8 @@ public class UserApiController {
         return ResponseEntity.ok(userService.getMyProfile(userId));
     }
 
-    @PutMapping
-    public ResponseEntity<UserProfileResponse> updateMyProfile(@RequestBody UserUpdateRequest request) {
+    @PatchMapping
+    public ResponseEntity<UserProfileResponse> updateMyProfile(@Valid @RequestBody UserUpdateRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(userService.updateMyProfile(userId, request));
     }

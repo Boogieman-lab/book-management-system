@@ -8,6 +8,7 @@ import com.example.bookmanagementsystembo.book.service.BookService;
 import com.example.bookmanagementsystembo.bookHold.dto.BookHoldResponse;
 import com.example.bookmanagementsystembo.bookHold.dto.BookHoldStatusUpdateRequest;
 import com.example.bookmanagementsystembo.bookHold.service.BookHoldService;
+import java.util.List;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class AdminBookController {
 
     private final BookService bookService;
     private final BookHoldService bookHoldService;
+
+    /** [관리자] 도서 보유본(실물) 목록 조회 */
+    @GetMapping("/books/{bookId}/holds")
+    public ResponseEntity<List<BookHoldResponse>> getHolds(@PathVariable Long bookId) {
+        return ResponseEntity.ok(bookHoldService.readAll(bookId));
+    }
 
     /** [관리자] 신규 도서 메타 등록 + BookHold 1건 자동 생성 */
     @PostMapping("/books")

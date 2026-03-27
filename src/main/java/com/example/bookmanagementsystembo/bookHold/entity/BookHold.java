@@ -56,4 +56,8 @@ public class BookHold extends BaseEntity {
     public void updateStatus(BookHoldStatus newStatus) {
         this.status = newStatus;
     }
+
+    public void updateLocation(String newLocation) {
+        this.location = newLocation;
+    }
 }

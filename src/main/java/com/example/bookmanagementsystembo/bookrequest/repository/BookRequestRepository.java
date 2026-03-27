@@ -1,6 +1,7 @@
 package com.example.bookmanagementsystembo.bookRequest.repository;
 
 import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
+import com.example.bookmanagementsystembo.bookRequest.enums.BookRequestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BookRequestRepository extends JpaRepository<BookRequest, Long>, BookRequestQueryRepository {
+
+    /** 주어진 상태의 전체 희망도서 신청 건수를 반환합니다. */
+    long countByStatus(BookRequestStatus status);
+
 
     @Query(
             value = "SELECT br.* " +

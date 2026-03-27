@@ -14,6 +14,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     /** BookHoldId 기준으로 주어진 상태의 예약 목록을 예약일시 오름차순으로 조회합니다. */
     List<Reservation> findByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(Long bookHoldId, ReservationStatus status);
 
+    /** 전체 주어진 상태의 예약 건수를 반환합니다. */
+    long countByStatus(ReservationStatus status);
+
     /** 특정 사용자의 주어진 상태 예약 건수를 반환합니다. */
     int countByUserIdAndStatus(Long userId, ReservationStatus status);
 

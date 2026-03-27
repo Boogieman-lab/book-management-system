@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title>임직원 권한 관리</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+    <!-- 페이지 헤더 -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-black text-gray-900">임직원 권한 관리</h1>
+        <p class="text-sm text-gray-500 mt-1">임직원의 권한(ROLE_USER / ROLE_ADMIN)을 변경합니다.</p>
+    </div>
+
+    <!-- 임직원 목록 카드 -->
+    <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                <tr class="border-b border-gray-100 bg-gray-50">
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">이름</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">이메일</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">부서</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">권한</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">계정 상태</th>
+                    <th class="text-center px-6 py-4 font-bold text-gray-600">권한 변경</th>
+                </tr>
+                </thead>
+                <tbody id="users-tbody">
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">데이터를 불러오는 중...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div id="pagination" class="flex items-center justify-between px-6 py-4 border-t border-gray-100"></div>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="script">
+<script>
+    let currentPage = 1;
+
+    async function loadUsers(page = 1) {
+        const data = await fetch(`/api/v1/admin/users?page=${page}&size=10`, { credentials: 'include' })
+            .then(r => r.ok ? r.json() : null);
+
+        const tbody = document.getElementById('users-tbody');
+        if (!data || !data.content?.length) {
+            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">임직원 데이터가 없습니다.</td></tr>`;
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        currentPage = page;
+        tbody.innerHTML = data.content.map(u => `
+            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-gray-900">${u.name}</td>
+                <td class="px-6 py-4 text-gray-600">${u.email}</td>
+                <td class="px-6 py-4 text-gray-500">${u.departmentName ?? '-'}</td>
+                <td class="px-6 py-4">
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${u.role === 'ROLE_ADMIN' ? 'bg-boogie-main/10 text-boogie-main' : 'bg-gray-100 text-gray-600'}">
+                        ${u.role === 'ROLE_ADMIN' ? '관리자' : '사용자'}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${u.isLocked ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}">
+                        ${u.isLocked ? '잠금' : '정상'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="toggleRole(${u.userId}, '${u.role}')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${u.role === 'ROLE_ADMIN'
+                                ? 'text-gray-600 border border-gray-200 hover:bg-gray-100'
+                                : 'text-white bg-boogie-main hover:bg-boogie-dark'}">
+                        ${u.role === 'ROLE_ADMIN' ? '사용자로 변경' : '관리자로 변경'}
+                    </button>
+                </td>
+            </tr>`).join('');
+
+        renderPagination(page, data.totalPages);
+    }
+
+    async function toggleRole(userId, currentRole) {
+        const newRole = currentRole === 'ROLE_ADMIN' ? 'ROLE_USER' : 'ROLE_ADMIN';
+        const label = newRole === 'ROLE_ADMIN' ? '관리자' : '사용자';
+        if (!confirm(`해당 임직원의 권한을 ${label}로 변경하시겠습니까?`)) return;
+
+        const res = await fetch(`/api/v1/admin/users/${userId}/role`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ role: newRole })
+        });
+
+        if (res.ok) {
+            loadUsers(currentPage);
+        } else {
+            alert('권한 변경에 실패했습니다.');
+        }
+    }
+
+    function renderPagination(page, totalPages) {
+        const el = document.getElementById('pagination');
+        if (totalPages <= 1) { el.innerHTML = ''; return; }
+        el.innerHTML = `
+            <button onclick="loadUsers(${page - 1})" ${page <= 1 ? 'disabled' : ''}
+                    class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors">← 이전</button>
+            <span class="text-sm text-gray-500">${page} / ${totalPages}</span>
+            <button onclick="loadUsers(${page + 1})" ${page >= totalPages ? 'disabled' : ''}
+                    class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors">다음 →</button>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadUsers(1));
+</script>
+</th:block>
+</body>
+</html>

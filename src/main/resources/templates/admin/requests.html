@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title>희망도서 결재함</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+    <!-- 페이지 헤더 -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-black text-gray-900">희망도서 결재함</h1>
+        <p class="text-sm text-gray-500 mt-1">임직원의 희망도서 신청을 승인하거나 거절합니다.</p>
+    </div>
+
+    <!-- 상태 필터 탭 -->
+    <div class="flex gap-2 mb-6 flex-wrap">
+        <button class="tab-btn active-tab px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="">전체</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="PENDING">대기</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="APPROVED">승인</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="REJECTED">거절</button>
+    </div>
+
+    <!-- 신청 목록 카드 -->
+    <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                <tr class="border-b border-gray-100 bg-gray-50">
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">도서명</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">저자</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">신청자 ID</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">신청일</th>
+                    <th class="text-left px-6 py-4 font-bold text-gray-600">상태</th>
+                    <th class="text-center px-6 py-4 font-bold text-gray-600">처리</th>
+                </tr>
+                </thead>
+                <tbody id="requests-tbody">
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">데이터를 불러오는 중...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div id="pagination" class="flex items-center justify-between px-6 py-4 border-t border-gray-100"></div>
+    </div>
+
+    <!-- 거절 사유 모달 -->
+    <div id="reject-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-[24px] p-8 w-full max-w-md shadow-xl">
+            <h2 class="text-lg font-black text-gray-900 mb-2">신청 거절</h2>
+            <p class="text-sm text-gray-500 mb-5">거절 사유를 입력해주세요.</p>
+            <textarea id="reject-reason" rows="4"
+                      class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main resize-none"
+                      placeholder="거절 사유를 입력하세요..."></textarea>
+            <div class="flex gap-3 mt-5">
+                <button id="reject-cancel-btn"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+                    취소
+                </button>
+                <button id="reject-confirm-btn"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 transition-colors">
+                    거절 확정
+                </button>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="script">
+<script>
+    let currentPage = 1;
+    let currentStatus = '';
+    let rejectTargetId = null;
+
+    const statusLabel = { PENDING: '대기', APPROVED: '승인', REJECTED: '거절' };
+    const statusClass = {
+        PENDING: 'bg-yellow-100 text-yellow-700',
+        APPROVED: 'bg-green-100 text-green-700',
+        REJECTED: 'bg-red-100 text-red-600'
+    };
+
+    async function loadRequests(page = 1, status = '') {
+        const params = new URLSearchParams({ page, size: 10 });
+        if (status) params.set('status', status);
+
+        const data = await fetch(`/api/v1/admin/book-requests?${params}`, { credentials: 'include' })
+            .then(r => r.ok ? r.json() : null);
+
+        const tbody = document.getElementById('requests-tbody');
+        if (!data || !data.items?.length) {
+            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">신청 내역이 없습니다.</td></tr>`;
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        tbody.innerHTML = data.items.map(r => `
+            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-gray-900 max-w-[200px] truncate">${r.title}</td>
+                <td class="px-6 py-4 text-gray-600">${r.authors ?? '-'}</td>
+                <td class="px-6 py-4 text-gray-500">${r.userId}</td>
+                <td class="px-6 py-4 text-gray-500">${r.createdAt?.substring(0, 10) ?? '-'}</td>
+                <td class="px-6 py-4">
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${statusClass[r.status] ?? 'bg-gray-100 text-gray-600'}">
+                        ${statusLabel[r.status] ?? r.status}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    ${r.status === 'PENDING' ? `
+                        <div class="flex gap-2 justify-center">
+                            <button onclick="approve(${r.bookRequestId})"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors">
+                                승인
+                            </button>
+                            <button onclick="openRejectModal(${r.bookRequestId})"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 border border-red-200 hover:bg-red-50 transition-colors">
+                                거절
+                            </button>
+                        </div>` : `<span class="text-gray-300 text-xs">처리 완료</span>`}
+                </td>
+            </tr>`).join('');
+
+        renderPagination(page, data.totalPages);
+    }
+
+    async function approve(requestId) {
+        if (!confirm('승인하시겠습니까?')) return;
+        await fetch(`/api/v1/admin/book-requests/${requestId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ status: 'APPROVED', rejectReason: null })
+        });
+        loadRequests(currentPage, currentStatus);
+    }
+
+    function openRejectModal(requestId) {
+        rejectTargetId = requestId;
+        document.getElementById('reject-reason').value = '';
+        document.getElementById('reject-modal').classList.remove('hidden');
+    }
+
+    document.getElementById('reject-cancel-btn').addEventListener('click', () => {
+        document.getElementById('reject-modal').classList.add('hidden');
+    });
+
+    document.getElementById('reject-confirm-btn').addEventListener('click', async () => {
+        const reason = document.getElementById('reject-reason').value.trim();
+        if (!reason) { alert('거절 사유를 입력해주세요.'); return; }
+        await fetch(`/api/v1/admin/book-requests/${rejectTargetId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ status: 'REJECTED', rejectReason: reason })
+        });
+        document.getElementById('reject-modal').classList.add('hidden');
+        loadRequests(currentPage, currentStatus);
+    });
+
+    function renderPagination(page, totalPages) {
+        const el = document.getElementById('pagination');
+        if (totalPages <= 1) { el.innerHTML = ''; return; }
+        el.innerHTML = `
+            <button onclick="loadRequests(${page - 1}, currentStatus)" ${page <= 1 ? 'disabled' : ''}
+                    class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors">← 이전</button>
+            <span class="text-sm text-gray-500">${page} / ${totalPages}</span>
+            <button onclick="loadRequests(${page + 1}, currentStatus)" ${page >= totalPages ? 'disabled' : ''}
+                    class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors">다음 →</button>`;
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+            btn.classList.add('active-tab');
+            currentStatus = btn.dataset.status;
+            currentPage = 1;
+            loadRequests(1, currentStatus);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => loadRequests(1, ''));
+</script>
+<style>
+    .tab-btn { background: #f3f4f6; color: #6b7280; }
+    .tab-btn.active-tab { background: #00A760; color: #fff; }
+</style>
+</th:block>
+</body>
+</html>

@@ -4,8 +4,10 @@ import com.example.bookmanagementsystembo.common.SecurityUtils;
 import com.example.bookmanagementsystembo.notification.dto.NotificationPageResponse;
 import com.example.bookmanagementsystembo.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/v1/notifications")
@@ -13,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
 
     private final NotificationService notificationService;
+
+    @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe() {
+        Long userId = SecurityUtils.getCurrentUserId();
+        return notificationService.subscribe(userId);
+    }
 
     @GetMapping
     public ResponseEntity<NotificationPageResponse> getMyNotifications(

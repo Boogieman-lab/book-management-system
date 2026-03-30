@@ -5,6 +5,7 @@ import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
+import com.example.bookmanagementsystembo.notification.service.NotificationService;
 import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.domain.service.ReservationService;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
@@ -39,6 +40,9 @@ class ReservationServiceTest {
     @Mock
     private BookHoldRepository bookHoldRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     // ======================================================================
     // createReservation
     // ======================================================================
@@ -56,7 +60,7 @@ class ReservationServiceTest {
             BookHold bookHold = BookHold.create(bookId);
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
-            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of(bookHold));
+            when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
             when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(false);
             when(reservationRepository.countByUserIdAndStatus(userId, ReservationStatus.WAITING)).thenReturn(0);
@@ -82,7 +86,7 @@ class ReservationServiceTest {
             Long userId = 100L;
             BookHold bookHold = BookHold.create(bookId); // 기본 상태 AVAILABLE
 
-            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of(bookHold));
+            when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
 
             // When & Then
             CoreException ex = assertThrows(CoreException.class,
@@ -100,7 +104,7 @@ class ReservationServiceTest {
             BookHold bookHold = BookHold.create(bookId);
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
-            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of(bookHold));
+            when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
             when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(true);
 
@@ -120,7 +124,7 @@ class ReservationServiceTest {
             BookHold bookHold = BookHold.create(bookId);
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
-            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of(bookHold));
+            when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
             when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(false);
             when(reservationRepository.countByUserIdAndStatus(userId, ReservationStatus.WAITING)).thenReturn(2);
@@ -141,7 +145,7 @@ class ReservationServiceTest {
             BookHold bookHold = BookHold.create(bookId);
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
-            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of(bookHold));
+            when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
             when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(false);
             when(reservationRepository.countByUserIdAndStatus(userId, ReservationStatus.WAITING)).thenReturn(0);
@@ -162,7 +166,7 @@ class ReservationServiceTest {
             Long bookId = 1L;
             Long userId = 100L;
 
-            when(bookHoldRepository.findByBookId(bookId)).thenReturn(List.of());
+            when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of());
 
             // When & Then
             // bookHolds가 비어 있으면: AVAILABLE 없음 → 중복 체크 skip → userWaiting 체크 → targetHold = null → RESERVATION_LIMIT_EXCEEDED

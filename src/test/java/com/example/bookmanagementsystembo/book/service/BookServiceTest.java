@@ -7,6 +7,7 @@ import com.example.bookmanagementsystembo.book.entity.Book;
 import com.example.bookmanagementsystembo.bookHold.entity.BookHold;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.book.repository.BookRepository;
+import com.example.bookmanagementsystembo.bookRequest.service.BookRequestService;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,9 @@ class BookServiceTest {
 
     @Mock
     private BookHoldRepository bookHoldRepository;
+
+    @Mock
+    private BookRequestService bookRequestService;
 
     private BookCreateRequest bookCreateReq;
     private BookUpdateRequest bookUpdateReq;

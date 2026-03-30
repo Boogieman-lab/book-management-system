@@ -6,6 +6,7 @@ import com.example.bookmanagementsystembo.bookRequest.enums.BookRequestStatus;
 import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
+import com.example.bookmanagementsystembo.notification.service.NotificationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,9 @@ class BookRequestServiceTest {
 
     @Mock
     private BookRequestRepository bookRequestRepository;
+
+    @Mock
+    private NotificationService notificationService;
 
     @Test
     @DisplayName("희망 도서 신청 성공")

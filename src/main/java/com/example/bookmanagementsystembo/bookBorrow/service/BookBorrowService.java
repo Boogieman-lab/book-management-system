@@ -92,6 +92,12 @@ public class BookBorrowService {
             throw new CoreException(ErrorType.BORROW_RESTRICTED, userId);
         }
 
+        // 대출 한도 확인 (최대 10권) — BookHold 락 전에 선검증하여 중복 제거
+        int currentBorrowCount = bookBorrowRepository.countByUserIdAndStatus(userId, BorrowStatus.BORROWED);
+        if (currentBorrowCount >= 10) {
+            throw new CoreException(ErrorType.BORROW_LIMIT_EXCEEDED, userId);
+        }
+
         // 비관적 락으로 BookHold 조회
         BookHold bookHold = bookHoldRepository.findByIdForUpdate(bookHoldId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
@@ -104,12 +110,6 @@ public class BookBorrowService {
                     .findByBookHold_BookHoldIdAndUserIdAndStatus(bookHoldId, userId, ReservationStatus.NOTIFIED)
                     .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_AVAILABLE, bookHoldId));
 
-            // 대출 한도 확인 (최대 10권)
-            int currentBorrowCount = bookBorrowRepository.countByUserIdAndStatus(userId, BorrowStatus.BORROWED);
-            if (currentBorrowCount >= 10) {
-                throw new CoreException(ErrorType.BORROW_LIMIT_EXCEEDED, userId);
-            }
-
             BookBorrow bookBorrow = BookBorrow.create(bookHoldId, bookHold.getBookId(), userId, reason);
             bookBorrowRepository.save(bookBorrow);
 
@@ -121,12 +121,6 @@ public class BookBorrowService {
 
         if (holdStatus != BookHoldStatus.AVAILABLE) {
             throw new CoreException(ErrorType.BOOK_NOT_AVAILABLE, bookHoldId);
-        }
-
-        // 대출 한도 확인 (최대 10권)
-        int currentBorrowCount = bookBorrowRepository.countByUserIdAndStatus(userId, BorrowStatus.BORROWED);
-        if (currentBorrowCount >= 10) {
-            throw new CoreException(ErrorType.BORROW_LIMIT_EXCEEDED, userId);
         }
 
         // 대출 처리

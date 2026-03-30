@@ -108,7 +108,7 @@ sequenceDiagram
         Server-->>Client: HTTP 200 OK { status: 'APPROVED' }
         Client-->>Admin: "승인 처리되었습니다" 완료 알림
 
-        Event->>DB: 비동기) INSERT INTO notification<br>(user_id, type='BORROW_APPROVED', message='...', is_read=false)
+        Event->>DB: 비동기) INSERT INTO notification<br>(user_id, type='BOOK_REQUEST_APPROVED', message='...', is_read=false)
         DB-->>Event: 알림 저장 완료
 
         Event-->>User: (향후) SSE로 실시간 알림 전송
@@ -138,7 +138,7 @@ sequenceDiagram
 
     Server-->>Client: HTTP 200 OK { status: 'REJECTED' }
 
-    Event->>DB: 비동기) INSERT INTO notification<br>(user_id, type='BORROW_REJECTED', message='희망도서 신청이 거절되었습니다. 사유: 품절')
+    Event->>DB: 비동기) INSERT INTO notification<br>(user_id, type='BOOK_REQUEST_REJECTED', message='희망도서 신청이 거절되었습니다. 사유: 품절')
     DB-->>Event: 알림 저장 완료
 
     Event-->>User: (향후) SSE로 실시간 알림 전송
@@ -181,9 +181,15 @@ sequenceDiagram
         DB-->>Server: 초기 재고(1권) 추가
 
         Server->>DB: SELECT * FROM book_request<br>WHERE isbn13 = ? AND status='APPROVED'
-        DB-->>Server: 관련 신청 건 조회 (선택)
+        DB-->>Server: 관련 신청 건 조회
 
-        Note over Server: 옵션: 승인된 신청과 연계하여<br>book_request 상태 갱신
+        alt 연계된 승인 신청 존재
+            Server->>DB: UPDATE book_request SET status='ARRIVED', updated_at=now()<br>WHERE isbn13 = ? AND status='APPROVED'
+            DB-->>Server: 상태 갱신 완료
+
+            Server->>Event: publish(BookRequestArrivedEvent)<br>{ userId, requestId, bookId, title }
+            Note over Event: 비동기 알림: "신청하신 도서가 입고되었습니다. 대출 가능합니다"
+        end
 
         Server-->>Client: HTTP 201 CREATED { bookId, isbn13, title }
         Client-->>Admin: "도서가 등록되었습니다" 완료 알림
@@ -200,10 +206,15 @@ sequenceDiagram
 신청 (PENDING)
    ↓
 [관리자 결재]
-   ├─→ 승인 (APPROVED) → 도서 정식 등록 가능
-   └─→ 거절 (REJECTED) [이력 보관, 사유 저장]
-        ↓
-      사용자 확인 가능
+   ├─→ 승인 (APPROVED) [알림: BOOK_REQUEST_APPROVED]
+   │      ↓
+   │   [관리자 도서 등록 — POST /admin/books]
+   │      ↓
+   │   입고 완료 (ARRIVED) [알림: BOOK_REQUEST_ARRIVED]
+   │      ↓
+   │   사용자 대출 가능
+   │
+   └─→ 거절 (REJECTED) [이력 보관, 사유 저장, 알림: BOOK_REQUEST_REJECTED]
 ```
 
 ### 전체 라이프사이클
@@ -211,13 +222,15 @@ sequenceDiagram
 ```
 1. 사용자 신청 (PENDING)
    ↓
-2. 관리자 승인 (APPROVED) [알림 발송]
+2. 관리자 승인 (APPROVED) [알림 발송: BOOK_REQUEST_APPROVED]
    ↓
-3. 실제 도서 구입 후 도서 센터에서 등록
+3. 실제 도서 구입 후 도서 센터에서 등록 (POST /admin/books)
    ↓
 4. Book + BookHold 엔티티 생성
    ↓
-5. 사용자 대출 가능
+5. book_request 상태 → ARRIVED 갱신 [알림 발송: BOOK_REQUEST_ARRIVED]
+   ↓
+6. 사용자 대출 가능
 ```
 
 ---

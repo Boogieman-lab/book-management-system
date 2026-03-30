@@ -50,7 +50,7 @@
 | `RETURN_DUE_SOON` | 반납 예정일 1일 전 | 대출 중인 사용자 |
 | `OVERDUE_NOTICE` | 연체 발생 | 연체 사용자 |
 
-> ⚠️ **타입명 주의**: `BORROW_APPROVED` / `BORROW_REJECTED` 명칭은 도서 대출(Borrow)과 혼동되므로 `BOOK_REQUEST_*` 접두어로 변경. DB 마이그레이션 및 코드 전체 일괄 수정 필요.
+> ✅ **타입명 정정 완료 (C-02)**: `BORROW_APPROVED` / `BORROW_REJECTED` → `BOOK_REQUEST_APPROVED` / `BOOK_REQUEST_REJECTED`로 변경. DB 마이그레이션(Flyway V3.0) 및 코드 전체 반영 완료.
 
 ---
 
@@ -102,6 +102,7 @@
 - `book_request`
 - `reservation`
 - `department`
+- `overdue_record` (**Hard Delete 금지** — 삭제 시 대출 제한 우회 보안 취약점 발생)
 
 ### 동시성 제어
 

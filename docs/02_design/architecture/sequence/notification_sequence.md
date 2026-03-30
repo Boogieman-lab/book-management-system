@@ -29,7 +29,7 @@ sequenceDiagram
     par 비동기 처리 (스레드 풀)
         Event->>Event: @EventListener(BookRequestApprovedEvent)<br>@Async 메서드 실행
 
-        Event->>DB: INSERT INTO notification<br>(user_id, type='BORROW_APPROVED', message='...')
+        Event->>DB: INSERT INTO notification<br>(user_id, type='BOOK_REQUEST_APPROVED', message='...')
         DB-->>Event: 알림 저장
 
         Event->>Redis: PUBLISH channel:user:{userId} { type: 'BOOK_REQUEST_APPROVED', ... }
@@ -256,7 +256,7 @@ public class RedisMessageListener {
                     .id(UUID.randomUUID().toString())
                     .name("notification")
                     .data(new NotificationDto(
-                        "BORROW_APPROVED",
+                        "BOOK_REQUEST_APPROVED",
                         "희망도서 신청이 승인되었습니다",
                         event.getTitle()
                     )));
@@ -292,7 +292,7 @@ function subscribeToNotifications() {
 }
 
 function showNotificationPopup(notification) {
-    const message = `${notification.type === 'BORROW_APPROVED'
+    const message = `${notification.type === 'BOOK_REQUEST_APPROVED'
         ? '승인됨'
         : notification.type === 'RESERVATION_ARRIVED'
         ? '도착함'

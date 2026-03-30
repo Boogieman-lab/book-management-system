@@ -1,7 +1,10 @@
 # 🗺️ 부기맨(Boogieman) 고도화 액션 플랜 (Action Plan)
 
 > **작성일**: 2026-03-27
+> **최종 업데이트**: 2026-03-30
 > **분석 근거**: requirements.md, api_spec.md, erd.md, functional_spec.md, 시퀀스 다이어그램 전체 교차 검증
+
+> **구현 현황**: ✅ 완료 | ⚠️ 부분 완료 (문서만 수정, 코드 미구현) | ❌ 미구현
 
 ---
 
@@ -9,37 +12,37 @@
 
 ### [Critical] 설계 불일치 및 논리 오류
 
-| ID | 제목 | 영향 범위 | 관련 문서 |
-|----|------|-----------|----------|
-| C-01 | 예약자 수령 대출 플로우 미설계 — `RESERVE_HOLD` 도서 대출 시 409 반환 | 예약 기능 전체 사용 불가 | book_borrow_sequence, reservation_sequence |
-| C-02 | 알림 타입명 오염 — `BORROW_APPROVED/REJECTED` → `BOOK_REQUEST_*` | DB 마이그레이션 + 코드 전파 | erd.md, functional_spec, notification_sequence |
-| C-03 | `BOOK_REQUEST` 상태에 `ARRIVED` 누락 — 승인 후 입고 완료 상태 전환 불가 | 희망도서 라이프사이클 단절 | erd.md, functional_spec |
-| C-04 | `NOTIFICATION` 테이블에 `related_book_request_id` 컬럼 누락 | 희망도서 알림 클릭 → 상세 이동 불가 | erd.md |
-| C-05 | 예약 취소 시 2순위 즉시 승계 로직 없음 — 배치 스케줄러(최대 24h 지연)에만 의존 | 예약 UX 저하 | reservation_sequence |
-| C-06 | 예약 순위(`reservation_order`) 정합성 — 1순위 취소 후 2순위 order 미갱신 | 예약 신청 시 순위 오표시 | reservation_sequence |
-| C-07 | 토큰 TTL 운영 부적합 — AccessToken 3분, RefreshToken 5분 | 5분 비활성 시 자동 로그아웃 | requirements.md |
-| C-08 | `OVERDUE_RECORD` `is_deleted` 컬럼 누락 — Hard Delete 시 대출 제한 우회 보안 취약 | 감사 데이터 보안 | erd.md |
+| ID | 제목 | 영향 범위 | 관련 문서 | 상태     |
+|----|------|-----------|----------|--------|
+| C-01 | 예약자 수령 대출 플로우 미설계 — `RESERVE_HOLD` 도서 대출 시 409 반환 | 예약 기능 전체 사용 불가 | book_borrow_sequence, reservation_sequence | ✅ 완료 |
+| C-02 | 알림 타입명 오염 — `BORROW_APPROVED/REJECTED` → `BOOK_REQUEST_*` | DB 마이그레이션 + 코드 전파 | erd.md, functional_spec, notification_sequence | ✅ 완료 |
+| C-03 | `BOOK_REQUEST` 상태에 `ARRIVED` 누락 — 승인 후 입고 완료 상태 전환 불가 | 희망도서 라이프사이클 단절 | erd.md, functional_spec | ✅ 완료 |
+| C-04 | `NOTIFICATION` 테이블에 `related_book_request_id` 컬럼 누락 | 희망도서 알림 클릭 → 상세 이동 불가 | erd.md | ❌ 미구현 (V3.1 migration 없음) |
+| C-05 | 예약 취소 시 2순위 즉시 승계 로직 없음 — 배치 스케줄러(최대 24h 지연)에만 의존 | 예약 UX 저하 | reservation_sequence | ✅ 완료 |
+| C-06 | 예약 순위(`reservation_order`) 정합성 — 1순위 취소 후 2순위 order 미갱신 | 예약 신청 시 순위 오표시 | reservation_sequence | ⚠️ 문서만 수정, 코드 미구현 |
+| C-07 | 토큰 TTL 운영 부적합 — AccessToken 3분, RefreshToken 5분 | 5분 비활성 시 자동 로그아웃 | requirements.md | ✅ 완료 |
+| C-08 | `OVERDUE_RECORD` `is_deleted` 컬럼 누락 — Hard Delete 시 대출 제한 우회 보안 취약 | 감사 데이터 보안 | erd.md | ⚠️ 문서만 수정, V3.4 migration 없음 |
 
 ### [Update] 기존 기능 수정 제안
 
-| ID | 제목 | 효과 | 난이도 |
-|----|------|------|--------|
-| U-01 | 예약 생성 동시성 보강 — `SELECT COUNT FOR UPDATE` 또는 Optimistic Lock | 동시 예약 3명 초과 방지 | 중 |
-| U-02 | SSE Scale-out 구조 검증 — Redis 채널 기반 브로드캐스트 확인 | 다중 인스턴스 알림 누락 방지 | 높 |
-| U-03 | 반납 시 예약자 조회 쿼리 정밀화 — `WAITING`만 조회 (현재 NOTIFIED 중복 알림 위험) | 알림 중복 발송 방지 | 낮 |
-| U-04 | `users.restriction_until` 캐시 컬럼 추가 — 대출 시 overdue_record N+1 제거 | 대출 API 쿼리 수 감소 | 낮 |
-| U-05 | 희망도서 승인/입고 알림 단계 분리 — APPROVED와 ARRIVED 각각 별도 알림 | 사용자 구매 진행 상황 투명화 | 낮 |
+| ID | 제목 | 효과 | 난이도 | 상태   |
+|----|------|------|--------|------|
+| U-01 | 예약 생성 동시성 보강 — `SELECT COUNT FOR UPDATE` 또는 Optimistic Lock | 동시 예약 3명 초과 방지 | 중 | ✅ 완료     |
+| U-02 | SSE Scale-out 구조 검증 — Redis 채널 기반 브로드캐스트 확인 | 다중 인스턴스 알림 누락 방지 | 높 | ✅ 완료     |
+| U-03 | 반납 시 예약자 조회 쿼리 정밀화 — `WAITING`만 조회 (현재 NOTIFIED 중복 알림 위험) | 알림 중복 발송 방지 | 낮 | ✅ 완료     |
+| U-04 | `users.restriction_until` 캐시 컬럼 추가 — 대출 시 overdue_record N+1 제거 | 대출 API 쿼리 수 감소 | 낮 | ✅ 완료 |
+| U-05 | 희망도서 승인/입고 알림 단계 분리 — APPROVED와 ARRIVED 각각 별도 알림 | 사용자 구매 진행 상황 투명화 | 낮 | ✅ 완료 |
 
 ### [New] 신규 추가 권장 기능
 
-| ID | 제목 | 우선순위 | 관련 API |
-|----|------|----------|----------|
-| N-01 | SSE Subscribe 엔드포인트 구현 | R1 필수 | `GET /notifications/subscribe` |
-| N-02 | 관리자 계정 잠금 해제 API | R1 필수 | `PATCH /admin/users/{id}/unlock` |
-| N-03 | 반납 예정일 알림 배치 스케줄러 (`@Scheduled`, 매일 오전 6시) | R1 문서 상 필수 | - |
-| N-04 | 연체 자동 감지 + `BOOK_BORROW.status=OVERDUE` 전환 배치 (매일 자정) | R2 | - |
-| N-05 | 4일 자동 승계 스케줄러 (reservation_sequence 설계 완료, 구현 미완) | R1 문서 상 필수 | - |
-| N-06 | `GET /admin/reservations` — 예약 대기 통계 조회 | R2 | - |
+| ID   | 제목 | 우선순위 | 관련 API | 상태    |
+|------|------|----------|----------|-------|
+| N-01 | SSE Subscribe 엔드포인트 구현 | R1 필수 | `GET /notifications/subscribe` | ✅ 완료  |
+| N-02 | 관리자 계정 잠금 해제 API | R1 필수 | `PATCH /admin/users/{id}/unlock` | ✅ 완료  |
+| N-03 | 반납 예정일 알림 배치 스케줄러 (`@Scheduled`, 매일 오전 6시) | R1 문서 상 필수 | - | ❌ 미구현 |
+| N-04 | 연체 자동 감지 + `BOOK_BORROW.status=OVERDUE` 전환 배치 (매일 자정) | R2 | - | ❌ 미구현 |
+| N-05 | 4일 자동 승계 스케줄러 (reservation_sequence 설계 완료, 구현 미완) | R1 문서 상 필수 | - | ❌ 미구현 |
+| N-06 | `GET /admin/reservations` — 예약 대기 통계 조회 | R2 | - | ❌ 미구현 |
 
 ---
 

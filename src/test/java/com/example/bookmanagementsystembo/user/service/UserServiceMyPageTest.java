@@ -124,7 +124,7 @@ class UserServiceMyPageTest {
         // Given
         Long userId = 1L;
         LocalDateTime now = LocalDateTime.now();
-        UserBorrowResponse borrowRes = new UserBorrowResponse("자바의 정석", 10L, now, now.plusDays(14), null, "BORROWED");
+        UserBorrowResponse borrowRes = new UserBorrowResponse(1L, 2L, "자바의 정석", "남궁성", "도우출판", null, 10L, now, now.plusDays(14), null, "BORROWED");
         Page<UserBorrowResponse> page = new PageImpl<>(List.of(borrowRes), PageRequest.of(0, 10), 1);
         when(bookBorrowRepository.findByUserId(eq(userId), any(), any())).thenReturn(page);
 

@@ -38,5 +38,4 @@ out/
 .omc/
 .claude/settings.local.json
 /CLAUDE.md
-/docs/fe_prompts.md
-/docs/ai_prompts.md
+/docs/04_development/prompts.md

@@ -63,15 +63,11 @@
 ---
 
 ## 🤓 기획 및 설계
-
-* 📊 \[프로젝트 칸반보드]
-* 🛠 [요구사항 정의서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/requirements.md)
-* 🛠 [기능 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/functional_spec.md)
-* 🖥 \[페이지 기획서]
-* 📑 [API 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/api_spec.md)
-* 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/blob/main/docs/erd-diagram)
+* 🛠 [요구사항 정의서](https://github.com/Boogieman-lab/book-management-system/docs/01_requirements/requirements.md)
+* 🛠 [기능 명세서](https://github.com/Boogieman-lab/book-management-system/docs/01_requirements/functional_spec.md)
+* 📑 [API 명세서](https://github.com/Boogieman-lab/book-management-system//docs/02_design/api_spec.md)
+* 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/docs/02_design/architecture/erd.md)
 * 👀 [사용자 디자인 미리보기](https://boogieman-lab.github.io/book-management-system/src/main/resources/static/design/index.html)
-
 ---
 
 ## ✅ 구현 완료 기능 (MVP1)

@@ -10,7 +10,7 @@ import com.example.bookmanagementsystembo.token.service.TokenService;
 import com.example.bookmanagementsystembo.user.entity.Users;
 import com.example.bookmanagementsystembo.user.enums.Role;
 import com.example.bookmanagementsystembo.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class AuthService {
      *   <li>로그인 성공 시 실패 횟수를 초기화하고 AccessToken/RefreshToken을 발급합니다.</li>
      * </ul>
      */
-    @Transactional
+    @Transactional(noRollbackFor = CoreException.class)
     public LoginResponse login(LoginRequest request) {
         Users user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new CoreException(ErrorType.INVALID_CREDENTIALS, request.email()));

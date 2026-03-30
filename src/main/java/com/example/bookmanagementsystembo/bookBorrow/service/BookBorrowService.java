@@ -9,9 +9,13 @@ import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
+import com.example.bookmanagementsystembo.notification.enums.NotificationType;
+import com.example.bookmanagementsystembo.notification.service.NotificationService;
 import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
+import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +36,8 @@ public class BookBorrowService {
     private final BookBorrowRepository bookBorrowRepository;
     private final BookHoldRepository bookHoldRepository;
     private final ReservationRepository reservationRepository;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     /** 전체 대출 목록을 요약 DTO로 반환합니다. */
     public List<BookBorrowDto> readAll() {
@@ -69,26 +76,51 @@ public class BookBorrowService {
      * 도서를 대출합니다 (메인 API).
      * <ul>
      *   <li>비관적 락으로 BookHold를 선점합니다.</li>
-     *   <li>AVAILABLE 상태가 아닌 경우 예외를 발생시킵니다.</li>
+     *   <li>AVAILABLE: 즉시 대출 처리합니다.</li>
+     *   <li>RESERVE_HOLD: 해당 bookHold에 NOTIFIED 예약이 있는 본인만 대출 가능합니다.</li>
+     *   <li>그 외 상태는 예외를 발생시킵니다.</li>
      *   <li>사용자의 현재 대출 권수가 10권 이상이면 예외를 발생시킵니다.</li>
      *   <li>대출 성공 시 BookHold 상태를 BORROWED로 변경합니다.</li>
      * </ul>
      */
     @Transactional
     public BorrowResponse borrow(Long bookHoldId, Long userId, String reason) {
+        // 연체 대출 제한 검증 (users.restriction_until 캐시 활용)
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
+        if (user.isRestricted()) {
+            throw new CoreException(ErrorType.BORROW_RESTRICTED, userId);
+        }
+
+        // 대출 한도 확인 (최대 10권) — BookHold 락 전에 선검증하여 중복 제거
+        int currentBorrowCount = bookBorrowRepository.countByUserIdAndStatus(userId, BorrowStatus.BORROWED);
+        if (currentBorrowCount >= 10) {
+            throw new CoreException(ErrorType.BORROW_LIMIT_EXCEEDED, userId);
+        }
+
         // 비관적 락으로 BookHold 조회
         BookHold bookHold = bookHoldRepository.findByIdForUpdate(bookHoldId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
 
-        // AVAILABLE 상태 확인
-        if (bookHold.getStatus() != BookHoldStatus.AVAILABLE) {
-            throw new CoreException(ErrorType.BOOK_NOT_AVAILABLE, bookHoldId);
+        BookHoldStatus holdStatus = bookHold.getStatus();
+
+        if (holdStatus == BookHoldStatus.RESERVE_HOLD) {
+            // 예약 수령 대출: NOTIFIED 상태의 예약자 본인만 대출 가능
+            Reservation reservation = reservationRepository
+                    .findByBookHold_BookHoldIdAndUserIdAndStatus(bookHoldId, userId, ReservationStatus.NOTIFIED)
+                    .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_AVAILABLE, bookHoldId));
+
+            BookBorrow bookBorrow = BookBorrow.create(bookHoldId, bookHold.getBookId(), userId, reason);
+            bookBorrowRepository.save(bookBorrow);
+
+            bookHold.updateStatus(BookHoldStatus.BORROWED);
+            reservation.reserve();
+
+            return new BorrowResponse(bookBorrow.getBookBorrowId(), bookBorrow.getDueDate());
         }
 
-        // 대출 한도 확인 (최대 10권)
-        int currentBorrowCount = bookBorrowRepository.countByUserIdAndStatus(userId, BorrowStatus.BORROWED);
-        if (currentBorrowCount >= 10) {
-            throw new CoreException(ErrorType.BORROW_LIMIT_EXCEEDED, userId);
+        if (holdStatus != BookHoldStatus.AVAILABLE) {
+            throw new CoreException(ErrorType.BOOK_NOT_AVAILABLE, bookHoldId);
         }
 
         // 대출 처리
@@ -129,21 +161,22 @@ public class BookBorrowService {
 
         // BookHold 상태 결정
         Long bookHoldId = bookBorrow.getBookHoldId();
-        int waitingCount = reservationRepository.countByBookHold_BookHoldIdAndStatus(bookHoldId, ReservationStatus.WAITING);
 
         BookHold bookHold = bookHoldRepository.findById(bookHoldId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
 
-        if (waitingCount > 0) {
-            bookHold.updateStatus(BookHoldStatus.RESERVE_HOLD);
-            List<Reservation> waitingReservations = reservationRepository
-                    .findByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING);
-            Reservation firstReservation = waitingReservations.get(0);
-            log.info("예약 알림: userId={} 에게 bookHoldId={} 도서 픽업 알림 발송 (알림 도메인 미구현, 로그 대체)",
-                    firstReservation.getUserId(), bookHoldId);
-        } else {
-            bookHold.updateStatus(BookHoldStatus.AVAILABLE);
-        }
+        reservationRepository
+                .findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
+                .ifPresentOrElse(firstReservation -> {
+                    bookHold.updateStatus(BookHoldStatus.RESERVE_HOLD);
+                    firstReservation.notifyPickup(LocalDateTime.now().plusDays(4));
+                    notificationService.saveAndSend(
+                            firstReservation.getUserId(),
+                            NotificationType.RESERVATION_ARRIVED,
+                            "예약하신 도서가 반납되었습니다. 4일 이내에 수령해주세요.",
+                            bookHoldId
+                    );
+                }, () -> bookHold.updateStatus(BookHoldStatus.AVAILABLE));
     }
 
     /** 사용자의 특정 도서에 대한 활성 대출(BORROWED/OVERDUE) ID를 반환합니다. 없으면 empty. */

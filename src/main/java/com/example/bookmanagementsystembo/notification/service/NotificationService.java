@@ -5,14 +5,22 @@ import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.notification.dto.NotificationPageResponse;
 import com.example.bookmanagementsystembo.notification.dto.NotificationResponse;
 import com.example.bookmanagementsystembo.notification.entity.Notification;
+import com.example.bookmanagementsystembo.notification.enums.NotificationType;
 import com.example.bookmanagementsystembo.notification.repository.NotificationQueryRepository;
 import com.example.bookmanagementsystembo.notification.repository.NotificationRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -20,6 +28,9 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationQueryRepository notificationQueryRepository;
+    private final SseEmitterManager sseEmitterManager;
+    private final NotificationRedisPublisher redisPublisher;
+    private final ObjectMapper objectMapper;
 
     /**
      * 내 알림 목록을 페이지네이션으로 조회합니다.
@@ -64,5 +75,56 @@ public class NotificationService {
     @Transactional
     public void markAllAsRead(Long userId) {
         notificationRepository.markAllAsReadByUserId(userId);
+    }
+
+    /**
+     * SSE 구독을 등록합니다.
+     *
+     * @param userId 구독할 사용자 ID
+     * @return SseEmitter
+     */
+    public SseEmitter subscribe(Long userId) {
+        return sseEmitterManager.subscribe(userId);
+    }
+
+    /**
+     * 알림을 DB에 저장하고 트랜잭션 커밋 후 SSE로 실시간 전송합니다.
+     * 커밋 이후에 SSE를 전송하므로 롤백 시 ghost 알림이 발송되지 않습니다.
+     *
+     * @param userId    수신자 ID
+     * @param type      알림 유형
+     * @param message   알림 메시지
+     * @param relatedId 관련 엔티티 ID (nullable)
+     */
+    @Transactional
+    public void saveAndSend(Long userId, NotificationType type, String message, Long relatedId) {
+        Notification notification = Notification.create(userId, type, message, relatedId);
+        notificationRepository.save(notification);
+
+        NotificationResponse response = NotificationResponse.from(notification);
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    publishToRedis(userId, response);
+                }
+            });
+        } else {
+            publishToRedis(userId, response);
+        }
+    }
+
+    /**
+     * 알림을 Redis 채널로 발행합니다.
+     * Redis 발행 실패 시 단일 인스턴스 환경 폴백으로 직접 SSE 전송합니다.
+     */
+    private void publishToRedis(Long userId, NotificationResponse response) {
+        try {
+            String payload = objectMapper.writeValueAsString(response);
+            redisPublisher.publish(userId, payload);
+        } catch (JsonProcessingException e) {
+            log.warn("알림 JSON 직렬화 실패 — userId={}, 직접 SSE 전송으로 폴백", userId, e);
+            sseEmitterManager.sendToUser(userId, response);
+        }
     }
 }

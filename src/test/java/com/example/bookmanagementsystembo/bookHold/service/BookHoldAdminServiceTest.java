@@ -162,7 +162,7 @@ class BookHoldAdminServiceTest {
             BookHold hold = BookHold.createWithLocation(1L, null);
             when(bookHoldRepository.findById(10L)).thenReturn(Optional.of(hold));
 
-            BookHoldResponse result = bookHoldService.updateHoldStatus(10L, new BookHoldStatusUpdateRequest(BookHoldStatus.LOST));
+            BookHoldResponse result = bookHoldService.updateHoldStatus(10L, new BookHoldStatusUpdateRequest(BookHoldStatus.LOST, null));
 
             assertThat(result.bookHoldStatus()).isEqualTo(BookHoldStatus.LOST);
         }
@@ -173,7 +173,7 @@ class BookHoldAdminServiceTest {
             BookHold hold = BookHold.createWithLocation(1L, null);
             when(bookHoldRepository.findById(10L)).thenReturn(Optional.of(hold));
 
-            BookHoldResponse result = bookHoldService.updateHoldStatus(10L, new BookHoldStatusUpdateRequest(BookHoldStatus.DISCARDED));
+            BookHoldResponse result = bookHoldService.updateHoldStatus(10L, new BookHoldStatusUpdateRequest(BookHoldStatus.DISCARDED, null));
 
             assertThat(result.bookHoldStatus()).isEqualTo(BookHoldStatus.DISCARDED);
         }
@@ -185,7 +185,7 @@ class BookHoldAdminServiceTest {
             when(bookHoldRepository.findById(20L)).thenReturn(Optional.of(hold));
 
             assertThatThrownBy(() ->
-                    bookHoldService.updateHoldStatus(20L, new BookHoldStatusUpdateRequest(BookHoldStatus.LOST)))
+                    bookHoldService.updateHoldStatus(20L, new BookHoldStatusUpdateRequest(BookHoldStatus.LOST, null)))
                     .isInstanceOf(CoreException.class)
                     .satisfies(ex -> assertThat(((CoreException) ex).getErrorType())
                             .isEqualTo(ErrorType.BOOK_HOLD_CANNOT_CHANGE_BORROWED));
@@ -198,7 +198,7 @@ class BookHoldAdminServiceTest {
             when(bookHoldRepository.findById(20L)).thenReturn(Optional.of(hold));
 
             assertThatThrownBy(() ->
-                    bookHoldService.updateHoldStatus(20L, new BookHoldStatusUpdateRequest(BookHoldStatus.DISCARDED)))
+                    bookHoldService.updateHoldStatus(20L, new BookHoldStatusUpdateRequest(BookHoldStatus.DISCARDED, null)))
                     .isInstanceOf(CoreException.class)
                     .satisfies(ex -> assertThat(((CoreException) ex).getErrorType())
                             .isEqualTo(ErrorType.BOOK_HOLD_CANNOT_CHANGE_BORROWED));
@@ -210,7 +210,7 @@ class BookHoldAdminServiceTest {
             when(bookHoldRepository.findById(999L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
-                    bookHoldService.updateHoldStatus(999L, new BookHoldStatusUpdateRequest(BookHoldStatus.LOST)))
+                    bookHoldService.updateHoldStatus(999L, new BookHoldStatusUpdateRequest(BookHoldStatus.LOST, null)))
                     .isInstanceOf(CoreException.class)
                     .satisfies(ex -> assertThat(((CoreException) ex).getErrorType())
                             .isEqualTo(ErrorType.BOOK_HOLD_NOT_FOUND));

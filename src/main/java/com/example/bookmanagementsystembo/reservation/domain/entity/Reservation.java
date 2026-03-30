@@ -72,6 +72,17 @@ public class Reservation extends BaseEntity {
                 LocalDateTime.now(), expireAt);
     }
 
+    /** 픽업 알림 처리 (WAITING → NOTIFIED). expireAt에 픽업 기한을 설정합니다. */
+    public void notifyPickup(LocalDateTime expireAt) {
+        this.status = ReservationStatus.NOTIFIED;
+        this.expireAt = expireAt;
+    }
+
+    /** 대출 수령 완료 처리 (NOTIFIED → RESERVED) */
+    public void reserve() {
+        this.status = ReservationStatus.RESERVED;
+    }
+
     /** 예약 만료 처리 */
     public void expire() {
         this.status = ReservationStatus.EXPIRED;

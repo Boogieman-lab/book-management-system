@@ -1,4 +1,4 @@
-# 가입 및 로그인 시퀀스 다이어그램 (Auth Sequence Diagram)
+# 🔐 가입 및 로그인 시퀀스 다이어그램 (Auth Sequence Diagram)
 
 이 문서는 사용자가 서비스에 진입하기 위해 거치는 자체 회원가입, 이메일/비밀번호 로그인(계정 잠금 포함), 카카오 OAuth 로그인, 토큰 갱신/로그아웃까지의 핵심 흐름을 설명합니다.
 
@@ -73,8 +73,8 @@ sequenceDiagram
             else 비밀번호 일치
                 Server->>DB: UPDATE users SET login_fail_count = 0, is_locked = false
                 DB-->>Server: 초기화 완료
-                Server->>Server: JWT Access Token (180s) + Refresh Token (300s) 생성
-                Server->>Redis: SET token:{email} = RefreshToken (TTL: 300s)
+                Server->>Server: JWT Access Token (1800s/30분) + Refresh Token (604800s/7일) 생성
+                Server->>Redis: SET token:{email} = RefreshToken (TTL: 604800s)
                 Redis-->>Server: 저장 완료
                 Server-->>Client: HTTP 200 OK { accessToken, refreshToken, email, name }
             end
@@ -120,7 +120,7 @@ sequenceDiagram
     Server->>Server: JWT Access Token + Refresh Token 생성
     Server->>Redis: SET token:{email} = RefreshToken
     Redis-->>Server: 저장 완료
-    Server-->>Client: HttpOnly Cookie(accessToken, refreshToken) 설정 후 /user/book/bookList 리다이렉트
+    Server-->>Client: HttpOnly Cookie(accessToken, refreshToken) 설정 후 /books 리다이렉트
 
     Client-->>User: 로그인 완료, 도서 목록 페이지 진입
 ```
@@ -183,3 +183,27 @@ sequenceDiagram
     Server-->>Client: HTTP 204 NO CONTENT
     Client-->>Client: 토큰 삭제 및 로그인 페이지 이동
 ```
+
+---
+
+## 요약: 토큰 생명주기
+
+### Access Token
+- **발행**: 로그인/토큰 갱신 시
+- **TTL**: 1800초 (30분)
+- **저장소**: HttpOnly 쿠키 (자동 포함)
+- **무효화**: 로그아웃 시 Redis 블랙리스트 등록
+
+### Refresh Token
+- **발행**: 로그인/토큰 갱신 시
+- **TTL**: 604800초 (7일)
+- **저장소**: Redis (서버 보관)
+- **갱신**: 토큰 갱신 시 새로운 토큰 발급 (기존 토큰 무효화)
+- **보안**: 토큰 탈취 시 불일치 감지 → 즉시 세션 강제 만료
+
+### 보안 규칙
+
+1. **Refresh Token Rotation**: 갱신 호출 시 새로운 토큰 발급, 이전 토큰 즉시 무효화
+2. **Token Mismatch Detection**: 저장된 토큰과 요청 토큰 불일치 시 토큰 탈취 의심 → 강제 삭제
+3. **Access Token Blacklist**: 로그아웃 시 Redis 블랙리스트에 등록, 잔여 TTL 동안 유효하지 않음
+

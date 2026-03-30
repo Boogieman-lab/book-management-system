@@ -55,6 +55,9 @@ public class BookHoldService {
         }
 
         hold.updateStatus(req.status());
+        if (req.location() != null) {
+            hold.updateLocation(req.location());
+        }
         return BookHoldResponse.from(hold);
     }
 }

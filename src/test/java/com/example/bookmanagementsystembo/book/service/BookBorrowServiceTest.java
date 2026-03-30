@@ -12,9 +12,12 @@ import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
+import com.example.bookmanagementsystembo.notification.service.NotificationService;
 import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
+import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +50,15 @@ class BookBorrowServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private Users mockUser;
 
     private static final Long BOOK_ID      = 5L;
     private static final Long BOOK_HOLD_ID = 10L;
@@ -210,6 +222,7 @@ class BookBorrowServiceTest {
     void borrow_success() {
         // Given
         BookHold bookHold = BookHold.create(BOOK_ID);
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(mockUser));
         when(bookHoldRepository.findByIdForUpdate(BOOK_HOLD_ID)).thenReturn(Optional.of(bookHold));
         when(bookBorrowRepository.countByUserIdAndStatus(USER_ID, BorrowStatus.BORROWED)).thenReturn(0);
         when(bookBorrowRepository.save(any(BookBorrow.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -229,13 +242,14 @@ class BookBorrowServiceTest {
     @DisplayName("대출 실패 - 존재하지 않는 bookHoldId")
     void borrow_fail_holdNotFound() {
         // Given
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(mockUser));
         when(bookHoldRepository.findByIdForUpdate(BOOK_HOLD_ID)).thenReturn(Optional.empty());
 
         // When & Then
         CoreException ex = assertThrows(CoreException.class,
                 () -> bookBorrowService.borrow(BOOK_HOLD_ID, USER_ID, "학습용"));
         assertEquals(ErrorType.BOOK_HOLD_NOT_FOUND, ex.getErrorType());
-        verifyNoInteractions(bookBorrowRepository);
+        verify(bookBorrowRepository, never()).save(any());
     }
 
     @Test
@@ -244,13 +258,14 @@ class BookBorrowServiceTest {
         // Given
         BookHold bookHold = BookHold.create(BOOK_ID);
         bookHold.updateStatus(BookHoldStatus.BORROWED);
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(mockUser));
         when(bookHoldRepository.findByIdForUpdate(BOOK_HOLD_ID)).thenReturn(Optional.of(bookHold));
 
         // When & Then
         CoreException ex = assertThrows(CoreException.class,
                 () -> bookBorrowService.borrow(BOOK_HOLD_ID, USER_ID, "학습용"));
         assertEquals(ErrorType.BOOK_NOT_AVAILABLE, ex.getErrorType());
-        verifyNoInteractions(bookBorrowRepository);
+        verify(bookBorrowRepository, never()).save(any());
     }
 
     @Test
@@ -258,7 +273,7 @@ class BookBorrowServiceTest {
     void borrow_fail_limitExceeded() {
         // Given
         BookHold bookHold = BookHold.create(BOOK_ID);
-        when(bookHoldRepository.findByIdForUpdate(BOOK_HOLD_ID)).thenReturn(Optional.of(bookHold));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(mockUser));
         when(bookBorrowRepository.countByUserIdAndStatus(USER_ID, BorrowStatus.BORROWED)).thenReturn(10);
 
         // When & Then
@@ -281,7 +296,6 @@ class BookBorrowServiceTest {
         bookHold.updateStatus(BookHoldStatus.BORROWED);
 
         when(bookBorrowRepository.findById(BORROW_ID)).thenReturn(Optional.of(bookBorrow));
-        when(reservationRepository.countByBookHold_BookHoldIdAndStatus(BOOK_HOLD_ID, ReservationStatus.WAITING)).thenReturn(0);
         when(bookHoldRepository.findById(BOOK_HOLD_ID)).thenReturn(Optional.of(bookHold));
 
         // When
@@ -303,10 +317,9 @@ class BookBorrowServiceTest {
         Reservation reservation = Reservation.create(bookHold, 200L, LocalDateTime.now().plusDays(3));
 
         when(bookBorrowRepository.findById(BORROW_ID)).thenReturn(Optional.of(bookBorrow));
-        when(reservationRepository.countByBookHold_BookHoldIdAndStatus(BOOK_HOLD_ID, ReservationStatus.WAITING)).thenReturn(1);
         when(bookHoldRepository.findById(BOOK_HOLD_ID)).thenReturn(Optional.of(bookHold));
-        when(reservationRepository.findByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(BOOK_HOLD_ID, ReservationStatus.WAITING))
-                .thenReturn(List.of(reservation));
+        when(reservationRepository.findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(BOOK_HOLD_ID, ReservationStatus.WAITING))
+                .thenReturn(Optional.of(reservation));
 
         // When
         bookBorrowService.returnBook(BORROW_ID, USER_ID);

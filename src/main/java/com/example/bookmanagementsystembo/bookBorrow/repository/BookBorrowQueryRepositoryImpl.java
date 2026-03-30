@@ -108,7 +108,11 @@ public class BookBorrowQueryRepositoryImpl implements BookBorrowQueryRepository 
         List<UserBorrowResponse> content = qf
                 .select(Projections.constructor(UserBorrowResponse.class,
                         bookBorrow.bookBorrowId,
+                        bookHold.bookId,
                         book.title,
+                        book.author,
+                        book.publisher,
+                        book.coverUrl,
                         bookBorrow.bookHoldId,
                         bookBorrow.borrowDate,
                         bookBorrow.dueDate,

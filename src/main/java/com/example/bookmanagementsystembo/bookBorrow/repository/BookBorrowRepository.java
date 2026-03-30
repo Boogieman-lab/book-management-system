@@ -16,6 +16,9 @@ public interface BookBorrowRepository extends JpaRepository<BookBorrow, Long>, B
 
     int countByUserIdAndStatus(Long userId, BorrowStatus status);
 
+    /** 주어진 상태의 전체 대출 건수를 반환합니다. */
+    long countByStatus(BorrowStatus status);
+
     @Query(value = """
             SELECT * FROM book_borrow
             WHERE user_id = :userId

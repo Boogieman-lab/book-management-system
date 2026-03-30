@@ -6,10 +6,13 @@ import java.util.List;
  * 프론트엔드 전달용 정규화된 도서 도큐먼트.
  *
  * <ul>
- *   <li>isbn  : isbn13 (13자리 숫자)</li>
- *   <li>authors: 저자 목록 (역할 표기 제거)</li>
- *   <li>thumbnail: /cover500/ 고해상도 표지 URL</li>
- *   <li>datetime: 출판일 (YYYYMMDD 형식)</li>
+ *   <li>isbn      : isbn13 (13자리 숫자)</li>
+ *   <li>isbn10    : isbn10 (10자리)</li>
+ *   <li>authors   : 저자 목록 (역할 표기 제거)</li>
+ *   <li>thumbnail : /cover500/ 고해상도 표지 URL</li>
+ *   <li>datetime  : 출판일 (YYYYMMDD 형식)</li>
+ *   <li>categoryId: 알라딘 분야 ID</li>
+ *   <li>priceStandard / priceSales: 정가 / 판매가</li>
  * </ul>
  */
 public record AladinBookDocument(
@@ -20,6 +23,14 @@ public record AladinBookDocument(
         String thumbnail,
         String isbn,
         String contents,
-        String category
+        String category,
+        String isbn10,
+        Integer categoryId,
+        int priceStandard,
+        int priceSales,
+        String mallType,
+        String stockStatus,
+        String adultYn,
+        int customerReviewRank
 ) {
 }

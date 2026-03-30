@@ -6,6 +6,7 @@ import com.example.bookmanagementsystembo.bookBorrow.repository.BookBorrowReposi
 import com.example.bookmanagementsystembo.bookHold.entity.QBookHold;
 import com.example.bookmanagementsystembo.bookRequest.entity.BookRequest;
 import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepository;
+import com.example.bookmanagementsystembo.department.entity.Department;
 import com.example.bookmanagementsystembo.department.repository.DepartmentRepository;
 import com.example.bookmanagementsystembo.department.service.DepartmentService;
 import com.example.bookmanagementsystembo.department.dto.DepartmentDto;
@@ -15,6 +16,7 @@ import com.example.bookmanagementsystembo.reservation.domain.entity.QReservation
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.user.dto.*;
 import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.enums.Role;
 import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -26,6 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -115,6 +120,51 @@ public class UserService {
                 )
                 .orderBy(reservation.reservedAt.desc())
                 .fetch();
+    }
+
+    /**
+     * 전체 임직원 목록을 페이지네이션으로 조회합니다 (관리자 전용).
+     * 부서명은 페이지 내 고유 departmentId를 IN 절로 일괄 조회하여 N+1을 방지합니다.
+     */
+    public AdminUserPageResponse findAllForAdmin(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Users> result = userRepository.findAll(pageable);
+
+        List<Long> deptIds = result.getContent().stream()
+                .map(Users::getDepartmentId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        Map<Long, String> deptNameMap = departmentRepository.findAllById(deptIds).stream()
+                .collect(Collectors.toMap(Department::getDepartmentId, Department::getName));
+
+        List<AdminUserListResponse> content = result.getContent().stream()
+                .map(user -> AdminUserListResponse.from(user, deptNameMap.get(user.getDepartmentId())))
+                .toList();
+
+        return new AdminUserPageResponse(content, page, size, result.getTotalElements(), result.getTotalPages());
+    }
+
+    /**
+     * 임직원 권한을 변경합니다 (관리자 전용).
+     */
+    @Transactional
+    public void updateRole(Long userId, Role role) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
+        user.updateRole(role);
+    }
+
+    /**
+     * 잠긴 계정을 해제합니다 (관리자 전용).
+     * 로그인 실패 횟수를 초기화하고 잠금을 해제합니다.
+     */
+    @Transactional
+    public void unlockUser(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
+        user.resetLoginFailCount();
     }
 
     private String resolveDepartmentName(Long departmentId) {

@@ -5,6 +5,8 @@ import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
+import com.example.bookmanagementsystembo.notification.enums.NotificationType;
+import com.example.bookmanagementsystembo.notification.service.NotificationService;
 import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Transactional(readOnly = true)
@@ -23,6 +26,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final BookHoldRepository bookHoldRepository;
+    private final NotificationService notificationService;
 
     /** 특정 도서의 WAITING 상태 예약 대기 목록을 예약 순서(오래된 순)로 반환합니다. */
     public List<ReservationWaitingResponse> getWaitingReservations(Long bookId) {
@@ -44,7 +48,8 @@ public class ReservationService {
      */
     @Transactional
     public ReservationResponse createReservation(Long bookId, Long userId) {
-        List<BookHold> bookHolds = bookHoldRepository.findByBookId(bookId);
+        // 비관적 락으로 BookHold 조회 — 동시 예약 초과 방지
+        List<BookHold> bookHolds = bookHoldRepository.findByBookIdWithLock(bookId);
 
         // 1. AVAILABLE 상태의 BookHold가 있으면 예약 불가 (바로 대출 가능)
         boolean hasAvailable = bookHolds.stream()
@@ -90,6 +95,7 @@ public class ReservationService {
      * 예약을 취소합니다 (EXPIRED 상태로 변경).
      * IDOR 검증 — 본인의 예약만 취소 가능합니다.
      * 이미 EXPIRED 상태인 예약은 예외를 발생시킵니다.
+     * NOTIFIED 상태 취소 시 다음 WAITING 예약자에게 즉시 승계합니다.
      */
     @Transactional
     public void cancelReservation(Long reservationId, Long userId) {
@@ -106,6 +112,27 @@ public class ReservationService {
             throw new CoreException(ErrorType.RESERVATION_ALREADY_CANCELLED, reservationId);
         }
 
+        boolean wasNotified = reservation.getStatus() == ReservationStatus.NOTIFIED;
         reservation.expire();
+
+        // NOTIFIED 취소 시 다음 WAITING 예약자 즉시 승계
+        if (wasNotified) {
+            succeedToNextWaiting(reservation.getBookHold());
+        }
+    }
+
+    private void succeedToNextWaiting(BookHold bookHold) {
+        Long bookHoldId = bookHold.getBookHoldId();
+        reservationRepository
+                .findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
+                .ifPresentOrElse(next -> {
+                    next.notifyPickup(LocalDateTime.now().plusDays(4));
+                    notificationService.saveAndSend(
+                            next.getUserId(),
+                            NotificationType.RESERVATION_ARRIVED,
+                            "예약하신 도서를 수령할 수 있습니다. 4일 이내에 수령해주세요.",
+                            bookHoldId
+                    );
+                }, () -> bookHold.updateStatus(BookHoldStatus.AVAILABLE));
     }
 }

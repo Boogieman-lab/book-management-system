@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title>도서 센터</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+    <!-- 브레드크럼 + 헤더 -->
+    <div class="mb-6">
+        <p class="text-xs text-gray-400 mb-1">도서 관리 › 도서 센터</p>
+        <h1 class="text-2xl font-black text-gray-900">도서 센터</h1>
+        <p class="text-sm text-gray-500 mt-1">도서 목록 조회 및 신규 도서 등록을 관리합니다.</p>
+    </div>
+
+    <!-- 탭 네비게이션 -->
+    <div class="flex gap-1 border-b border-gray-200 mb-6">
+        <button id="tab-list"
+                class="tab-nav px-5 py-3 text-sm font-bold border-b-2 -mb-px transition-colors active-tab">
+            도서 목록
+        </button>
+        <button id="tab-register"
+                class="tab-nav px-5 py-3 text-sm font-bold border-b-2 -mb-px transition-colors inactive-tab">
+            수동 등록
+        </button>
+    </div>
+
+    <!-- ── 패널: 도서 목록 ────────────────────────────────────── -->
+    <div id="panel-list">
+        <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-wrap gap-3">
+                <h2 class="text-base font-black text-gray-800">등록된 도서 목록</h2>
+                <div class="flex gap-2">
+                    <input id="book-search-input" type="text"
+                           class="border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main w-44"
+                           placeholder="도서명 검색...">
+                    <button id="book-search-btn"
+                            class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors">
+                        검색
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50">
+                        <th class="text-left px-6 py-4 font-bold text-gray-600">표지</th>
+                        <th class="text-left px-6 py-4 font-bold text-gray-600">제목</th>
+                        <th class="text-left px-6 py-4 font-bold text-gray-600">저자</th>
+                        <th class="text-left px-6 py-4 font-bold text-gray-600">출판사</th>
+                        <th class="text-center px-6 py-4 font-bold text-gray-600">대출가능</th>
+                        <th class="text-center px-6 py-4 font-bold text-gray-600">총 재고</th>
+                        <th class="text-center px-6 py-4 font-bold text-gray-600">관리</th>
+                    </tr>
+                    </thead>
+                    <tbody id="books-tbody">
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-400 text-sm">데이터를 불러오는 중...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="books-pagination"
+                 class="flex items-center justify-between px-6 py-4 border-t border-gray-100"></div>
+        </div>
+    </div>
+
+    <!-- ── 패널: 수동 등록 ───────────────────────────────────── -->
+    <div id="panel-register" class="hidden">
+
+        <!-- 알라딘 검색 -->
+        <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm p-6 mb-6">
+            <h2 class="text-base font-black text-gray-800 mb-4">알라딘 도서 검색</h2>
+            <div class="flex gap-3 mb-5">
+                <input id="aladin-search-input" type="text"
+                       class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                       placeholder="도서명, 저자, ISBN으로 검색...">
+                <select id="aladin-search-target"
+                        class="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main">
+                    <option value="keyword">제목+저자</option>
+                    <option value="title">제목</option>
+                    <option value="author">저자</option>
+                    <option value="publisher">출판사</option>
+                </select>
+                <button id="aladin-search-btn"
+                        class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors">
+                    검색
+                </button>
+            </div>
+            <!-- 검색 결과 -->
+            <div id="aladin-results" class="hidden mt-2">
+                <!-- 로딩 스켈레톤 -->
+                <div id="aladin-loading" class="hidden space-y-1 border border-gray-100 rounded-xl overflow-hidden">
+                    <div class="flex gap-4 p-4 animate-pulse">
+                        <div class="w-14 h-20 bg-gray-100 rounded-lg flex-shrink-0"></div>
+                        <div class="flex-1 space-y-2 py-2">
+                            <div class="h-3 bg-gray-100 rounded w-3/4"></div>
+                            <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                            <div class="h-3 bg-gray-100 rounded w-1/3"></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 animate-pulse border-t border-gray-50">
+                        <div class="w-14 h-20 bg-gray-100 rounded-lg flex-shrink-0"></div>
+                        <div class="flex-1 space-y-2 py-2">
+                            <div class="h-3 bg-gray-100 rounded w-3/4"></div>
+                            <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                            <div class="h-3 bg-gray-100 rounded w-1/3"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 빈 결과 -->
+                <div id="aladin-empty" class="hidden py-10 text-center">
+                    <p class="text-sm text-gray-400">검색 결과가 없습니다.</p>
+                    <p class="text-xs text-gray-300 mt-1">다른 검색어로 시도해 보세요</p>
+                </div>
+                <!-- 결과 리스트 -->
+                <ul id="aladin-results-list" class="hidden divide-y divide-gray-50 border border-gray-100 rounded-xl overflow-hidden"></ul>
+                <!-- 페이지네이션 -->
+                <div id="aladin-pagination" class="hidden items-center justify-between pt-3 mt-1">
+                    <button id="aladin-prev-btn"
+                            class="px-3 py-1.5 text-xs font-bold text-gray-500 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-30 transition-colors">
+                        ← 이전
+                    </button>
+                    <span id="aladin-page-info" class="text-xs text-gray-400"></span>
+                    <button id="aladin-next-btn"
+                            class="px-3 py-1.5 text-xs font-bold text-gray-500 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-30 transition-colors">
+                        다음 →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 등록 폼 -->
+        <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm p-6">
+            <h2 class="text-base font-black text-gray-800 mb-5">도서 정보 입력</h2>
+            <div class="flex gap-6">
+                <div class="flex-shrink-0">
+                    <img id="form-cover-preview" src="" alt="표지"
+                         class="w-24 h-32 object-cover rounded-xl border border-gray-100 hidden">
+                    <div id="form-cover-placeholder"
+                         class="w-24 h-32 bg-gray-100 rounded-xl flex items-center justify-center text-gray-300 text-xs">
+                        표지 없음
+                    </div>
+                </div>
+                <input type="hidden" id="form-isbn10">
+                <input type="hidden" id="form-cover-url">
+                <input type="hidden" id="form-category-id">
+                <input type="hidden" id="form-stock-status">
+                <input type="hidden" id="form-customer-review-rank">
+                <input type="hidden" id="form-series-id">
+                <input type="hidden" id="form-series-name">
+                <input type="hidden" id="form-mall-type">
+                <input type="hidden" id="form-adult-yn">
+                <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">ISBN13 *</label>
+                        <input id="form-isbn13" type="text" maxlength="13"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                               placeholder="9791234567890">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">제목 *</label>
+                        <input id="form-title" type="text"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                               placeholder="도서명">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">저자 *</label>
+                        <input id="form-author" type="text"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                               placeholder="홍길동">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">출판사</label>
+                        <input id="form-publisher" type="text"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                               placeholder="출판사명">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">출판일</label>
+                        <input id="form-pub-date" type="date"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">카테고리</label>
+                        <input id="form-category-name" type="text"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                               placeholder="국내도서 > 소설">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">정가</label>
+                        <input id="form-price-standard" type="number" min="0"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                               placeholder="0">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">판매가</label>
+                        <input id="form-price-sales" type="number" min="0"
+                               class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                               placeholder="0">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">설명</label>
+                        <textarea id="form-description" rows="3"
+                                  class="form-input w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main resize-none"
+                                  placeholder="도서 설명..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end mt-5">
+                <button id="register-book-btn"
+                        class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors">
+                    도서 등록
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 실물 추가 모달 ────────────────────────────────────── -->
+    <div id="hold-add-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-[24px] p-8 w-full max-w-sm shadow-xl">
+            <h2 class="text-lg font-black text-gray-900 mb-1">실물 재고 추가</h2>
+            <p id="hold-add-title" class="text-sm text-gray-500 mb-5 truncate"></p>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1">비치 위치 (선택)</label>
+                <input id="hold-add-location" type="text"
+                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                       placeholder="예: 1층 A구역">
+            </div>
+            <div class="flex gap-3 mt-5">
+                <button id="hold-add-cancel"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+                    취소
+                </button>
+                <button id="hold-add-confirm"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors">
+                    추가
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 재고 관리 모달 ────────────────────────────────────── -->
+    <div id="hold-manage-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-[24px] w-full max-w-2xl shadow-xl flex flex-col" style="max-height:80vh;">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 flex-shrink-0">
+                <div>
+                    <h2 class="text-base font-black text-gray-900">재고 관리</h2>
+                    <p id="hold-manage-title" class="text-sm text-gray-400 mt-0.5 truncate max-w-xs"></p>
+                </div>
+                <button id="hold-manage-close"
+                        class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors text-xl font-bold">
+                    ×
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto px-6 py-4">
+                <table class="w-full text-sm">
+                    <thead>
+                    <tr class="border-b border-gray-100">
+                        <th class="text-left py-3 font-bold text-gray-500 text-xs">No.</th>
+                        <th class="text-left py-3 font-bold text-gray-500 text-xs">상태</th>
+                        <th class="text-left py-3 font-bold text-gray-500 text-xs">위치</th>
+                        <th class="text-center py-3 font-bold text-gray-500 text-xs">수정</th>
+                    </tr>
+                    </thead>
+                    <tbody id="holds-tbody">
+                    <tr><td colspan="4" class="py-8 text-center text-gray-400 text-sm">불러오는 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-100 flex-shrink-0 flex justify-end">
+                <button id="hold-manage-add-btn"
+                        class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors">
+                    + 실물 추가
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 개별 보유본 수정 모달 ─────────────────────────────── -->
+    <div id="hold-edit-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] hidden">
+        <div class="bg-white rounded-[24px] p-8 w-full max-w-sm shadow-xl">
+            <h2 class="text-lg font-black text-gray-900 mb-5">보유본 수정</h2>
+            <input type="hidden" id="edit-hold-id">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">상태</label>
+                    <select id="edit-hold-status"
+                            class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main">
+                        <option value="AVAILABLE">대출 가능</option>
+                        <option value="LOST">분실</option>
+                        <option value="DISCARDED">폐기</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">위치</label>
+                    <input id="edit-hold-location" type="text"
+                           class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-boogie-main"
+                           placeholder="예: 1층 A구역">
+                </div>
+            </div>
+            <div class="flex gap-3 mt-5">
+                <button id="hold-edit-cancel"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+                    취소
+                </button>
+                <button id="hold-edit-confirm"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors">
+                    저장
+                </button>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="script">
+<script>
+    // ── 유틸 ─────────────────────────────────────────────────
+    function esc(str) {
+        if (str == null) return '';
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;');
+    }
+    function safeUrl(url) {
+        if (!url) return '';
+        return /^https?:\/\//i.test(url) ? url : '';
+    }
+
+    // ── 탭 전환 ──────────────────────────────────────────────
+    const ACTIVE   = ['text-boogie-main', 'border-boogie-main'];
+    const INACTIVE = ['text-gray-400',    'border-transparent'];
+
+    function switchTab(tabId) {
+        const isListTab = tabId === 'tab-list';
+        const tabList     = document.getElementById('tab-list');
+        const tabRegister = document.getElementById('tab-register');
+
+        tabList.classList.toggle('active-tab',   isListTab);
+        tabList.classList.toggle('inactive-tab', !isListTab);
+
+        tabRegister.classList.toggle('active-tab',   !isListTab);
+        tabRegister.classList.toggle('inactive-tab',  isListTab);
+
+        document.getElementById('panel-list').classList.toggle('hidden',    !isListTab);
+        document.getElementById('panel-register').classList.toggle('hidden', isListTab);
+    }
+
+    document.getElementById('tab-list').addEventListener('click',     () => switchTab('tab-list'));
+    document.getElementById('tab-register').addEventListener('click', () => switchTab('tab-register'));
+
+    // ── 도서 목록 ─────────────────────────────────────────────
+    let currentBooksPage = 1;
+    let currentKeyword   = '';
+
+    async function loadBooks(page = 1, keyword = currentKeyword) {
+        currentBooksPage = page;
+        currentKeyword   = keyword;
+
+        const params = new URLSearchParams({ page: page - 1, size: 10 });
+        if (keyword) params.set('keyword', keyword);
+
+        try {
+            const data = await fetch(`/api/v1/books?${params}`, { credentials: 'include' })
+                .then(r => r.ok ? r.json() : null);
+
+            const tbody = document.getElementById('books-tbody');
+            if (!data?.content?.length) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-gray-400 text-sm">등록된 도서가 없습니다.</td></tr>`;
+                document.getElementById('books-pagination').innerHTML = '';
+                return;
+            }
+
+            tbody.innerHTML = data.content.map(b => {
+                const thumb = safeUrl(b.coverUrl);
+                const avail = b.availableStock > 0;
+                return `
+                <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-3">
+                        ${thumb
+                            ? `<img src="${esc(thumb)}" alt="표지" class="w-10 h-14 object-cover rounded-lg border border-gray-100">`
+                            : `<div class="w-10 h-14 bg-gray-100 rounded-lg flex items-center justify-center text-gray-300 text-[10px]">없음</div>`}
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900 max-w-[200px]">
+                        <p class="truncate">${esc(b.title)}</p>
+                        <p class="text-[10px] text-gray-400 mt-0.5">${esc(b.isbn13 ?? '')}</p>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">${esc(b.author)}</td>
+                    <td class="px-6 py-4 text-gray-500">${esc(b.publisher ?? '-')}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold
+                            ${avail ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}">
+                            ${b.availableStock}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center font-bold text-gray-700">${b.totalStock}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button class="manage-hold-btn px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-boogie-main hover:bg-boogie-dark transition-colors"
+                                data-book-id="${b.bookId}" data-book-title="${esc(b.title)}">
+                            재고 관리
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // totalPages 안전 처리: 응답에 없을 경우 totalElements로 계산
+            const totalPages = data.totalPages ?? Math.ceil((data.totalElements ?? 0) / 10);
+            renderBooksPagination(page, totalPages);
+        } catch (_) {
+            document.getElementById('books-tbody').innerHTML =
+                `<tr><td colspan="7" class="px-6 py-12 text-center text-red-400 text-sm">데이터를 불러오지 못했습니다.</td></tr>`;
+        }
+    }
+
+    function renderBooksPagination(page, totalPages) {
+        const el = document.getElementById('books-pagination');
+        if (!totalPages || totalPages <= 1) { el.innerHTML = ''; return; }
+        el.innerHTML = `
+            <button class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                    data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>← 이전</button>
+            <span class="text-sm text-gray-500">${page} / ${totalPages}</span>
+            <button class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                    data-page="${page + 1}" ${page >= totalPages ? 'disabled' : ''}>다음 →</button>`;
+    }
+
+    document.getElementById('books-pagination').addEventListener('click', e => {
+        const btn = e.target.closest('[data-page]');
+        if (btn && !btn.disabled) loadBooks(parseInt(btn.dataset.page, 10));
+    });
+
+    document.getElementById('book-search-btn').addEventListener('click', () =>
+        loadBooks(1, document.getElementById('book-search-input').value.trim()));
+    document.getElementById('book-search-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') loadBooks(1, e.target.value.trim());
+    });
+
+    // ── 재고 관리 모달 ───────────────────────────────────────
+    let manageBookId = null;
+
+    const HOLD_STATUS_LABEL = {
+        AVAILABLE:    { text: '대출 가능', cls: 'bg-green-100 text-green-700' },
+        BORROWED:     { text: '대출 중',   cls: 'bg-blue-100 text-blue-700' },
+        RESERVE_HOLD: { text: '예약 대기', cls: 'bg-yellow-100 text-yellow-700' },
+        LOST:         { text: '분실',      cls: 'bg-red-100 text-red-600' },
+        DISCARDED:    { text: '폐기',      cls: 'bg-gray-100 text-gray-500' },
+    };
+
+    // 도서 목록 행 클릭 → 재고 관리 모달
+    document.getElementById('books-tbody').addEventListener('click', e => {
+        const btn = e.target.closest('.manage-hold-btn');
+        if (!btn) return;
+        manageBookId = btn.dataset.bookId;
+        document.getElementById('hold-manage-title').textContent = btn.dataset.bookTitle;
+        document.getElementById('hold-manage-modal').classList.remove('hidden');
+        loadHolds(manageBookId);
+    });
+
+    document.getElementById('hold-manage-close').addEventListener('click', () =>
+        document.getElementById('hold-manage-modal').classList.add('hidden'));
+
+    async function loadHolds(bookId) {
+        const tbody = document.getElementById('holds-tbody');
+        tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-gray-400 text-sm">불러오는 중...</td></tr>`;
+        try {
+            const holds = await fetch(`/api/v1/admin/books/${bookId}/holds`, { credentials: 'include' })
+                .then(r => r.ok ? r.json() : []);
+
+            if (!holds.length) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-gray-400 text-sm">보유본이 없습니다.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = holds.map((h, i) => {
+                const st = HOLD_STATUS_LABEL[h.bookHoldStatus] ?? { text: h.bookHoldStatus, cls: 'bg-gray-100 text-gray-500' };
+                const canEdit = h.bookHoldStatus !== 'BORROWED' && h.bookHoldStatus !== 'RESERVE_HOLD';
+                return `
+                <tr class="border-b border-gray-50">
+                    <td class="py-3 text-gray-400 text-xs">#${i + 1}</td>
+                    <td class="py-3">
+                        <span class="px-2 py-1 rounded-full text-[11px] font-bold ${st.cls}">${st.text}</span>
+                    </td>
+                    <td class="py-3 text-gray-600 text-xs">${esc(h.location ?? '-')}</td>
+                    <td class="py-3 text-center">
+                        ${canEdit
+                            ? `<button class="edit-hold-btn px-2.5 py-1 rounded-lg text-xs font-bold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors"
+                                       data-hold-id="${h.bookHoldId}"
+                                       data-hold-status="${h.bookHoldStatus}"
+                                       data-hold-location="${esc(h.location ?? '')}">수정</button>`
+                            : `<span class="text-gray-300 text-xs">수정 불가</span>`}
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (_) {
+            tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-red-400 text-sm">불러오기 실패</td></tr>`;
+        }
+    }
+
+    // 재고 관리 모달 내 수정 버튼 → 개별 수정 모달
+    document.getElementById('holds-tbody').addEventListener('click', e => {
+        const btn = e.target.closest('.edit-hold-btn');
+        if (!btn) return;
+        document.getElementById('edit-hold-id').value      = btn.dataset.holdId;
+        document.getElementById('edit-hold-status').value  = btn.dataset.holdStatus;
+        document.getElementById('edit-hold-location').value = btn.dataset.holdLocation;
+        document.getElementById('hold-edit-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('hold-edit-cancel').addEventListener('click', () =>
+        document.getElementById('hold-edit-modal').classList.add('hidden'));
+
+    document.getElementById('hold-edit-confirm').addEventListener('click', async () => {
+        const holdId  = document.getElementById('edit-hold-id').value;
+        const status  = document.getElementById('edit-hold-status').value;
+        const location = document.getElementById('edit-hold-location').value.trim() || null;
+
+        try {
+            const res = await fetch(`/api/v1/admin/book-holds/${holdId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ status, location })
+            });
+            document.getElementById('hold-edit-modal').classList.add('hidden');
+            if (res.ok) {
+                loadHolds(manageBookId);
+                loadBooks(currentBooksPage);
+            } else {
+                const err = await res.json().catch(() => ({}));
+                alert(err.message ?? '수정에 실패했습니다.');
+            }
+        } catch (_) {
+            document.getElementById('hold-edit-modal').classList.add('hidden');
+            alert('수정 중 오류가 발생했습니다.');
+        }
+    });
+
+    // 재고 관리 모달 내 실물 추가 버튼
+    document.getElementById('hold-manage-add-btn').addEventListener('click', () => {
+        document.getElementById('hold-add-title').textContent =
+            document.getElementById('hold-manage-title').textContent;
+        document.getElementById('hold-add-location').value = '';
+        document.getElementById('hold-add-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('hold-add-cancel').addEventListener('click', () =>
+        document.getElementById('hold-add-modal').classList.add('hidden'));
+
+    document.getElementById('hold-add-confirm').addEventListener('click', async () => {
+        const location = document.getElementById('hold-add-location').value.trim() || null;
+        try {
+            const res = await fetch(`/api/v1/admin/books/${manageBookId}/holds`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ location })
+            });
+            document.getElementById('hold-add-modal').classList.add('hidden');
+            if (res.ok) {
+                loadHolds(manageBookId);
+                loadBooks(currentBooksPage);
+            } else {
+                alert('실물 추가에 실패했습니다.');
+            }
+        } catch (_) {
+            document.getElementById('hold-add-modal').classList.add('hidden');
+            alert('실물 추가 중 오류가 발생했습니다.');
+        }
+    });
+
+    // ── 알라딘 검색 (리스트 형태) ────────────────────────────
+    const ALADIN_PAGE_SIZE = 10;
+    let _allAladinDocs = [];
+    let _aladinPage    = 0;
+
+    function aladinShowState(state) {
+        ['aladin-loading', 'aladin-empty', 'aladin-results-list'].forEach(id =>
+            document.getElementById(id).classList.add('hidden'));
+        document.getElementById('aladin-pagination').classList.add('hidden');
+        if (state) document.getElementById(state).classList.remove('hidden');
+    }
+
+    function buildAladinItem(doc) {
+        const isbn13  = (doc.isbn ?? '').split(' ').find(s => s.length === 13) ?? doc.isbn ?? '';
+        const authors = (doc.authors ?? []).join(', ');
+        const year    = doc.datetime ? doc.datetime.slice(0, 4) : '';
+        const thumb   = safeUrl(doc.thumbnail);
+        return `
+        <li class="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors">
+            ${thumb
+                ? `<img src="${esc(thumb)}" alt="표지" class="w-14 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-100">`
+                : `<div class="w-14 h-20 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center text-gray-300 text-xs">없음</div>`}
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <p class="text-sm font-bold text-gray-800 leading-snug line-clamp-2">${esc(doc.title)}</p>
+                    ${isbn13 ? `<span id="aladin-badge-${esc(isbn13)}" class="hidden px-1.5 py-0.5 bg-red-50 text-red-500 text-xs font-bold rounded-full flex-shrink-0">보유중</span>` : ''}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">${esc(authors)}</p>
+                <p class="text-xs text-gray-400 mt-0.5">${esc(doc.publisher ?? '')}${year ? ' · ' + year : ''}</p>
+                ${isbn13 ? `<p class="text-xs text-gray-300 mt-0.5">ISBN ${esc(isbn13)}</p>` : ''}
+            </div>
+            <button type="button"
+                    class="aladin-select-btn flex-shrink-0 mt-1 px-3 py-1.5 text-xs font-bold text-boogie-main border border-boogie-main rounded-full hover:bg-boogie-main hover:text-white transition-colors whitespace-nowrap"
+                    data-idx="${doc._idx}">
+                선택
+            </button>
+        </li>`;
+    }
+
+    function renderAladinPage(page) {
+        const total = Math.ceil(_allAladinDocs.length / ALADIN_PAGE_SIZE);
+        _aladinPage = Math.max(0, Math.min(page, total - 1));
+        const slice = _allAladinDocs.slice(_aladinPage * ALADIN_PAGE_SIZE, (_aladinPage + 1) * ALADIN_PAGE_SIZE);
+
+        const list = document.getElementById('aladin-results-list');
+        list.innerHTML = slice.map(buildAladinItem).join('');
+        aladinShowState('aladin-results-list');
+
+        document.getElementById('aladin-page-info').textContent =
+            `${_aladinPage + 1} / ${total} (총 ${_allAladinDocs.length}건)`;
+        document.getElementById('aladin-prev-btn').disabled = _aladinPage === 0;
+        document.getElementById('aladin-next-btn').disabled = _aladinPage >= total - 1;
+
+        const pagination = document.getElementById('aladin-pagination');
+        if (total > 1) { pagination.classList.remove('hidden'); pagination.classList.add('flex'); }
+
+        checkAladinHeld(slice);
+    }
+
+    async function checkAladinHeld(slice) {
+        slice.forEach(async doc => {
+            const isbn13 = (doc.isbn ?? '').split(' ').find(s => s.length === 13) ?? '';
+            if (!isbn13) return;
+            try {
+                const res = await fetch(`/api/v1/books/isbn-check?isbn=${encodeURIComponent(isbn13)}`, { credentials: 'include' });
+                if (!res.ok) return;
+                const { exists } = await res.json();
+                if (exists) {
+                    const badge = document.getElementById(`aladin-badge-${isbn13}`);
+                    if (badge) badge.classList.remove('hidden');
+                }
+            } catch (_) {}
+        });
+    }
+
+    async function searchAladin() {
+        const query = document.getElementById('aladin-search-input').value.trim();
+        if (!query) return;
+        const target = document.getElementById('aladin-search-target').value;
+
+        document.getElementById('aladin-results').classList.remove('hidden');
+        aladinShowState('aladin-loading');
+
+        try {
+            const data = await fetch(
+                `/api/v1/external/aladin/books?query=${encodeURIComponent(query)}&target=${encodeURIComponent(target)}&size=50`,
+                { credentials: 'include' }
+            ).then(r => r.ok ? r.json() : null);
+
+            if (!data?.documents?.length) { aladinShowState('aladin-empty'); return; }
+
+            _allAladinDocs = data.documents.map((d, i) => ({ ...d, _idx: i }));
+            renderAladinPage(0);
+        } catch (_) {
+            aladinShowState('aladin-empty');
+            alert('알라딘 검색 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 리스트 선택 버튼 — 이벤트 위임
+    document.getElementById('aladin-results-list').addEventListener('click', e => {
+        const btn = e.target.closest('.aladin-select-btn');
+        if (!btn) return;
+        const doc = _allAladinDocs[parseInt(btn.dataset.idx, 10)];
+        if (!doc) return;
+        fillRegisterForm(doc);
+    });
+
+    function fillRegisterForm(doc) {
+        const thumbUrl = safeUrl(doc.thumbnail);
+
+        // ── 노출 필드 ─────────────────────────────────────────
+        document.getElementById('form-isbn13').value          = doc.isbn ?? '';
+        document.getElementById('form-title').value           = doc.title ?? '';
+        document.getElementById('form-author').value          = (doc.authors ?? []).join(', ');
+        document.getElementById('form-publisher').value       = doc.publisher ?? '';
+        document.getElementById('form-category-name').value   = doc.category ?? '';
+        document.getElementById('form-description').value     = doc.contents ?? '';
+        document.getElementById('form-price-standard').value  = doc.priceStandard > 0 ? doc.priceStandard : '';
+        document.getElementById('form-price-sales').value     = doc.priceSales > 0    ? doc.priceSales    : '';
+
+        const d = doc.datetime ?? '';
+        document.getElementById('form-pub-date').value =
+            d.length === 8 ? `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}` : '';
+
+        // ── hidden 필드 ───────────────────────────────────────
+        document.getElementById('form-isbn10').value               = doc.isbn10 ?? '';
+        document.getElementById('form-cover-url').value            = thumbUrl;
+        document.getElementById('form-category-id').value          = doc.categoryId ?? '';
+        document.getElementById('form-stock-status').value         = doc.stockStatus ?? '';
+        document.getElementById('form-customer-review-rank').value = doc.customerReviewRank ?? 0;
+        document.getElementById('form-series-id').value            = '';
+        document.getElementById('form-series-name').value          = '';
+        document.getElementById('form-mall-type').value            = doc.mallType ?? 'BOOK';
+        document.getElementById('form-adult-yn').value             = doc.adultYn ?? 'N';
+
+        const img = document.getElementById('form-cover-preview');
+        const ph  = document.getElementById('form-cover-placeholder');
+        if (thumbUrl) { img.src = thumbUrl; img.classList.remove('hidden'); ph.classList.add('hidden'); }
+        else          { img.classList.add('hidden'); ph.classList.remove('hidden'); }
+
+        document.querySelector('.bg-white.rounded-\\[24px\\].border.border-gray-100.shadow-sm.p-6:last-of-type')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.getElementById('aladin-prev-btn').addEventListener('click', () => renderAladinPage(_aladinPage - 1));
+    document.getElementById('aladin-next-btn').addEventListener('click', () => renderAladinPage(_aladinPage + 1));
+
+    document.getElementById('aladin-search-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') searchAladin();
+    });
+    document.getElementById('aladin-search-btn').addEventListener('click', searchAladin);
+
+    // ── 도서 등록 ─────────────────────────────────────────────
+    document.getElementById('register-book-btn').addEventListener('click', async () => {
+        const isbn13 = document.getElementById('form-isbn13').value.trim();
+        const title  = document.getElementById('form-title').value.trim();
+        const author = document.getElementById('form-author').value.trim();
+
+        if (!isbn13 || !title || !author) { alert('ISBN13, 제목, 저자는 필수입니다.'); return; }
+
+        const body = {
+            isbn13,
+            isbn10:              document.getElementById('form-isbn10').value          || null,
+            title, author,
+            publisher:           document.getElementById('form-publisher').value       || null,
+            pubDate:             document.getElementById('form-pub-date').value        || null,
+            description:         document.getElementById('form-description').value     || null,
+            coverUrl:            document.getElementById('form-cover-url').value       || null,
+            categoryId:          parseInt(document.getElementById('form-category-id').value)            || null,
+            categoryName:        document.getElementById('form-category-name').value   || null,
+            priceStandard:       parseInt(document.getElementById('form-price-standard').value)         || 0,
+            priceSales:          parseInt(document.getElementById('form-price-sales').value)            || 0,
+            stockStatus:         document.getElementById('form-stock-status').value    || null,
+            customerReviewRank:  parseInt(document.getElementById('form-customer-review-rank').value)   || 0,
+            seriesId:            parseInt(document.getElementById('form-series-id').value)              || null,
+            seriesName:          document.getElementById('form-series-name').value     || null,
+            mallType:            document.getElementById('form-mall-type').value       || null,
+            adultYn:             document.getElementById('form-adult-yn').value        || null,
+        };
+
+        try {
+            const res = await fetch('/api/v1/admin/books', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(body)
+            });
+            if (res.ok) {
+                alert('도서가 등록되었습니다.');
+                document.querySelectorAll('.form-input').forEach(el => { el.value = ''; });
+                ['form-isbn10','form-cover-url','form-category-id','form-stock-status',
+                 'form-customer-review-rank','form-series-id','form-series-name',
+                 'form-mall-type','form-adult-yn'].forEach(id => {
+                    document.getElementById(id).value = '';
+                });
+                document.getElementById('form-cover-preview').classList.add('hidden');
+                document.getElementById('form-cover-placeholder').classList.remove('hidden');
+                switchTab('tab-list');
+                loadBooks(1);
+            } else {
+                const err = await res.json().catch(() => ({}));
+                alert(err.message ?? '등록에 실패했습니다.');
+            }
+        } catch (_) {
+            alert('등록 중 오류가 발생했습니다.');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => loadBooks(1));
+</script>
+<style>
+    .active-tab   { color: #00A760; border-color: #00A760; }
+    .inactive-tab { color: #9ca3af; border-color: transparent; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+</style>
+</th:block>
+</body>
+</html>

@@ -78,13 +78,13 @@
             <i class="fa-regular fa-user mr-1.5"></i>프로필
         </button>
         <button class="tab-btn px-5 py-3 text-sm text-gray-500 whitespace-nowrap" data-tab="borrows">
-            <i class="fa-solid fa-book-open mr-1.5"></i>대출 내역
+            <i class="fa-solid fa-book-open mr-1.5"></i>대출 이력
         </button>
         <button class="tab-btn px-5 py-3 text-sm text-gray-500 whitespace-nowrap" data-tab="reserv">
             <i class="fa-regular fa-bookmark mr-1.5"></i>예약 현황
         </button>
         <button class="tab-btn px-5 py-3 text-sm text-gray-500 whitespace-nowrap" data-tab="noti">
-            <i class="fa-regular fa-bell mr-1.5"></i>알림함
+            <i class="fa-regular fa-bell mr-1.5"></i>알림 내역
             <span id="noti-unread-badge" class="ml-1.5 hidden px-1.5 py-0.5 text-[10px] font-bold text-white rounded-full"
                   style="background: linear-gradient(135deg, #00A760 0%, #10B981 100%);">0</span>
         </button>
@@ -165,12 +165,32 @@
             </div>
 
             <!-- 대출 목록 -->
-            <div id="borrow-list" class="space-y-3">
-                <!-- JS로 렌더링 -->
-                <div class="text-center py-12 text-gray-400">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i>
-                    <p class="text-sm">불러오는 중...</p>
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50 text-xs font-bold text-gray-500">
+                        <th class="px-3 py-3 text-center w-10">No.</th>
+                        <th class="px-3 py-3 text-center w-12">표지</th>
+                        <th class="px-3 py-3 text-left w-16">도서ID</th>
+                        <th class="px-3 py-3 text-left">도서명</th>
+                        <th class="px-3 py-3 text-left">저자</th>
+                        <th class="px-3 py-3 text-left">출판사</th>
+                        <th class="px-3 py-3 text-center">대출일자</th>
+                        <th class="px-3 py-3 text-center">반납예정일</th>
+                        <th class="px-3 py-3 text-center">반납일</th>
+                        <th class="px-3 py-3 text-center">연체일</th>
+                        <th class="px-3 py-3 text-center">상태</th>
+                    </tr>
+                    </thead>
+                    <tbody id="borrow-list">
+                    <tr>
+                        <td colspan="11" class="py-12 text-center text-gray-400">
+                            <i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i>
+                            <p class="text-sm mt-2">불러오는 중...</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- 페이지네이션 -->
@@ -236,6 +256,18 @@ const fmtDate = (iso) => {
     if (!iso) return '-';
     return new Date(iso).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
 };
+
+function calcOverdueDays(b) {
+    if (b.status === 'RETURNED' && b.returnDate && b.dueDate) {
+        const days = Math.floor((new Date(b.returnDate) - new Date(b.dueDate)) / 86400000);
+        return days > 0 ? days : '-';
+    }
+    if (b.status === 'OVERDUE' && b.dueDate) {
+        const days = Math.floor((Date.now() - new Date(b.dueDate)) / 86400000);
+        return days > 0 ? days : '-';
+    }
+    return '-';
+}
 
 const borrowStatusLabel = (s) => ({
     BORROWED: { text: '대출중',   cls: 'bg-blue-100 text-blue-700' },
@@ -375,7 +407,7 @@ const renderBorrows = async (page = 1, status = '') => {
     borrowStatus = status;
 
     const list = document.getElementById('borrow-list');
-    list.innerHTML = `<div class="text-center py-12 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></div>`;
+    list.innerHTML = `<tr><td colspan="11" class="py-12 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></td></tr>`;
 
     try {
         let url = `/api/v1/users/me/borrows?page=${page}&size=10`;
@@ -386,41 +418,46 @@ const renderBorrows = async (page = 1, status = '') => {
 
         if (!items.length) {
             list.innerHTML = `
-                <div class="text-center py-16 text-gray-400">
-                    <i class="fa-solid fa-book-open text-4xl mb-3 opacity-30"></i>
+                <tr><td colspan="11" class="py-16 text-center text-gray-400">
+                    <i class="fa-solid fa-book-open text-4xl mb-3 opacity-30 block"></i>
                     <p class="text-sm font-medium">대출 내역이 없습니다.</p>
-                </div>`;
+                </td></tr>`;
             document.getElementById('borrow-pagination').innerHTML = '';
             return;
         }
 
-        list.innerHTML = items.map(b => {
-            const s = borrowStatusLabel(b.status);
+        const pageOffset = (borrowPage - 1) * 10;
+        list.innerHTML = items.map((b, i) => {
+            const s        = borrowStatusLabel(b.status);
             const isActive = b.status === 'BORROWED' || b.status === 'OVERDUE';
+            const cover    = b.coverUrl ? `<img src="${escHtml(b.coverUrl)}" alt="표지" class="w-9 h-12 object-cover rounded-lg border border-gray-100 mx-auto">`
+                                        : `<div class="w-9 h-12 bg-gray-100 rounded-lg mx-auto flex items-center justify-center text-gray-300 text-[9px]">없음</div>`;
+            const overdue  = calcOverdueDays(b);
             return `
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors">
-                <div class="flex items-start gap-3 min-w-0">
-                    <div class="mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 bg-boogie-light">
-                        <i class="fa-solid fa-book text-sm text-boogie-main"></i>
+            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <td class="px-3 py-3 text-center text-xs text-gray-400">${pageOffset + i + 1}</td>
+                <td class="px-3 py-3">${cover}</td>
+                <td class="px-3 py-3 text-xs text-gray-400">${Number.isInteger(b.bookId) ? b.bookId : '-'}</td>
+                <td class="px-3 py-3 font-medium text-gray-900 max-w-[160px]">
+                    <p class="truncate text-sm">${escHtml(b.bookTitle) || '-'}</p>
+                </td>
+                <td class="px-3 py-3 text-xs text-gray-600 whitespace-nowrap">${escHtml(b.author ?? '-')}</td>
+                <td class="px-3 py-3 text-xs text-gray-500 whitespace-nowrap">${escHtml(b.publisher ?? '-')}</td>
+                <td class="px-3 py-3 text-xs text-gray-500 text-center whitespace-nowrap">${fmtDate(b.borrowDate)}</td>
+                <td class="px-3 py-3 text-xs text-gray-500 text-center whitespace-nowrap">${fmtDate(b.dueDate)}</td>
+                <td class="px-3 py-3 text-xs text-gray-500 text-center whitespace-nowrap">${b.returnDate ? fmtDate(b.returnDate) : '-'}</td>
+                <td class="px-3 py-3 text-center">
+                    ${overdue !== '-' ? `<span class="text-xs font-bold text-red-500">${overdue}일</span>` : `<span class="text-xs text-gray-300">-</span>`}
+                </td>
+                <td class="px-3 py-3 text-center">
+                    <div class="flex flex-col items-center gap-1.5">
+                        <span class="status-badge ${s.cls}">${s.text}</span>
+                        ${isActive ? `<button class="return-book-btn px-2.5 py-1 text-[11px] font-bold text-white rounded-lg transition-colors hover:opacity-90 whitespace-nowrap"
+                            data-borrow-id="${parseInt(b.borrowId, 10)}"
+                            style="background:linear-gradient(135deg,#00A760 0%,#10B981 100%)">반납</button>` : ''}
                     </div>
-                    <div class="min-w-0">
-                        <p class="font-bold text-gray-900 text-sm truncate">${escHtml(b.bookTitle) || '알 수 없는 도서'}</p>
-                        <p class="text-xs text-gray-400 mt-0.5">
-                            대출: ${fmtDate(b.borrowDate)} &nbsp;·&nbsp; 반납기한: ${fmtDate(b.dueDate)}
-                            ${b.returnDate ? `&nbsp;·&nbsp; 반납일: ${fmtDate(b.returnDate)}` : ''}
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 flex-shrink-0">
-                    <span class="status-badge ${s.cls}">${s.text}</span>
-                    ${isActive ? `
-                    <button onclick="returnBook(${b.borrowId})"
-                            class="px-4 py-1.5 text-xs font-bold text-white rounded-xl transition-colors hover:opacity-90"
-                            style="background:linear-gradient(135deg,#00A760 0%,#10B981 100%)">
-                        반납하기
-                    </button>` : ''}
-                </div>
-            </div>`;
+                </td>
+            </tr>`;
         }).join('');
 
         /* 페이지네이션 */
@@ -428,7 +465,7 @@ const renderBorrows = async (page = 1, status = '') => {
         renderBorrowPagination(totalPages);
 
     } catch (err) {
-        list.innerHTML = `<p class="text-center text-sm text-red-500 py-8">데이터 로드에 실패했습니다.</p>`;
+        list.innerHTML = `<tr><td colspan="11" class="py-8 text-center text-red-400 text-sm">데이터 로드에 실패했습니다.</td></tr>`;
     }
 };
 
@@ -443,6 +480,15 @@ const renderBorrowPagination = (total) => {
 };
 
 TAB_LOADERS.borrows = () => renderBorrows(1, '');
+
+/* 반납 버튼 이벤트 위임 */
+document.getElementById('borrow-list').addEventListener('click', e => {
+    const btn = e.target.closest('.return-book-btn');
+    if (!btn) return;
+    const borrowId = parseInt(btn.dataset.borrowId, 10);
+    if (!Number.isInteger(borrowId)) return;
+    returnBook(borrowId);
+});
 
 /* 상태 필터 이벤트 */
 document.getElementById('borrow-filters').addEventListener('click', (e) => {

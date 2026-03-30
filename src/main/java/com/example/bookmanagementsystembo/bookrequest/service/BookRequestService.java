@@ -7,6 +7,8 @@ import com.example.bookmanagementsystembo.bookRequest.repository.BookRequestRepo
 import com.example.bookmanagementsystembo.common.PageLimitCalculator;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
+import com.example.bookmanagementsystembo.notification.enums.NotificationType;
+import com.example.bookmanagementsystembo.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +25,10 @@ import java.util.List;
 public class BookRequestService {
 
     private final BookRequestRepository bookRequestRepository;
+    private final NotificationService notificationService;
 
     /** 희망 도서를 신청합니다 (레거시 API — 중복 검증 없음). */
+    @Transactional
     public BookRequestSummaryResponse create(Long userId, BookRequestCreateRequest request) {
 
         BookRequest bookRequest = bookRequestRepository.save(
@@ -136,7 +140,42 @@ public class BookRequestService {
         }
 
         bookRequest.updateStatus(status, rejectReason);
+
+        if (status == BookRequestStatus.APPROVED) {
+            notificationService.saveAndSend(
+                    bookRequest.getUserId(),
+                    NotificationType.BOOK_REQUEST_APPROVED,
+                    "희망도서 신청이 승인되었습니다: " + bookRequest.getTitle(),
+                    bookRequest.getBookRequestId()
+            );
+        } else if (status == BookRequestStatus.REJECTED) {
+            notificationService.saveAndSend(
+                    bookRequest.getUserId(),
+                    NotificationType.BOOK_REQUEST_REJECTED,
+                    "희망도서 신청이 거절되었습니다: " + bookRequest.getTitle(),
+                    bookRequest.getBookRequestId()
+            );
+        }
+
         return BookRequestResponse.from(bookRequest);
+    }
+
+    /**
+     * 도서 등록 시 ISBN이 일치하는 APPROVED 상태의 희망도서 신청을 ARRIVED로 전환하고 알림을 발송합니다.
+     * BookService.create() 호출 시점에 실행됩니다.
+     */
+    @Transactional
+    public void markArrivedByIsbn(String isbn, Long bookId) {
+        bookRequestRepository.findByIsbnAndStatus(isbn, BookRequestStatus.APPROVED)
+                .forEach(req -> {
+                    req.updateStatus(BookRequestStatus.ARRIVED, null);
+                    notificationService.saveAndSend(
+                            req.getUserId(),
+                            NotificationType.BOOK_REQUEST_ARRIVED,
+                            "신청하신 도서가 입고되었습니다: " + req.getTitle(),
+                            req.getBookRequestId()
+                    );
+                });
     }
 
 }

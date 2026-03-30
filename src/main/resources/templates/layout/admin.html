@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - 관리자 · 부기맨">관리자 · 부기맨</title>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Noto Sans KR -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind 커스텀 컬러 (Green Turtle Edition) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        boogie: {
+                            main:   '#00A760',
+                            dark:   '#008f51',
+                            light:  '#E1F7EF',
+                            gold:   '#FFD700',
+                            blush:  '#FF7B9C',
+                            darkbg: '#0D1B15'
+                        }
+                    },
+                    fontFamily: {
+                        sans:       ['"Noto Sans KR"', 'sans-serif'],
+                        pretendard: ['Pretendard', '-apple-system', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f7f5;
+            color: #111827;
+        }
+
+        /* ── 사이드바 ──────────────────────────────────────────── */
+        #admin-sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            background-color: #0D1B15;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 40;
+            transition: transform 0.3s ease;
+        }
+
+        /* 컨텐츠 영역은 사이드바 너비만큼 밀어냄 */
+        #admin-main {
+            margin-left: 240px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── 사이드바 메뉴 아이템 ────────────────────────────── */
+        .admin-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #9CA3AF;
+            transition: all 0.15s ease;
+            margin: 2px 12px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .admin-nav-item:hover {
+            background-color: rgba(255,255,255,0.07);
+            color: #ffffff;
+        }
+        .admin-nav-item.active {
+            background-color: rgba(0, 167, 96, 0.18);
+            color: #00A760;
+        }
+        .admin-nav-item .nav-icon {
+            width: 18px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* ── 섹션 구분 레이블 ────────────────────────────────── */
+        .nav-section-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #4B5563;
+            text-transform: uppercase;
+            padding: 16px 20px 6px;
+        }
+
+        /* ── 카드 hover ──────────────────────────────────────── */
+        .hover-lift {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ── 모바일 오버레이 ──────────────────────────────────── */
+        #sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 39;
+        }
+        @media (max-width: 768px) {
+            #admin-sidebar { transform: translateX(-100%); }
+            #admin-sidebar.open { transform: translateX(0); }
+            #admin-main { margin-left: 0; }
+            #sidebar-overlay.show { display: block; }
+        }
+    </style>
+
+    <th:block layout:fragment="head"></th:block>
+</head>
+
+<body class="flex">
+
+<!-- ════════════════════════════════════════════════════════════
+     좌측 관리자 사이드바
+════════════════════════════════════════════════════════════ -->
+<aside id="admin-sidebar">
+
+    <!-- 로고 -->
+    <div class="flex items-center gap-3 px-5 py-6 border-b border-white/10">
+        <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
+            <rect x="35" y="15" width="50" height="60" rx="8" fill="#00A760"/>
+            <path d="M15 45C15 36.7157 21.7157 30 30 30H40V60H30C21.7157 60 15 53.2843 15 45Z" fill="#00A760"/>
+            <path d="M75 15V30L80 25L85 30V15H75Z" fill="#FFD700"/>
+        </svg>
+        <div>
+            <p class="font-pretendard font-black text-white text-base leading-tight tracking-tight">부기맨</p>
+            <p class="text-[10px] font-bold text-boogie-main tracking-widest uppercase">Admin Console</p>
+        </div>
+    </div>
+
+    <!-- 네비게이션 -->
+    <nav class="flex-1 overflow-y-auto py-4">
+
+        <p class="nav-section-label">대시보드</p>
+        <a href="/admin/dashboard" class="admin-nav-item" data-path="/admin/dashboard">
+            <span class="nav-icon">📊</span> 통계 대시보드
+        </a>
+
+        <p class="nav-section-label">도서 관리</p>
+        <a href="/admin/books" class="admin-nav-item" data-path="/admin/books">
+            <span class="nav-icon">📚</span> 도서 센터
+        </a>
+        <a href="/admin/borrows" class="admin-nav-item" data-path="/admin/borrows">
+            <span class="nav-icon">🔄</span> 대출/반납 관제
+        </a>
+        <a href="/admin/requests" class="admin-nav-item" data-path="/admin/requests">
+            <span class="nav-icon">📥</span> 희망도서 결재함
+        </a>
+
+        <p class="nav-section-label">회원 관리</p>
+        <a href="/admin/users" class="admin-nav-item" data-path="/admin/users">
+            <span class="nav-icon">👥</span> 임직원 목록
+        </a>
+
+    </nav>
+
+    <!-- 하단: 사용자 화면 복귀 + 로그아웃 -->
+    <div class="border-t border-white/10 p-4 space-y-2">
+        <a href="/books"
+           class="flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
+            <span>← </span> 사용자 화면으로
+        </a>
+        <button id="admin-logout-btn"
+                class="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors">
+            <span>🚪</span> 로그아웃
+        </button>
+    </div>
+
+    <!-- 로그인 사용자 정보 -->
+    <div class="border-t border-white/10 px-5 py-4 flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-boogie-main/20 flex items-center justify-center flex-shrink-0">
+            <span class="text-boogie-main text-xs font-bold" th:text="${#strings.substring(#authentication.name, 0, 1)}">A</span>
+        </div>
+        <div class="min-w-0">
+            <p class="text-xs font-bold text-white truncate" sec:authentication="name">관리자</p>
+            <p class="text-[10px] text-gray-500">ROLE_ADMIN</p>
+        </div>
+    </div>
+
+</aside>
+
+<!-- 모바일 오버레이 -->
+<div id="sidebar-overlay"></div>
+
+<!-- ════════════════════════════════════════════════════════════
+     우측 메인 영역
+════════════════════════════════════════════════════════════ -->
+<div id="admin-main" class="flex flex-col flex-1">
+
+    <!-- 상단 툴바 (모바일 햄버거 + 현재 페이지명) -->
+    <div class="bg-white border-b border-gray-100 px-6 py-4 flex items-center gap-4 sticky top-0 z-30">
+        <!-- 모바일 햄버거 -->
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+        <div class="flex-1">
+            <p id="admin-page-title" class="text-sm font-black text-gray-900">관리자 콘솔</p>
+        </div>
+        <span class="px-3 py-1 text-[10px] font-bold text-white rounded-full"
+              style="background: linear-gradient(135deg,#ef4444 0%,#f97316 100%);">ADMIN</span>
+    </div>
+
+    <!-- 페이지 컨텐츠 -->
+    <main class="flex-1 p-6 lg:p-8">
+        <th:block layout:fragment="content"></th:block>
+    </main>
+
+    <!-- 관리자 푸터 -->
+    <footer class="border-t border-gray-200 px-8 py-4 bg-white">
+        <p class="text-xs text-gray-400 text-center">
+            &copy; 2026 Boogieman Admin Console &nbsp;·&nbsp; 운영 문의: library@boogieman.company.com
+        </p>
+    </footer>
+</div>
+
+<!-- 각 페이지별 스크립트 영역 -->
+<th:block layout:fragment="script"></th:block>
+
+<script src="/js/api.js"></script>
+<script>
+/* ── 현재 경로 기반 active 메뉴 하이라이트 ──────────────────── */
+(function () {
+    const path = location.pathname;
+    document.querySelectorAll('.admin-nav-item[data-path]').forEach(el => {
+        if (path.startsWith(el.dataset.path)) {
+            el.classList.add('active');
+            // 상단 툴바 페이지명 동기화
+            const title = el.textContent.trim();
+            document.getElementById('admin-page-title').textContent = title;
+        }
+    });
+})();
+
+/* ── 로그아웃 ────────────────────────────────────────────────── */
+document.getElementById('admin-logout-btn').addEventListener('click', () => {
+    fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+        .finally(() => { location.href = '/user/auth/login'; });
+});
+
+/* ── 모바일 사이드바 토글 ────────────────────────────────────── */
+const sidebar  = document.getElementById('admin-sidebar');
+const overlay  = document.getElementById('sidebar-overlay');
+const toggle   = document.getElementById('sidebar-toggle');
+
+toggle?.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+});
+overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+});
+</script>
+
+</body>
+</html>

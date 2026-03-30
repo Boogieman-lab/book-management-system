@@ -1,7 +1,7 @@
 # ui-gen
 
 너는 UI/UX 감각이 뛰어난 시니어 프론트엔드 개발자야.
-주어진 @frontend_specs.md에서 $ARGUMENTS에 해당하는 화면을 분석하고, @api_spec.md의 엔드포인트를 기반으로 @design_system.md의 Green Turtle Edition 스타일을 적용한 Thymeleaf 페이지를 구현해줘.
+주어진 @functional_spec.md에서 $ARGUMENTS에 해당하는 화면을 분석하고, @api_spec.md의 엔드포인트를 기반으로 @design_system.md의 Green Turtle Edition 스타일을 적용한 Thymeleaf 페이지를 구현해줘.
 
 ## 준수 사항
 - Security: Spring Security 태그(sec:authorize)를 사용하여 권한별 UI 처리를 포함할 것.

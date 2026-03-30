@@ -51,7 +51,7 @@ public class BookQueryRepositoryImpl implements BookQueryRepository {
         List<Book> content = queryFactory
                 .selectFrom(book)
                 .where(condition)
-                .orderBy(book.title.asc())
+                .orderBy(book.bookId.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

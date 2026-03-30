@@ -88,7 +88,7 @@ sequenceDiagram
                 DB-->>Server: 다음 대기자 (없으면 null)
 
                 alt 다음 대기자 존재 (2순위 → 1순위 승계)
-                    Server->>DB: UPDATE reservation<br>SET status='NOTIFIED', notified_at=now()<br>WHERE reservation_id = ?
+                    Server->>DB: UPDATE reservation<br>SET status='NOTIFIED', notified_at=now(),<br>reservation_order=1<br>WHERE reservation_id = ?
                     DB-->>Server: 승계 완료
 
                     Server->>Event: publish(ReservationArrivedEvent)<br>{ userId: 승계된_user_id }
@@ -137,8 +137,8 @@ sequenceDiagram
         DB-->>Server: 2순위 예약자 정보
 
         alt 2순위 예약자 존재
-            Server->>DB: UPDATE reservation SET status='NOTIFIED', notified_at=now()<br>WHERE reservation_id = ?
-            DB-->>Server: 2순위를 NOTIFIED 상태로 전환
+            Server->>DB: UPDATE reservation<br>SET status='NOTIFIED', notified_at=now(),<br>reservation_order=1<br>WHERE reservation_id = ?
+            DB-->>Server: 2순위를 NOTIFIED(1순위)로 전환
 
             Note over Server,DB: book_hold는 여전히 RESERVE_HOLD 상태 유지<br>(4일 다시 카운트)
 

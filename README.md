@@ -63,10 +63,10 @@
 ---
 
 ## 🤓 기획 및 설계
-* 🛠 [요구사항 정의서](https://github.com/Boogieman-lab/book-management-system/docs/01_requirements/requirements.md)
-* 🛠 [기능 명세서](https://github.com/Boogieman-lab/book-management-system/docs/01_requirements/functional_spec.md)
-* 📑 [API 명세서](https://github.com/Boogieman-lab/book-management-system//docs/02_design/api_spec.md)
-* 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/docs/02_design/architecture/erd.md)
+* 🛠 [요구사항 정의서](https://github.com/Boogieman-lab/book-management-system/tree/main/docs/01_requirements/requirements.md)
+* 🛠 [기능 명세서](https://github.com/Boogieman-lab/book-management-system/tree/main/docs/01_requirements/functional_spec.md)
+* 📑 [API 명세서](https://github.com/Boogieman-lab/book-management-system//tree/main/docs/02_design/api_spec.md)
+* 💾 [DB 명세서](https://github.com/Boogieman-lab/book-management-system/tree/main/docs/02_design/architecture/erd.md)
 * 👀 [사용자 디자인 미리보기](https://boogieman-lab.github.io/book-management-system/src/main/resources/static/design/index.html)
 ---
 

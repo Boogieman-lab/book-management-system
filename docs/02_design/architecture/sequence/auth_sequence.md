@@ -73,8 +73,8 @@ sequenceDiagram
             else 비밀번호 일치
                 Server->>DB: UPDATE users SET login_fail_count = 0, is_locked = false
                 DB-->>Server: 초기화 완료
-                Server->>Server: JWT Access Token (180s) + Refresh Token (300s) 생성
-                Server->>Redis: SET token:{email} = RefreshToken (TTL: 300s)
+                Server->>Server: JWT Access Token (1800s/30분) + Refresh Token (604800s/7일) 생성
+                Server->>Redis: SET token:{email} = RefreshToken (TTL: 604800s)
                 Redis-->>Server: 저장 완료
                 Server-->>Client: HTTP 200 OK { accessToken, refreshToken, email, name }
             end
@@ -190,13 +190,13 @@ sequenceDiagram
 
 ### Access Token
 - **발행**: 로그인/토큰 갱신 시
-- **TTL**: 180초 (3분)
+- **TTL**: 1800초 (30분)
 - **저장소**: HttpOnly 쿠키 (자동 포함)
 - **무효화**: 로그아웃 시 Redis 블랙리스트 등록
 
 ### Refresh Token
 - **발행**: 로그인/토큰 갱신 시
-- **TTL**: 300초 (5분)
+- **TTL**: 604800초 (7일)
 - **저장소**: Redis (서버 보관)
 - **갱신**: 토큰 갱신 시 새로운 토큰 발급 (기존 토큰 무효화)
 - **보안**: 토큰 탈취 시 불일치 감지 → 즉시 세션 강제 만료

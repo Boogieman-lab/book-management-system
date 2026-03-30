@@ -44,7 +44,7 @@
 
 4. **외부 API 키 노출 차단 (Proxy Pattern 적용)**: 프론트엔드에서 알라딘 도서 검색 API를 직접 호출할 경우 `TTBKey`가 브라우저에 노출되는 치명적인 보안 결함이 발생합니다. 반드시 백엔드 서버를 거쳐(Proxy) 외부 API와 통신하도록 아키텍처를 강제합니다.
 
-5. **Refresh Token Rotation (재발급 보안)**: `/auth/refresh` 호출 시 Access Token뿐 아니라 Refresh Token도 동시에 교체 발급합니다. 이전 Refresh Token은 즉시 무효화되며, 이미 사용된 토큰으로 재발급 시도 시 해당 사용자의 모든 세션을 강제 만료합니다. 현재 토큰 TTL: Access Token 180초, Refresh Token 300초.
+5. **Refresh Token Rotation (재발급 보안)**: `/auth/refresh` 호출 시 Access Token뿐 아니라 Refresh Token도 동시에 교체 발급합니다. 이전 Refresh Token은 즉시 무효화되며, 이미 사용된 토큰으로 재발급 시도 시 해당 사용자의 모든 세션을 강제 만료합니다. 현재 토큰 TTL: Access Token 1800초(30분), Refresh Token 604800초(7일).
 
 6. **최초 관리자(Admin) 계정 생성**: 일반 회원가입으로는 `ROLE_ADMIN` 권한을 얻을 수 없습니다. 초기 관리자 계정은 Flyway DB 마이그레이션 스크립트(`db/migration/`)를 통한 시딩(Seeding) 또는 개발 환경 전용 부트스트랩 API로 생성하며, 운영 환경에서 해당 경로는 반드시 비활성화해야 합니다.
 

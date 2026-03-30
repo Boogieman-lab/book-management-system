@@ -41,6 +41,7 @@ public enum ErrorType {
 
     BOOK_NOT_AVAILABLE(ErrorCode.CONFLICT, "대출 가능한 상태가 아닙니다.", LogLevel.WARN),
     BORROW_LIMIT_EXCEEDED(ErrorCode.CONFLICT, "대출 한도(10권)를 초과했습니다.", LogLevel.WARN),
+    BORROW_RESTRICTED(ErrorCode.FORBIDDEN, "연체로 인해 대출이 제한된 사용자입니다.", LogLevel.WARN),
     BORROW_NOT_OWNER(ErrorCode.FORBIDDEN, "본인의 대출 건만 처리할 수 있습니다.", LogLevel.WARN),
     BORROW_ALREADY_RETURNED(ErrorCode.BAD_REQUEST, "이미 반납된 도서입니다.", LogLevel.WARN),
 

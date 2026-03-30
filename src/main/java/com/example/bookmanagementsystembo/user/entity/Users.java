@@ -3,6 +3,7 @@ package com.example.bookmanagementsystembo.user.entity;
 import com.example.bookmanagementsystembo.common.entity.BaseEntity;
 import com.example.bookmanagementsystembo.user.enums.Role;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -64,10 +65,26 @@ public class Users extends BaseEntity {
     @Comment("계정 잠금 여부")
     private boolean isLocked = false;
 
+    @Column(name = "restriction_until")
+    @Comment("연체 대출 제한 종료일 — NULL이면 제한 없음")
+    private LocalDateTime restrictionUntil;
+
     private static final int MAX_LOGIN_FAIL_COUNT = 5;
 
     public static Users create(String email, String password, String name, Long departmentId, String profileImage, Role role) {
-        return new Users(null, email, password, name, departmentId, profileImage, role, 0, false);
+        return new Users(null, email, password, name, departmentId, profileImage, role, 0, false, null);
+    }
+
+    /** 연체 제한 종료일을 갱신합니다. 기존 제한보다 나중이면 덮어씁니다. */
+    public void applyRestriction(LocalDateTime until) {
+        if (this.restrictionUntil == null || until.isAfter(this.restrictionUntil)) {
+            this.restrictionUntil = until;
+        }
+    }
+
+    /** 현재 대출 제한 상태인지 확인합니다. */
+    public boolean isRestricted() {
+        return restrictionUntil != null && restrictionUntil.isAfter(LocalDateTime.now());
     }
 
     public void incrementLoginFailCount() {

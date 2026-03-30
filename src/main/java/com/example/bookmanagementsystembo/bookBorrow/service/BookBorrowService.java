@@ -14,6 +14,8 @@ import com.example.bookmanagementsystembo.notification.service.NotificationServi
 import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
+import com.example.bookmanagementsystembo.user.entity.Users;
+import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,6 +37,7 @@ public class BookBorrowService {
     private final BookHoldRepository bookHoldRepository;
     private final ReservationRepository reservationRepository;
     private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     /** 전체 대출 목록을 요약 DTO로 반환합니다. */
     public List<BookBorrowDto> readAll() {
@@ -82,6 +85,13 @@ public class BookBorrowService {
      */
     @Transactional
     public BorrowResponse borrow(Long bookHoldId, Long userId, String reason) {
+        // 연체 대출 제한 검증 (users.restriction_until 캐시 활용)
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.USER_NOT_FOUND, userId));
+        if (user.isRestricted()) {
+            throw new CoreException(ErrorType.BORROW_RESTRICTED, userId);
+        }
+
         // 비관적 락으로 BookHold 조회
         BookHold bookHold = bookHoldRepository.findByIdForUpdate(bookHoldId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
@@ -161,22 +171,18 @@ public class BookBorrowService {
         BookHold bookHold = bookHoldRepository.findById(bookHoldId)
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
 
-        List<Reservation> waitingReservations = reservationRepository
-                .findByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING);
-
-        if (!waitingReservations.isEmpty()) {
-            bookHold.updateStatus(BookHoldStatus.RESERVE_HOLD);
-            Reservation firstReservation = waitingReservations.get(0);
-            firstReservation.notifyPickup(LocalDateTime.now().plusDays(4));
-            notificationService.saveAndSend(
-                    firstReservation.getUserId(),
-                    NotificationType.RESERVATION_ARRIVED,
-                    "예약하신 도서가 반납되었습니다. 4일 이내에 수령해주세요.",
-                    bookHoldId
-            );
-        } else {
-            bookHold.updateStatus(BookHoldStatus.AVAILABLE);
-        }
+        reservationRepository
+                .findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
+                .ifPresentOrElse(firstReservation -> {
+                    bookHold.updateStatus(BookHoldStatus.RESERVE_HOLD);
+                    firstReservation.notifyPickup(LocalDateTime.now().plusDays(4));
+                    notificationService.saveAndSend(
+                            firstReservation.getUserId(),
+                            NotificationType.RESERVATION_ARRIVED,
+                            "예약하신 도서가 반납되었습니다. 4일 이내에 수령해주세요.",
+                            bookHoldId
+                    );
+                }, () -> bookHold.updateStatus(BookHoldStatus.AVAILABLE));
     }
 
     /** 사용자의 특정 도서에 대한 활성 대출(BORROWED/OVERDUE) ID를 반환합니다. 없으면 empty. */

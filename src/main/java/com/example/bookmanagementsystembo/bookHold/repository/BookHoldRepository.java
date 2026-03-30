@@ -19,6 +19,11 @@ public interface BookHoldRepository extends JpaRepository<BookHold, Long> {
 
     List<BookHold> findByBookId(Long bookId);
 
+    /** 예약 생성 시 동시성 보호를 위해 비관적 락으로 BookHold 목록을 조회합니다. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT bh FROM BookHold bh WHERE bh.bookId = :bookId")
+    List<BookHold> findByBookIdWithLock(@Param("bookId") Long bookId);
+
     Optional<BookHold> findByBookHoldIdAndBookId(Long holdId, Long bookId);
 
     void deleteByBookId(Long bookId);

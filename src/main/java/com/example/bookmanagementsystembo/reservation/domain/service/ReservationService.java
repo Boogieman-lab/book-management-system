@@ -48,7 +48,8 @@ public class ReservationService {
      */
     @Transactional
     public ReservationResponse createReservation(Long bookId, Long userId) {
-        List<BookHold> bookHolds = bookHoldRepository.findByBookId(bookId);
+        // 비관적 락으로 BookHold 조회 — 동시 예약 초과 방지
+        List<BookHold> bookHolds = bookHoldRepository.findByBookIdWithLock(bookId);
 
         // 1. AVAILABLE 상태의 BookHold가 있으면 예약 불가 (바로 대출 가능)
         boolean hasAvailable = bookHolds.stream()
@@ -122,20 +123,16 @@ public class ReservationService {
 
     private void succeedToNextWaiting(BookHold bookHold) {
         Long bookHoldId = bookHold.getBookHoldId();
-        List<Reservation> waitingList = reservationRepository
-                .findByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING);
-
-        if (!waitingList.isEmpty()) {
-            Reservation next = waitingList.get(0);
-            next.notifyPickup(LocalDateTime.now().plusDays(4));
-            notificationService.saveAndSend(
-                    next.getUserId(),
-                    NotificationType.RESERVATION_ARRIVED,
-                    "예약하신 도서를 수령할 수 있습니다. 4일 이내에 수령해주세요.",
-                    bookHoldId
-            );
-        } else {
-            bookHold.updateStatus(BookHoldStatus.AVAILABLE);
-        }
+        reservationRepository
+                .findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
+                .ifPresentOrElse(next -> {
+                    next.notifyPickup(LocalDateTime.now().plusDays(4));
+                    notificationService.saveAndSend(
+                            next.getUserId(),
+                            NotificationType.RESERVATION_ARRIVED,
+                            "예약하신 도서를 수령할 수 있습니다. 4일 이내에 수령해주세요.",
+                            bookHoldId
+                    );
+                }, () -> bookHold.updateStatus(BookHoldStatus.AVAILABLE));
     }
 }

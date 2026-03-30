@@ -28,6 +28,7 @@ public class BookRequestService {
     private final NotificationService notificationService;
 
     /** 희망 도서를 신청합니다 (레거시 API — 중복 검증 없음). */
+    @Transactional
     public BookRequestSummaryResponse create(Long userId, BookRequestCreateRequest request) {
 
         BookRequest bookRequest = bookRequestRepository.save(

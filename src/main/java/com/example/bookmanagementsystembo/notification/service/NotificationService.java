@@ -8,7 +8,10 @@ import com.example.bookmanagementsystembo.notification.entity.Notification;
 import com.example.bookmanagementsystembo.notification.enums.NotificationType;
 import com.example.bookmanagementsystembo.notification.repository.NotificationQueryRepository;
 import com.example.bookmanagementsystembo.notification.repository.NotificationRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -25,6 +29,8 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationQueryRepository notificationQueryRepository;
     private final SseEmitterManager sseEmitterManager;
+    private final NotificationRedisPublisher redisPublisher;
+    private final ObjectMapper objectMapper;
 
     /**
      * 내 알림 목록을 페이지네이션으로 조회합니다.
@@ -100,10 +106,24 @@ public class NotificationService {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    sseEmitterManager.sendToUser(userId, response);
+                    publishToRedis(userId, response);
                 }
             });
         } else {
+            publishToRedis(userId, response);
+        }
+    }
+
+    /**
+     * 알림을 Redis 채널로 발행합니다.
+     * Redis 발행 실패 시 단일 인스턴스 환경 폴백으로 직접 SSE 전송합니다.
+     */
+    private void publishToRedis(Long userId, NotificationResponse response) {
+        try {
+            String payload = objectMapper.writeValueAsString(response);
+            redisPublisher.publish(userId, payload);
+        } catch (JsonProcessingException e) {
+            log.warn("알림 JSON 직렬화 실패 — userId={}, 직접 SSE 전송으로 폴백", userId, e);
             sseEmitterManager.sendToUser(userId, response);
         }
     }

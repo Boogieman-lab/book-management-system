@@ -15,6 +15,7 @@ import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository
 import com.example.bookmanagementsystembo.book.repository.BookQueryRepository;
 import com.example.bookmanagementsystembo.book.repository.BookRepository;
 import com.example.bookmanagementsystembo.book.dto.BookResponse;
+import com.example.bookmanagementsystembo.bookRequest.service.BookRequestService;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookHoldRepository bookHoldRepository;
     private final BookQueryRepository bookQueryRepository;
+    private final BookRequestService bookRequestService;
 
     // ──────────────────────────────────────────────────────────────
     // V1 API (GET /api/v1/books)
@@ -99,6 +101,11 @@ public class BookService {
                 .orElseGet(() -> bookRepository.save(Book.create(request)));
 
         bookHoldRepository.save(BookHold.create(book.getBookId()));
+
+        // ISBN이 일치하는 APPROVED 희망도서 신청을 ARRIVED로 전환하고 알림 발송
+        if (request.isbn13() != null) {
+            bookRequestService.markArrivedByIsbn(request.isbn13(), book.getBookId());
+        }
 
         return BookResponse.from(book);
     }

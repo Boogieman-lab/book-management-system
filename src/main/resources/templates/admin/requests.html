@@ -21,6 +21,7 @@
         <button class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="PENDING">대기</button>
         <button class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="APPROVED">승인</button>
         <button class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="REJECTED">거절</button>
+        <button class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-colors" data-status="ARRIVED">입고</button>
     </div>
 
     <!-- 신청 목록 카드 -->
@@ -74,15 +75,24 @@
 
 <th:block layout:fragment="script">
 <script>
+    function esc(str) {
+        if (str == null) return '';
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;');
+    }
+
     let currentPage = 1;
     let currentStatus = '';
     let rejectTargetId = null;
 
-    const statusLabel = { PENDING: '대기', APPROVED: '승인', REJECTED: '거절' };
+    const statusLabel = { PENDING: '대기', APPROVED: '승인', REJECTED: '거절', ARRIVED: '입고' };
     const statusClass = {
         PENDING: 'bg-yellow-100 text-yellow-700',
         APPROVED: 'bg-green-100 text-green-700',
-        REJECTED: 'bg-red-100 text-red-600'
+        REJECTED: 'bg-red-100 text-red-600',
+        ARRIVED: 'bg-blue-100 text-blue-700'
     };
 
     async function loadRequests(page = 1, status = '') {
@@ -101,13 +111,13 @@
 
         tbody.innerHTML = data.items.map(r => `
             <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 font-medium text-gray-900 max-w-[200px] truncate">${r.title}</td>
-                <td class="px-6 py-4 text-gray-600">${r.authors ?? '-'}</td>
-                <td class="px-6 py-4 text-gray-500">${r.userId}</td>
-                <td class="px-6 py-4 text-gray-500">${r.createdAt?.substring(0, 10) ?? '-'}</td>
+                <td class="px-6 py-4 font-medium text-gray-900 max-w-[200px] truncate">${esc(r.title)}</td>
+                <td class="px-6 py-4 text-gray-600">${esc(r.authors ?? '-')}</td>
+                <td class="px-6 py-4 text-gray-500">${esc(r.userId)}</td>
+                <td class="px-6 py-4 text-gray-500">${esc(r.createdAt?.substring(0, 10) ?? '-')}</td>
                 <td class="px-6 py-4">
                     <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${statusClass[r.status] ?? 'bg-gray-100 text-gray-600'}">
-                        ${statusLabel[r.status] ?? r.status}
+                        ${esc(statusLabel[r.status] ?? r.status)}
                     </span>
                 </td>
                 <td class="px-6 py-4 text-center">
@@ -121,7 +131,13 @@
                                     class="px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 border border-red-200 hover:bg-red-50 transition-colors">
                                 거절
                             </button>
-                        </div>` : `<span class="text-gray-300 text-xs">처리 완료</span>`}
+                        </div>`
+                    : r.status === 'APPROVED' && r.isbn ? `
+                        <a href="/admin/books?isbn=${encodeURIComponent(r.isbn)}"
+                           class="inline-block px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-blue-500 hover:bg-blue-600 transition-colors">
+                            도서 등록
+                        </a>`
+                    : `<span class="text-gray-300 text-xs">처리 완료</span>`}
                 </td>
             </tr>`).join('');
 

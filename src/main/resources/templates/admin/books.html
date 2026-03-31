@@ -411,7 +411,7 @@
             }).join('');
 
             // totalPages 안전 처리: 응답에 없을 경우 totalElements로 계산
-            const totalPages = data.totalPages ?? Math.ceil((data.totalElements ?? 0) / 10);
+            const totalPages = data.page.totalPages ?? Math.ceil((data.page.totalElements ?? 0) / 10);
             renderBooksPagination(page, totalPages);
         } catch (_) {
             document.getElementById('books-tbody').innerHTML =
@@ -422,12 +422,30 @@
     function renderBooksPagination(page, totalPages) {
         const el = document.getElementById('books-pagination');
         if (!totalPages || totalPages <= 1) { el.innerHTML = ''; return; }
-        el.innerHTML = `
-            <button class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors"
-                    data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>← 이전</button>
-            <span class="text-sm text-gray-500">${page} / ${totalPages}</span>
-            <button class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors"
-                    data-page="${page + 1}" ${page >= totalPages ? 'disabled' : ''}>다음 →</button>`;
+
+        let html = `
+            <div class="flex items-center gap-2">
+                <button class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                        data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>← 이전</button>
+                <div class="flex items-center gap-1">`;
+
+        const startPage = Math.max(1, page - 2);
+        const endPage = Math.min(totalPages, page + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            html += `
+                <button class="w-8 h-8 rounded-lg text-sm font-bold transition-colors ${i === page ? 'bg-boogie-main text-white' : 'text-gray-500 hover:bg-gray-100'}"
+                        data-page="${i}">${i}</button>`;
+        }
+
+        html += `
+                </div>
+                <button class="px-3 py-1.5 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                        data-page="${page + 1}" ${page >= totalPages ? 'disabled' : ''}>다음 →</button>
+            </div>
+            <p class="text-xs text-gray-400">총 ${totalPages}페이지</p>`;
+
+        el.innerHTML = html;
     }
 
     document.getElementById('books-pagination').addEventListener('click', e => {
@@ -782,7 +800,36 @@
         }
     });
 
-    document.addEventListener('DOMContentLoaded', () => loadBooks(1));
+    // ── ISBN 쿼리 파라미터 자동 처리 ─────────────────────────
+    async function autoFillByIsbn(isbn) {
+        switchTab('tab-register');
+        document.getElementById('form-isbn13').value = isbn;
+
+        try {
+            const data = await fetch(
+                `/api/v1/external/aladin/books?query=${encodeURIComponent(isbn)}&target=keyword&size=3`,
+                { credentials: 'include' }
+            ).then(r => r.ok ? r.json() : null);
+
+            if (!data?.documents?.length) return;
+
+            // ISBN13이 정확히 일치하는 항목 우선, 없으면 첫 번째 항목 사용
+            const match = data.documents.find(d => {
+                const isbn13 = (d.isbn ?? '').split(' ').find(s => s.length === 13) ?? '';
+                return isbn13 === isbn;
+            }) ?? data.documents[0];
+
+            fillRegisterForm({ ...match, _idx: 0 });
+        } catch (e) {
+            console.warn('알라딘 ISBN 자동검색 실패:', e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadBooks(1);
+        const isbn = new URLSearchParams(window.location.search).get('isbn');
+        if (isbn && /^\d{13}$/.test(isbn)) autoFillByIsbn(isbn);
+    });
 </script>
 <style>
     .active-tab   { color: #00A760; border-color: #00A760; }

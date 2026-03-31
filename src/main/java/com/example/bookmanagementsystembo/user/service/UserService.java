@@ -19,6 +19,7 @@ import com.example.bookmanagementsystembo.user.entity.Users;
 import com.example.bookmanagementsystembo.user.enums.Role;
 import com.example.bookmanagementsystembo.user.repository.UserRepository;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -97,9 +98,10 @@ public class UserService {
         return bookRequestRepository.findAllByCondition(userId, null, pageable);
     }
 
-    /** 내 WAITING 상태 예약 목록을 QueryDSL로 도서명과 함께 조회합니다. */
+    /** 내 WAITING 상태 예약 목록을 QueryDSL로 도서명 및 대기 순위와 함께 조회합니다. */
     public List<UserReservationResponse> getMyReservations(Long userId) {
         QReservation reservation = QReservation.reservation;
+        QReservation reservation2 = new QReservation("reservation2");
         QBookHold bookHold = QBookHold.bookHold;
         QBook book = QBook.book;
 
@@ -109,16 +111,26 @@ public class UserService {
                         book.title,
                         reservation.status,
                         reservation.reservedAt,
-                        reservation.expireAt
+                        reservation.expireAt,
+                        JPAExpressions
+                                .select(reservation2.count().add(1))
+                                .from(reservation2)
+                                .where(
+                                        reservation2.bookHoldId.eq(reservation.bookHoldId),
+                                        reservation2.status.eq(ReservationStatus.WAITING),
+                                        reservation2.reservedAt.lt(reservation.reservedAt)
+                                                .or(reservation2.reservedAt.eq(reservation.reservedAt)
+                                                        .and(reservation2.reservationId.lt(reservation.reservationId)))
+                                )
                 ))
                 .from(reservation)
-                .leftJoin(bookHold).on(reservation.bookHold.bookHoldId.eq(bookHold.bookHoldId))
+                .leftJoin(bookHold).on(reservation.bookHoldId.eq(bookHold.bookHoldId))
                 .leftJoin(book).on(bookHold.bookId.eq(book.bookId))
                 .where(
                         reservation.userId.eq(userId),
                         reservation.status.eq(ReservationStatus.WAITING)
                 )
-                .orderBy(reservation.reservedAt.desc())
+                .orderBy(reservation.reservedAt.asc())
                 .fetch();
     }
 

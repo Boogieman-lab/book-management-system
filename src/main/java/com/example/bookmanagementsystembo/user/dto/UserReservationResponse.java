@@ -9,6 +9,7 @@ public record UserReservationResponse(
         String bookTitle,
         ReservationStatus status,
         LocalDateTime reservedAt,
-        LocalDateTime expireAt
+        LocalDateTime expireAt,
+        Long waitingOrder
 ) {
 }

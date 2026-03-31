@@ -1,24 +1,34 @@
 package com.example.bookmanagementsystembo.reservation.domain.service;
 
+import com.example.bookmanagementsystembo.admin.dto.AdminReservationStatsResponse;
+import com.example.bookmanagementsystembo.book.entity.QBook;
 import com.example.bookmanagementsystembo.bookHold.entity.BookHold;
+import com.example.bookmanagementsystembo.bookHold.entity.QBookHold;
 import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import com.example.bookmanagementsystembo.exception.CoreException;
 import com.example.bookmanagementsystembo.exception.ErrorType;
 import com.example.bookmanagementsystembo.notification.enums.NotificationType;
 import com.example.bookmanagementsystembo.notification.service.NotificationService;
+import com.example.bookmanagementsystembo.reservation.domain.entity.QReservation;
 import com.example.bookmanagementsystembo.reservation.domain.entity.Reservation;
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
 import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationResponse;
 import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationWaitingResponse;
+import com.example.bookmanagementsystembo.user.entity.QUsers;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -27,11 +37,12 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final BookHoldRepository bookHoldRepository;
     private final NotificationService notificationService;
+    private final JPAQueryFactory queryFactory;
 
     /** 특정 도서의 WAITING 상태 예약 대기 목록을 예약 순서(오래된 순)로 반환합니다. */
     public List<ReservationWaitingResponse> getWaitingReservations(Long bookId) {
         return reservationRepository
-                .findByBookHold_BookIdAndStatusOrderByReservedAtAsc(bookId, ReservationStatus.WAITING)
+                .findByBookIdAndStatus(bookId, ReservationStatus.WAITING)
                 .stream()
                 .map(r -> new ReservationWaitingResponse(r.getUserId(), r.getReservedAt()))
                 .toList();
@@ -61,7 +72,7 @@ public class ReservationService {
         // 2. 같은 bookId에 해당 userId의 WAITING 예약이 이미 있으면 중복 예약 불가
         List<Long> bookHoldIds = bookHolds.stream().map(BookHold::getBookHoldId).toList();
         if (!bookHoldIds.isEmpty() &&
-                reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(bookHoldIds, userId, ReservationStatus.WAITING)) {
+                reservationRepository.existsByBookHoldIdInAndUserIdAndStatus(bookHoldIds, userId, ReservationStatus.WAITING)) {
             throw new CoreException(ErrorType.RESERVATION_ALREADY_EXISTS, bookId);
         }
 
@@ -74,7 +85,7 @@ public class ReservationService {
         // 4. 각 BookHold를 순회하여 WAITING 예약이 2명 미만인 hold 탐색
         BookHold targetHold = null;
         for (BookHold bh : bookHolds) {
-            int waitingCount = reservationRepository.countByBookHold_BookHoldIdAndStatus(bh.getBookHoldId(), ReservationStatus.WAITING);
+            int waitingCount = reservationRepository.countByBookHoldIdAndStatus(bh.getBookHoldId(), ReservationStatus.WAITING);
             if (waitingCount < 2) {
                 targetHold = bh;
                 break;
@@ -85,7 +96,7 @@ public class ReservationService {
         }
 
         // 5. 예약 생성
-        Reservation reservation = Reservation.create(targetHold, userId, null);
+        Reservation reservation = Reservation.create(targetHold.getBookHoldId(), userId, null);
         reservationRepository.save(reservation);
 
         return new ReservationResponse(reservation.getReservationId(), reservation.getStatus());
@@ -117,22 +128,76 @@ public class ReservationService {
 
         // NOTIFIED 취소 시 다음 WAITING 예약자 즉시 승계
         if (wasNotified) {
-            succeedToNextWaiting(reservation.getBookHold());
+            succeedToNextWaiting(reservation.getBookHoldId());
         }
     }
 
-    private void succeedToNextWaiting(BookHold bookHold) {
-        Long bookHoldId = bookHold.getBookHoldId();
+    /**
+     * 관리자용 예약 대기 통계를 조회합니다.
+     * 전체 WAITING 예약을 도서명·예약일시 순으로 반환하며, 각 항목에 대기 순위를 포함합니다.
+     */
+    public AdminReservationStatsResponse getWaitingStats() {
+        QReservation r  = QReservation.reservation;
+        QReservation r2 = new QReservation("r2");
+        QBookHold bh    = QBookHold.bookHold;
+        QBook b         = QBook.book;
+        QUsers u        = QUsers.users;
+
+        List<AdminReservationStatsResponse.Item> items = queryFactory
+                .select(Projections.constructor(AdminReservationStatsResponse.Item.class,
+                        r.reservationId,
+                        b.bookId,
+                        b.title,
+                        r.userId,
+                        u.name,
+                        JPAExpressions
+                                .select(r2.count().add(1))
+                                .from(r2)
+                                .where(
+                                        r2.bookHoldId.eq(r.bookHoldId),
+                                        r2.status.eq(ReservationStatus.WAITING),
+                                        r2.reservedAt.lt(r.reservedAt)
+                                                .or(r2.reservedAt.eq(r.reservedAt)
+                                                        .and(r2.reservationId.lt(r.reservationId)))
+                                )
+                ))
+                .from(r)
+                .join(bh).on(r.bookHoldId.eq(bh.bookHoldId))
+                .leftJoin(b).on(bh.bookId.eq(b.bookId))
+                .leftJoin(u).on(r.userId.eq(u.userId))
+                .where(r.status.eq(ReservationStatus.WAITING))
+                .orderBy(b.title.asc(), r.reservedAt.asc())
+                .fetch();
+
+        return new AdminReservationStatsResponse(items.size(), items);
+    }
+
+    /**
+     * 다음 WAITING 예약자에게 예약을 즉시 승계합니다.
+     * 대기자가 없으면 BookHold를 AVAILABLE로 전환합니다.
+     *
+     * @param bookHoldId 승계 대상 BookHold ID
+     */
+    void succeedToNextWaiting(Long bookHoldId) {
         reservationRepository
-                .findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
+                .findFirstByBookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
                 .ifPresentOrElse(next -> {
                     next.notifyPickup(LocalDateTime.now().plusDays(4));
-                    notificationService.saveAndSend(
-                            next.getUserId(),
-                            NotificationType.RESERVATION_ARRIVED,
-                            "예약하신 도서를 수령할 수 있습니다. 4일 이내에 수령해주세요.",
-                            bookHoldId
-                    );
-                }, () -> bookHold.updateStatus(BookHoldStatus.AVAILABLE));
+                    try {
+                        notificationService.saveAndSend(
+                                next.getUserId(),
+                                NotificationType.RESERVATION_ARRIVED,
+                                "예약하신 도서를 수령할 수 있습니다. 4일 이내에 수령해주세요.",
+                                bookHoldId
+                        );
+                    } catch (Exception e) {
+                        log.error("[ReservationService] 승계 알림 발송 실패 — userId={}, bookHoldId={}",
+                                next.getUserId(), bookHoldId, e);
+                    }
+                }, () -> {
+                    BookHold bookHold = bookHoldRepository.findById(bookHoldId)
+                            .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
+                    bookHold.updateStatus(BookHoldStatus.AVAILABLE);
+                });
     }
 }

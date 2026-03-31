@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  *   <li>null(미지정): 제목 + 저자 + ISBN OR 통합 검색</li>
  * </ul>
  * keyword가 비어있으면 WHERE 조건 없이 전체 조회합니다.
- * 정렬: title 가나다(ASC) 고정.
+ * 정렬: bookId DESC (최신 등록순) 고정.
  */
 @Repository
 @RequiredArgsConstructor

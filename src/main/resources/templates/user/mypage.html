@@ -287,6 +287,7 @@ const notiTypeIcon = (t) => ({
     RESERVATION_EXPIRED:   'fa-bookmark text-gray-400',
     BOOK_REQUEST_APPROVED: 'fa-circle-check text-boogie-main',
     BOOK_REQUEST_REJECTED: 'fa-circle-xmark text-red-400',
+    BOOK_REQUEST_ARRIVED:  'fa-truck-fast text-boogie-main',
 }[t] ?? 'fa-bell text-gray-400');
 
 /* ═══════════════════════════════════════════════════════════
@@ -548,7 +549,10 @@ TAB_LOADERS.reserv = async () => {
                         <i class="fa-regular fa-bookmark text-sm text-boogie-main"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="font-bold text-gray-900 text-sm truncate">${escHtml(r.bookTitle) || '알 수 없는 도서'}</p>
+                        <div class="flex items-center gap-2">
+                            <p class="font-bold text-gray-900 text-sm truncate">${escHtml(r.bookTitle) || '알 수 없는 도서'}</p>
+                            ${r.waitingOrder ? `<span class="flex-shrink-0 px-2 py-0.5 text-[10px] font-bold rounded-full bg-boogie-light text-boogie-main">${r.waitingOrder}순위</span>` : ''}
+                        </div>
                         <p class="text-xs text-gray-400 mt-0.5">
                             예약일: ${fmtDate(r.reservedAt)}
                             ${r.expireAt ? `&nbsp;·&nbsp; 만료일: ${fmtDate(r.expireAt)}` : ''}
@@ -623,7 +627,9 @@ TAB_LOADERS.noti = async () => {
         list.innerHTML = items.map(n => `
             <div id="noti-${n.notificationId}"
                  class="flex items-start gap-3 px-5 py-4 rounded-2xl transition-colors cursor-pointer ${n.isRead ? 'hover:bg-gray-50' : 'noti-unread hover:bg-green-50'}"
-                 onclick="readNoti(${n.notificationId}, this)">
+                 data-noti-id="${n.notificationId}"
+                 data-type="${escHtml(n.type)}"
+                 data-related-id="${n.relatedId ?? ''}">
                 <div class="mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 bg-white border border-gray-100">
                     <i class="fa-solid ${notiTypeIcon(n.type)} text-sm"></i>
                 </div>
@@ -640,7 +646,7 @@ TAB_LOADERS.noti = async () => {
 };
 
 /* 알림 읽음 처리 */
-const readNoti = async (id, el) => {
+const readNoti = async (id, el, type, relatedId) => {
     if (el.classList.contains('noti-unread')) {
         try {
             await apiFetch(`/api/v1/notifications/${id}/read`, { method: 'PATCH' });
@@ -657,7 +663,22 @@ const readNoti = async (id, el) => {
             else badge.textContent = cnt;
         } catch (_) { /* 무시 */ }
     }
+
+    /* 희망도서 입고 알림 클릭 시 도서 상세로 이동 */
+    if (type === 'BOOK_REQUEST_ARRIVED' && relatedId) {
+        window.location.href = `/books/${relatedId}`;
+    }
 };
+
+/* 알림 항목 클릭 이벤트 위임 */
+document.getElementById('noti-list')?.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-noti-id]');
+    if (!el) return;
+    const id       = Number(el.dataset.notiId);
+    const type     = el.dataset.type;
+    const relatedId = el.dataset.relatedId ? Number(el.dataset.relatedId) : null;
+    readNoti(id, el, type, relatedId);
+});
 
 /* 전체 읽음 */
 document.getElementById('mark-all-read-btn').addEventListener('click', async () => {

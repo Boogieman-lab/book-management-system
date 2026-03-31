@@ -173,7 +173,7 @@ public class BookRequestService {
                             req.getUserId(),
                             NotificationType.BOOK_REQUEST_ARRIVED,
                             "신청하신 도서가 입고되었습니다: " + req.getTitle(),
-                            req.getBookRequestId()
+                            bookId
                     );
                 });
     }

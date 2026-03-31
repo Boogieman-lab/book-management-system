@@ -11,6 +11,7 @@ import com.example.bookmanagementsystembo.reservation.domain.service.Reservation
 import com.example.bookmanagementsystembo.reservation.enums.ReservationStatus;
 import com.example.bookmanagementsystembo.reservation.infra.ReservationRepository;
 import com.example.bookmanagementsystembo.reservation.presentation.dto.ReservationResponse;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,9 @@ class ReservationServiceTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private JPAQueryFactory queryFactory;
+
     // ======================================================================
     // createReservation
     // ======================================================================
@@ -61,10 +65,10 @@ class ReservationServiceTest {
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
             when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
-            when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
+            when(reservationRepository.existsByBookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(false);
             when(reservationRepository.countByUserIdAndStatus(userId, ReservationStatus.WAITING)).thenReturn(0);
-            when(reservationRepository.countByBookHold_BookHoldIdAndStatus(
+            when(reservationRepository.countByBookHoldIdAndStatus(
                     bookHold.getBookHoldId(), ReservationStatus.WAITING)).thenReturn(0);
             when(reservationRepository.save(any(Reservation.class)))
                     .thenAnswer(invocation -> invocation.getArgument(0));
@@ -105,7 +109,7 @@ class ReservationServiceTest {
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
             when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
-            when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
+            when(reservationRepository.existsByBookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(true);
 
             // When & Then
@@ -125,7 +129,7 @@ class ReservationServiceTest {
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
             when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
-            when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
+            when(reservationRepository.existsByBookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(false);
             when(reservationRepository.countByUserIdAndStatus(userId, ReservationStatus.WAITING)).thenReturn(2);
 
@@ -146,10 +150,10 @@ class ReservationServiceTest {
             bookHold.updateStatus(BookHoldStatus.BORROWED);
 
             when(bookHoldRepository.findByBookIdWithLock(bookId)).thenReturn(List.of(bookHold));
-            when(reservationRepository.existsByBookHold_BookHoldIdInAndUserIdAndStatus(
+            when(reservationRepository.existsByBookHoldIdInAndUserIdAndStatus(
                     anyList(), eq(userId), eq(ReservationStatus.WAITING))).thenReturn(false);
             when(reservationRepository.countByUserIdAndStatus(userId, ReservationStatus.WAITING)).thenReturn(0);
-            when(reservationRepository.countByBookHold_BookHoldIdAndStatus(
+            when(reservationRepository.countByBookHoldIdAndStatus(
                     bookHold.getBookHoldId(), ReservationStatus.WAITING)).thenReturn(2);
 
             // When & Then
@@ -194,7 +198,7 @@ class ReservationServiceTest {
             Long reservationId = 1L;
             Long userId = 100L;
             BookHold bookHold = BookHold.create(10L);
-            Reservation reservation = Reservation.create(bookHold, userId, null);
+            Reservation reservation = Reservation.create(bookHold.getBookHoldId(), userId, null);
 
             when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
 
@@ -228,7 +232,7 @@ class ReservationServiceTest {
             Long ownerUserId = 100L;
             Long attackerUserId = 999L;
             BookHold bookHold = BookHold.create(10L);
-            Reservation reservation = Reservation.create(bookHold, ownerUserId, null);
+            Reservation reservation = Reservation.create(bookHold.getBookHoldId(), ownerUserId, null);
 
             when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
 
@@ -246,7 +250,7 @@ class ReservationServiceTest {
             Long reservationId = 1L;
             Long userId = 100L;
             BookHold bookHold = BookHold.create(10L);
-            Reservation reservation = Reservation.create(bookHold, userId, null);
+            Reservation reservation = Reservation.create(bookHold.getBookHoldId(), userId, null);
             reservation.expire(); // 이미 만료
 
             when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));

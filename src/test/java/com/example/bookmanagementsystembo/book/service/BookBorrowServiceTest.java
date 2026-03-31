@@ -314,11 +314,11 @@ class BookBorrowServiceTest {
         BookBorrow bookBorrow = BookBorrow.create(BOOK_HOLD_ID, BOOK_ID, USER_ID, "학습용");
         BookHold bookHold = BookHold.create(BOOK_ID);
         bookHold.updateStatus(BookHoldStatus.BORROWED);
-        Reservation reservation = Reservation.create(bookHold, 200L, LocalDateTime.now().plusDays(3));
+        Reservation reservation = Reservation.create(BOOK_HOLD_ID, 200L, LocalDateTime.now().plusDays(3));
 
         when(bookBorrowRepository.findById(BORROW_ID)).thenReturn(Optional.of(bookBorrow));
         when(bookHoldRepository.findById(BOOK_HOLD_ID)).thenReturn(Optional.of(bookHold));
-        when(reservationRepository.findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(BOOK_HOLD_ID, ReservationStatus.WAITING))
+        when(reservationRepository.findFirstByBookHoldIdAndStatusOrderByCreatedAtAsc(BOOK_HOLD_ID, ReservationStatus.WAITING))
                 .thenReturn(Optional.of(reservation));
 
         // When

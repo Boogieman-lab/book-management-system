@@ -1,12 +1,12 @@
 package com.example.bookmanagementsystembo.book.repository;
 
+import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
+import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
 import com.example.bookmanagementsystembo.book.dto.BookSearchCond;
+import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.book.entity.Book;
 import com.example.bookmanagementsystembo.book.enums.BookSearchField;
 import com.example.bookmanagementsystembo.book.service.BookService;
-import com.example.bookmanagementsystembo.book.dto.BookCreateRequest;
-import com.example.bookmanagementsystembo.book.dto.BookDetailResponse;
-import com.example.bookmanagementsystembo.book.dto.BookSummaryResponse;
 import com.example.bookmanagementsystembo.bookHold.enums.BookHoldStatus;
 import com.example.bookmanagementsystembo.bookHold.repository.BookHoldRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -181,24 +182,36 @@ class BookQueryRepositoryTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // 가나다 정렬
+    // 정렬 (현재 구현체는 bookId DESC 고정임)
     // ──────────────────────────────────────────────────────────────
     @Nested
-    @DisplayName("가나다(title ASC) 정렬")
+    @DisplayName("정렬 테스트")
     class SortingTest {
 
         @Test
-        @DisplayName("전체 조회 결과가 제목 가나다순으로 정렬된다")
-        void searchAll_sortedByTitleAsc() {
+        @DisplayName("전체 조회 결과가 도서 ID 내림차순(최신 등록순)으로 정렬된다")
+        void searchAll_sortedByBookIdDesc() {
+            // given
             BookSearchCond cond = new BookSearchCond(null, null);
 
+            // when
             Page<Book> result = bookQueryRepository.searchBooks(cond, PageRequest.of(0, 20));
+            List<Book> content = result.getContent();
 
-            List<String> titles = result.getContent().stream()
-                    .map(Book::getTitle).toList();
-            List<String> sorted = titles.stream().sorted().toList();
+            // then
+            // 1. 결과가 비어있지 않은지 확인
+            assertThat(content).hasSizeGreaterThanOrEqualTo(3);
 
-            assertThat(titles).isEqualTo(sorted);
+            // 2. ID를 추출하여 내림차순 정렬인지 검증
+            List<Long> bookIds = content.stream()
+                    .map(Book::getBookId)
+                    .toList();
+
+            List<Long> sortedIds = bookIds.stream()
+                    .sorted(Comparator.reverseOrder())
+                    .toList();
+
+            assertThat(bookIds).isEqualTo(sortedIds);
         }
     }
 

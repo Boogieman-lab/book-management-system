@@ -107,7 +107,7 @@ public class BookBorrowService {
         if (holdStatus == BookHoldStatus.RESERVE_HOLD) {
             // 예약 수령 대출: NOTIFIED 상태의 예약자 본인만 대출 가능
             Reservation reservation = reservationRepository
-                    .findByBookHold_BookHoldIdAndUserIdAndStatus(bookHoldId, userId, ReservationStatus.NOTIFIED)
+                    .findByBookHoldIdAndUserIdAndStatus(bookHoldId, userId, ReservationStatus.NOTIFIED)
                     .orElseThrow(() -> new CoreException(ErrorType.BOOK_NOT_AVAILABLE, bookHoldId));
 
             BookBorrow bookBorrow = BookBorrow.create(bookHoldId, bookHold.getBookId(), userId, reason);
@@ -166,16 +166,21 @@ public class BookBorrowService {
                 .orElseThrow(() -> new CoreException(ErrorType.BOOK_HOLD_NOT_FOUND, bookHoldId));
 
         reservationRepository
-                .findFirstByBookHold_BookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
+                .findFirstByBookHoldIdAndStatusOrderByCreatedAtAsc(bookHoldId, ReservationStatus.WAITING)
                 .ifPresentOrElse(firstReservation -> {
                     bookHold.updateStatus(BookHoldStatus.RESERVE_HOLD);
                     firstReservation.notifyPickup(LocalDateTime.now().plusDays(4));
-                    notificationService.saveAndSend(
-                            firstReservation.getUserId(),
-                            NotificationType.RESERVATION_ARRIVED,
-                            "예약하신 도서가 반납되었습니다. 4일 이내에 수령해주세요.",
-                            bookHoldId
-                    );
+                    try {
+                        notificationService.saveAndSend(
+                                firstReservation.getUserId(),
+                                NotificationType.RESERVATION_ARRIVED,
+                                "예약하신 도서가 반납되었습니다. 4일 이내에 수령해주세요.",
+                                bookHoldId
+                        );
+                    } catch (Exception e) {
+                        log.error("[BookBorrowService] 예약 도착 알림 발송 실패 — userId={}, bookHoldId={}",
+                                firstReservation.getUserId(), bookHoldId, e);
+                    }
                 }, () -> bookHold.updateStatus(BookHoldStatus.AVAILABLE));
     }
 

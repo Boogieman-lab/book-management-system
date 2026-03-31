@@ -18,6 +18,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -112,6 +114,19 @@ public class NotificationService {
         } else {
             publishToRedis(userId, response);
         }
+    }
+
+    /**
+     * 오늘 이미 동일 타입·relatedId로 알림이 발송되었는지 확인합니다 (중복 발송 방지용).
+     *
+     * @param type      알림 유형
+     * @param relatedId 관련 엔티티 ID
+     * @return 오늘 발송 이력이 있으면 true
+     */
+    public boolean alreadySentToday(NotificationType type, Long relatedId) {
+        LocalDateTime from = LocalDate.now().atStartOfDay();
+        LocalDateTime to   = from.plusDays(1);
+        return notificationRepository.existsByTypeAndRelatedIdAndCreatedAtBetween(type, relatedId, from, to);
     }
 
     /**
